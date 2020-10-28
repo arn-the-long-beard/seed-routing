@@ -1,0 +1,31 @@
+@startuml
+
+title Router listening
+
+:fn init
+Router::new();
+
+:Msg::UrlChanged;
+
+:fn update;
+
+:confirm_navigation(url)
+
+match router.move;
+
+
+fork
+ :navigate to next;
+    if (route?) then (exist)
+        :current_route = route;
+    else (not found)
+        :current_route = default_route;
+    endif
+    :update history;
+fork again
+ :move back;
+fork again
+ :move forward;
+end fork
+:router : is_ready;
+@enduml

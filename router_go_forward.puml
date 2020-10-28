@@ -1,0 +1,18 @@
+@startuml
+
+title Router go forward
+
+:Msg::GoForward;
+
+:fn update;
+
+:request_moving_forward;
+
+if(next_route) then (exist)
+    :router.move = move_forward;
+    :notify subs::UrlRequested;
+    :Msg::UrlChanged;
+endif
+:router_listening;
+@enduml
+

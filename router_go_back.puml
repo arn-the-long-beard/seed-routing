@@ -1,0 +1,18 @@
+@startuml
+
+title Router go back
+
+:Msg::GoBack;
+
+:fn update;
+
+:request_moving_back;
+
+if(previous_route) then (exist)
+    :router.move = move_back;
+    :notify subs::UrlRequested;
+    :Msg::UrlChanged;
+endif
+:router_listening;
+@enduml
+
