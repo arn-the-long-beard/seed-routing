@@ -19,7 +19,7 @@ This example actually contains 2 distinct but linked concepts :
     - You know if you can go back of forward and display it on UI easy.
 
 
-- Derive macro for generating URL and/or (almost)full TEA Module calls ( init & view and parent Model for now ) .
+- Derive macro for generating Url and/or call (almost)full TEA Module functions( init & view and parent Model for now ) .
 
     - With **AsUrl** , you can easily convert URL for all your enums and vis versa.
     - With **RoutingModules**, you will get :
@@ -151,6 +151,11 @@ Then we go back to the router listening
 
 
 ### Use the example
+```bash
+cd exanples/backbone_app
+```
+
+
 
 ```bash
 cargo make watch 
@@ -160,7 +165,7 @@ cargo make serve
 
 Open [127.0.0.1:8000](http://127.0.0.1:8000) in your browser.
 
-###Author
+### Author
 
 [arn-the-long-beard](https://github.com/arn-the-long-beard)
 
