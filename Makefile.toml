@@ -55,3 +55,4 @@ description = "Run tests. Ex: 'cargo make test firefox'. Test envs: [chrome, fir
 install_crate = { crate_name = "wasm-pack", binary = "wasm-pack", test_arg = "-V" }
 command = "wasm-pack"
 args = ["test", "--${@}"]
+
