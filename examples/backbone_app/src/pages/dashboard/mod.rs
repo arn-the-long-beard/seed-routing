@@ -2,16 +2,16 @@ use seed::{prelude::*, *};
 pub mod message;
 pub mod statistics;
 pub mod tasks;
-use crate::{pages::dashboard::tasks::TasksRoutes, router};
+
 pub use router::{Init, View};
 use seed_routing::*;
 
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
-pub enum DashboardRoutes {
+pub enum Routes {
     Message,
     Tasks {
         query: IndexMap<String, String>,
-        children: TasksRoutes,
+        children: tasks::Routes,
     },
     Statistics,
     #[default_route]
@@ -19,12 +19,7 @@ pub enum DashboardRoutes {
     #[as_path = ""]
     Root,
 }
-pub fn init(
-    _: Url,
-    model: &mut Model,
-    nested: &DashboardRoutes,
-    orders: &mut impl Orders<Msg>,
-) -> Model {
+pub fn init(_: Url, model: &mut Model, nested: &Routes, orders: &mut impl Orders<Msg>) -> Model {
     nested.init(model, orders);
     model.clone()
 }
@@ -58,7 +53,7 @@ pub fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         Msg::Tasks(task) => tasks::update(task, &mut model.tasks, &mut orders.proxy(Msg::Tasks)),
     }
 }
-pub fn view(dashboard_routes: &DashboardRoutes, model: &Model) -> Node<Msg> {
+pub fn view(dashboard_routes: &Routes, model: &Model) -> Node<Msg> {
     dashboard_routes.view(model)
 }
 

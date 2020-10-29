@@ -1,4 +1,4 @@
-use crate::{router, Routes};
+use crate::{router, Routes as Root};
 pub use router::View;
 use router::*;
 
@@ -11,7 +11,7 @@ pub fn init(
     _: Url,
     _: &mut Model,
     id: &str,
-    children: &AdminRoutes,
+    children: &Routes,
     orders: &mut impl Orders<Msg>,
 ) -> Model {
     let models = load_models();
@@ -23,11 +23,11 @@ pub fn init(
             name: name.to_string(),
             description: description.to_string(),
         }
-    } else if !children.eq(&AdminRoutes::NotFound) {
+    } else if !children.eq(&Routes::NotFound) {
         orders.notify(subs::UrlRequested::new(
-            Routes::Admin {
+            Root::Admin {
                 id: id.to_string(),
-                children: AdminRoutes::NotFound,
+                children: Routes::NotFound,
             }
             .to_url(),
         ));
@@ -50,7 +50,7 @@ pub struct Model {
 pub enum Msg {}
 
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
-pub enum AdminRoutes {
+pub enum Routes {
     #[view = " => root"]
     Root,
     #[view = " => manager"]
@@ -62,7 +62,7 @@ pub enum AdminRoutes {
 
 pub fn update(_: Msg, _: &mut Model, _: &mut impl Orders<Msg>) {}
 
-pub fn view(routes: &AdminRoutes, model: &Model) -> Node<Msg> {
+pub fn view(routes: &Routes, model: &Model) -> Node<Msg> {
     routes.view(model)
 }
 fn manager(model: &Model) -> Node<Msg> {

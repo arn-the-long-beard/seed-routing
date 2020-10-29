@@ -1,12 +1,15 @@
-use crate::{pages::dashboard::DashboardRoutes, Routes};
+use crate::Routes as Root;
+
+use crate::pages::dashboard::Routes as Parent;
 use seed::{prelude::*, *};
 use seed_routing::*;
+
 pub mod task;
 pub fn init(
     _: Url,
     model: &mut Model,
     query: &IndexMap<String, String>,
-    _: &TasksRoutes,
+    _: &Routes,
     _: &mut impl Orders<Msg>,
 ) -> Model {
     if !model.is_default {
@@ -52,7 +55,7 @@ impl Default for Model {
     }
 }
 #[derive(Debug, PartialEq, Clone, AsUrl)]
-pub enum TasksRoutes {
+pub enum Routes {
     Task { id: String },
     //     #[as_path = ""] this makes run time error
     Root,
@@ -95,13 +98,14 @@ pub fn list(tasks: &[task::Model], list: &[u32]) -> Vec<Node<Msg>> {
 }
 
 pub fn render_task(task: &task::Model, is_checked: bool) -> Node<Msg> {
-    let task_url = Routes::Dashboard(DashboardRoutes::Tasks {
-        children: TasksRoutes::Task {
+    let task_url = Root::Dashboard(Parent::Tasks {
+        children: Routes::Task {
             id: task.task_no.to_string(),
         },
         query: IndexMap::new(),
     })
     .to_url();
+
     let task_no = task.task_no;
     li![div![
         input![
@@ -144,15 +148,15 @@ pub fn get_dummy_data() -> Vec<task::Model> {
         },
     ]
 }
-pub fn view(task_routes: &TasksRoutes, model: &Model) -> Node<Msg> {
+pub fn view(task_routes: &Routes, model: &Model) -> Node<Msg> {
     div![vec![
         render_tasks(model),
         match task_routes {
-            TasksRoutes::Task { id } => {
+            Routes::Task { id } => {
                 let task = model.tasks.iter().find(|t| t.task_no.to_string() == *id);
                 task::view(task.unwrap()).map_msg(Msg::Task)
             }
-            TasksRoutes::Root => div!["no task selected"],
+            Routes::Root => div!["no task selected"],
         },
     ]]
 }
