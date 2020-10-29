@@ -22,15 +22,16 @@ pub enum DashboardRoutes {
     Root,
 }
 pub fn init(
-    url: Url,
-    _: &mut Model,
+    _: Url,
+    model: &mut Model,
     nested: &DashboardRoutes,
     orders: &mut impl Orders<Msg>,
 ) -> Model {
-    Model::default()
+    nested.init(model, orders);
+    model.clone()
 }
 
-#[derive(Default)]
+#[derive(Default, Clone)]
 pub struct Model {
     pub name: String,
     pub message: message::Model,
