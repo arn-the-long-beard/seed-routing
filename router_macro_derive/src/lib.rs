@@ -430,15 +430,14 @@ pub fn derive_add_module_load(item: TokenStream) -> TokenStream {
     }
 
          impl router::Init<#ident, Model, Msg> for #ident {
-        fn init<'b, 'c>(
+        fn init(
             &self,
-            previous_state: &'b mut Model,
-            orders: &'c mut impl Orders<Msg>,
-        ) -> &'b mut Model {
+            previous_state: &mut Model,
+            orders: &mut impl Orders<Msg>,
+        ) {
             match self {
                 #(#init_snippets),*
             }
-            previous_state
         }
     }
 

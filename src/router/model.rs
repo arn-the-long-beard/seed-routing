@@ -1,9 +1,5 @@
 use seed::prelude::Orders;
 
 pub trait Init<Routes, State, Msg: 'static> {
-    fn init<'b, 'c>(
-        &self,
-        previous_state: &'b mut State,
-        orders: &'c mut impl Orders<Msg>,
-    ) -> &'b mut State;
+    fn init(&self, previous_state: &mut State, orders: &mut impl Orders<Msg>);
 }
