@@ -227,10 +227,8 @@ mod test {
 
     extern crate router_macro_derive;
     use super::*;
-    use crate::router;
-    use crate::ParseError;
-    use router_macro_derive::AsUrl;
-    use router_macro_derive::Root;
+    use crate::{router, ParseError};
+    use router_macro_derive::{AsUrl, Root};
     use wasm_bindgen_test::*;
 
     wasm_bindgen_test_configure!(run_in_browser);
@@ -261,37 +259,6 @@ mod test {
         Home,
     }
 
-    // #[wasm_bindgen_test]
-    // fn test_iteration() {
-    //     for route in ExampleRoutes::iter() {
-    //
-    //         // println!("stuff {:?}", answer());
-    //     }
-    //     assert_eq!(ExampleRoutes::iter().len(), 6);
-    // }
-
-    // fn test_router_build() {
-    //     // let mut router = SuperRouter::<ExampleRoutes>::new();
-    //     // for route in ExampleRoutes::iter() {
-    //     //     log!(route);
-    //     // }
-    //     //
-    //     // let home = ExampleRoutes::parse_path("").unwrap();
-    //     // let not_found = ExampleRoutes::parse_path("not_found").unwrap();
-    //     // let admin =
-    // ExampleRoutes::parse_path("dashboard/admin/other").unwrap();     // log!
-    // (home);     // log!(admin);
-    //     // log!(not_found);
-    //     // let compare =
-    // ExampleRoutes::Dashboard(DashboardRoutes::Admin(DashboardAdminRoutes::
-    // Other));     // assert_eq!(res.unwrap(), &ExampleRoutes::Home);
-    //     // assert_eq!(res_2.unwrap(), &ExampleRoutes::NotFound);
-    //     // assert_eq!(
-    //     //     res_3.unwrap(),
-    //     //
-    // &ExampleRoutes::Dashboard(DashboardRoutes::Admin(DashboardAdminRoutes::
-    // Other))     // );
-    // }
     #[wasm_bindgen_test]
     fn test_router_default_route() {
         let mut router = Router::<ExampleRoutes>::new();
@@ -299,26 +266,7 @@ mod test {
         router.navigate_to_url(url);
         assert_eq!(router.current_route.unwrap(), router.default_route);
     }
-    // #[test]
-    // fn test_children_routes_generation() {
-    //     let hashed_mapped_routes = DashboardRoutes::get_hashed_routes();
-    //     for map in &hashed_mapped_routes {
-    //         println!("url : {:?} - Route {:?} ", map.0, map.1);
-    //     }
-    //     let len: u8 = hashed_mapped_routes.len() as u8;
-    //     assert_eq!(len, 4);
-    // }
-    // #[test]
-    // fn test_great_children_routes_generation() {
-    //     let hashed_mapped_routes = DashboardAdminRoutes::get_hashed_routes();
-    //     for map in &hashed_mapped_routes {
-    //         println!("url : {:?} - Route {:?} ", map.0, map.1);
-    //     }
-    //     let len: u8 = hashed_mapped_routes.len() as u8;
-    //     assert_eq!(len, 2);
-    // }
-    //
-    //
+
     #[wasm_bindgen_test]
     fn test_build_url() {
         let mut router: Router<ExampleRoutes> = Router::new();
@@ -350,8 +298,6 @@ mod test {
             router.current_route.unwrap(),
             ExampleRoutes::parse_path("/dashboard/profile/1").unwrap()
         );
-        // eprintln!("{:?}", url.path());
-        // eprintln!("{:?}", url_from_router.path());
     }
 
     #[wasm_bindgen_test]
@@ -364,8 +310,6 @@ mod test {
             ExampleRoutes::Dashboard(DashboardRoutes::Profile(1))
         );
         assert_eq!(router.current_history_index, 0);
-
-        // assert_eq!(router.current_route_variant.unwrap(), ExampleRoutes::Home);
 
         router.navigate_to_new(&ExampleRoutes::parse_path("/dashboard/profile/55").unwrap());
 
@@ -382,8 +326,6 @@ mod test {
         );
         assert_eq!(router.current_history_index, 2);
     }
-
-    // #[test]
 
     #[wasm_bindgen_test]
     fn test_backward() {

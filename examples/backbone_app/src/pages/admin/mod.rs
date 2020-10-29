@@ -1,10 +1,11 @@
-use crate::router;
-use crate::Routes;
+use crate::{router, Routes};
 pub use router::View;
 use router::*;
 
-use seed::prelude::wasm_bindgen::__rt::std::collections::HashMap;
-use seed::{prelude::*, *};
+use seed::{
+    prelude::{wasm_bindgen::__rt::std::collections::HashMap, *},
+    *,
+};
 
 pub fn init(
     _: Url,
@@ -23,8 +24,6 @@ pub fn init(
             description: description.to_string(),
         }
     } else if !children.eq(&AdminRoutes::NotFound) {
-        // todo need to simplify with reusing the root of the url;
-        // maybe a function like to_parent_url which merge the root url for example
         orders.notify(subs::UrlRequested::new(
             Routes::Admin {
                 id: id.to_string(),
