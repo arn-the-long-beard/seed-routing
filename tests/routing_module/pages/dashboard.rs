@@ -16,7 +16,7 @@ pub enum Routes {
     Settings,
 }
 pub enum Msg {}
-pub fn init(url: Url, model: &mut Model, orders: &mut impl Orders<Msg>) -> Model {
+pub fn init(url: Url, model: &mut Model, nested: &Routes, orders: &mut impl Orders<Msg>) -> Model {
     Model {
         stuff: "".to_string(),
     }
