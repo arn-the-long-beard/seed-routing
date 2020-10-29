@@ -102,7 +102,28 @@ fn init_for_tuple_variant(
         Some((_, _)) => {
             quote! { {} }
         }
-        None => get_init_token(ident.clone(), modules_path),
+        None => {
+            let module_name = ident.to_string().to_case(Case::Snake);
+            let full_path = if let Some(modules_path) = modules_path {
+                format!("{}::{}", modules_path, module_name)
+            } else {
+                module_name.clone()
+            };
+            let token: TokenStream2 = format!(
+                " previous_state.{} = {}::init(self.to_url(),
+                    &mut previous_state.{},
+                        nested,
+                        &mut orders.proxy(Msg::{}),)  ",
+                module_name,
+                full_path,
+                module_name,
+                ident.to_string()
+            )
+            .parse()
+            .unwrap();
+            quote! {
+            #token  }
+        }
     };
     quote! {
         Self::#ident(nested) => #init_to_load
