@@ -225,7 +225,9 @@ fn build_string_payload(structs_tuple: (Option<&Field>, Option<&Field>, Option<&
 }
 /// Define a routing config as root for your navigation.
 /// It will contain the default route used by the router when it cannot find the
-/// right url ```rust
+/// right url
+///
+/// ```rust
 /// #[derive(Debug, PartialEq, Copy, Clone, Root)]
 /// pub enum DashboardAdminRoutes {
 ///     #[default_route]
@@ -281,7 +283,8 @@ pub fn define_as_root(item: TokenStream) -> TokenStream {
 }
 
 /// The RoutingModule makes the enum variants representing modules loaded by the
-/// routes By default, an enum variant snake case is equal to its module name
+/// routes.
+/// By default, an enum variant snake case is equal to its module name
 ///
 ///  You can rename the path
 ///  You can specify routes that does not load module ( no init, no specific
