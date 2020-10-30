@@ -276,6 +276,16 @@ mod test {
         .to_url();
         let url_to_compare: Url = "/admin".parse().unwrap();
         assert_eq!(url, url_to_compare);
+
+        let url = ExampleRoutes::Admin {
+            query: IndexMap::new(),
+        }
+        .to_url();
+        let url_to_compare: Url = "/admin?".parse().unwrap();
+
+        let string_url = url.to_string();
+        assert_eq!(string_url, "/admin");
+        assert_eq!(url, url_to_compare);
     }
     #[wasm_bindgen_test]
     fn test_convert_from_url() {
