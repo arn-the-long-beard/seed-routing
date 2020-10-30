@@ -172,9 +172,7 @@ impl<Routes: Debug + PartialEq + ParsePath + Default + Clone + Navigation> Route
     /// Match the url that change and update the router with the new current
     /// Route
     pub fn navigate_to_url(&mut self, url: Url) {
-        let path = &mut url.to_string();
-        path.remove(0);
-        if let Ok(route_match) = Routes::parse_path(path) {
+        if let Ok(route_match) = Routes::from_url(url) {
             // log!("found route");
             self.navigate_to_new(&route_match);
         } else {
