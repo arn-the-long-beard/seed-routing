@@ -134,6 +134,15 @@ mod test {
             .unwrap();
         assert_eq!(url, url_to_compare);
 
+        let query_search: IndexMap<String, String> = IndexMap::new();
+
+        let url = ExampleRoutes::Admin {
+            query: query_search.clone(),
+        }
+        .to_url();
+        let url_to_compare: Url = "/admin".parse().unwrap();
+        assert_eq!(url, url_to_compare);
+
         let url: Url = ExampleRoutes::Profile {
             id: "1".to_string(),
         }
@@ -141,7 +150,11 @@ mod test {
 
         let url_to_compare: Url = "/profile/1".parse().unwrap();
         assert_eq!(url, url_to_compare);
+        let mut query_search: IndexMap<String, String> = IndexMap::new();
 
+        query_search.insert("user".to_string(), "arn".to_string());
+        query_search.insert("role".to_string(), "baby_programmer".to_string());
+        query_search.insert("location".to_string(), "norway".to_string());
         let url: Url = ExampleRoutes::Other {
             id: "2".to_string(),
             children: Settings::Projects {
@@ -184,6 +197,29 @@ mod test {
                 query: query_search
             }
         );
+
+        let string = "/admin?";
+
+        let route = ExampleRoutes::parse_path(string).unwrap();
+        let query_search: IndexMap<String, String> = IndexMap::new();
+        assert_eq!(
+            route,
+            ExampleRoutes::Admin {
+                query: query_search
+            }
+        );
+
+        let string = "/admin?";
+
+        let route = ExampleRoutes::parse_path(string).unwrap();
+        let query_search: IndexMap<String, String> = IndexMap::new();
+        assert_eq!(
+            route,
+            ExampleRoutes::Admin {
+                query: query_search
+            }
+        );
+
         let string = "/profile/1/repos";
 
         let route = ExampleRoutes::parse_path(string).unwrap();
@@ -233,6 +269,13 @@ mod test {
             .parse()
             .unwrap();
         assert_eq!(url, url_to_compare);
+
+        let url = ExampleRoutes::Admin {
+            query: IndexMap::new(),
+        }
+        .to_url();
+        let url_to_compare: Url = "/admin".parse().unwrap();
+        assert_eq!(url, url_to_compare);
     }
     #[wasm_bindgen_test]
     fn test_convert_from_url() {
@@ -253,6 +296,13 @@ mod test {
         let route = ExampleRoutes::Admin { query };
         assert_eq!(route, route_to_compare);
 
+        let url_to_compare: Url = "/admin".parse().unwrap();
+        let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
+
+        let query: IndexMap<String, String> = IndexMap::new();
+        let route = ExampleRoutes::Admin { query };
+        assert_eq!(route, route_to_compare);
+
         let url_to_compare: Url = "/profile/1".parse().unwrap();
 
         let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
@@ -265,7 +315,7 @@ mod test {
         let route = ExampleRoutes::Dashboard(DashboardRoutes::Stuff {
             id: "123".to_string(),
         });
-
+        assert_eq!(route.to_url(), url_to_compare);
         let mut query: IndexMap<String, String> = IndexMap::new();
 
         query.insert("user".to_string(), "arn".to_string());

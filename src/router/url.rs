@@ -98,23 +98,31 @@ pub fn extract_query_params(url_string: String) -> IndexMap<String, String> {
     let mut query: IndexMap<String, String> = IndexMap::new();
     let url_parts: Vec<&str> = url_string.split('?').collect();
     let mut parts_iter = url_parts.iter();
+
     let _ = parts_iter.next();
     if let Some(sub_string) = parts_iter.next() {
-        let key_value: Vec<&str> = sub_string.split('&').collect();
+        if sub_string.is_empty() {
+            eprintln!(
+                "query parameter is empty because query string only contains
+            '?'"
+            );
+        } else {
+            let key_value: Vec<&str> = sub_string.split('&').collect();
 
-        for pair in key_value {
-            let mut sub = pair.split('=');
-            let key = sub.next().expect(
-                format!(
-                    "we should have a key for the parameter key but got {}",
-                    url_string
-                )
-                .as_str(),
-            );
-            let value = sub.next().expect(
-                format!("we should have a value for the key but got {}", url_string).as_str(),
-            );
-            query.insert(key.to_string(), value.to_string());
+            for pair in key_value {
+                let mut sub = pair.split('=');
+                let key = sub.next().expect(
+                    format!(
+                        "we should have a key for the parameter key but got {}",
+                        url_string
+                    )
+                    .as_str(),
+                );
+                let value = sub.next().expect(
+                    format!("we should have a value for the key but got {}", url_string).as_str(),
+                );
+                query.insert(key.to_string(), value.to_string());
+            }
         }
     }
     query
@@ -171,6 +179,20 @@ mod test {
 
         query_to_compare.insert("user".to_string(), "arn".to_string());
         query_to_compare.insert("role".to_string(), "programmer".to_string());
+        assert_eq!(params, query_to_compare);
+
+        let url_string = "/12/stuff";
+
+        let params = extract_query_params(url_string.to_string());
+        let query_to_compare: IndexMap<String, String> = IndexMap::new();
+
+        assert_eq!(params, query_to_compare);
+
+        let url_string = "/12/stuff?";
+
+        let params = extract_query_params(url_string.to_string());
+        let query_to_compare: IndexMap<String, String> = IndexMap::new();
+
         assert_eq!(params, query_to_compare);
     }
     #[test]
