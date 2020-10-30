@@ -88,7 +88,7 @@ impl<Routes: Debug + PartialEq + ParsePath + Default + Clone + Navigation> Route
     ///  # Note for now it does not add to history since we navigate inside
     pub fn back(&mut self) -> bool {
         if let Some(next_route) = self.can_back_with_route() {
-            self.current_route = Routes::parse_path(next_route.as_path().as_str()).ok();
+            self.current_route = Some(next_route);
             self.current_history_index -= 1;
             true
         } else {
@@ -143,9 +143,8 @@ impl<Routes: Debug + PartialEq + ParsePath + Default + Clone + Navigation> Route
     /// to move forward in the history
     /// # Note for now it does not add to history since we navigate inside
     pub fn forward(&mut self) -> bool {
-        if let Some(next_route) = &self.can_forward_with_route() {
-            let path: String = next_route.clone().as_path();
-            self.current_route = Routes::parse_path(&path).ok();
+        if let Some(next_route) = self.can_forward_with_route() {
+            self.current_route = Some(next_route);
             self.current_history_index += 1;
             true
         } else {
