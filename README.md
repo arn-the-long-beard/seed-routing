@@ -1,21 +1,65 @@
-## Custom elements example
+## Seed Routing
 
-A try to make a custom Router that we could use to make a good routing system inside Seed.
+A try to make a Router that we could use to make a good routing for Seed equivalent to what we have in Angular/React/Vue.
+
+
+### Rules
+
+Here are the rules I try to respect
+- Respect for TEA
+- One single path of truth
+- Minimize the boilerplate and the risks of bugs
+- Easy API so we can follow the flow of an app
+- Making routing  in TEA should be as easy as in Angular
+- Making transition from other front end framework as easy as possible
+
+### Motivations
+
+My idea and motivation come mainly from the fact that I had a very bad experience with large App in Elm.
+
+I got pain there with :
+- Routing was absent
+- Single path of truth is hard to see
+- How to add and load components was not framed
+- Need to update 5 or 6 files code in order to just add a tiny component
+- Could not see guards
+
+I also got a lot of happiness doing routing in Angular
+- Routes are easy to write with the path, guard and component or module to load
+- Sub routes are easy since you add them to sub modules and they are added automatically later on
+- Lazy loading is easy
+- Guarding routes is easy
+- You can pass data to routes
+- The router is easy to use via dependency injection at runtime
+- RouterLink is OP in html template
+```html
+<a [routerLink]="['/user/bob']" [queryParams]="{debug: true}" queryParamsHandling="merge">
+  link to user component
+</a>
+```
+- Management state from the router is possible with Ngrx
+- Little code in html
+
+```html
+    <router-outlet></router-outlet>
+```
+- Routing is framed as a standard in Angular so you know where to find consistent information to make good routing
+
 
 The discussion regarding routing in seed is there https://github.com/seed-rs/seed/issues/383
 
-### Introduction
+### Description
 
 
-This example is a try hard to make a router as we have in other web front_end frameworks.
 
-This example actually contains 2 distinct but linked concepts :
+This repos actually contains 2 distinct but linked concepts :
 
 - A **router** for : 
     - Managing history.
     - Go back.
     - Go forward .
     - Use default route.
+    - Standard navigation
     - You know if you can go back of forward and display it on UI easy.
 
 
