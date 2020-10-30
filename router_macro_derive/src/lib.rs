@@ -10,13 +10,10 @@ extern crate convert_case;
 extern crate proc_macro;
 extern crate proc_macro_error;
 
-use crate::root::get_default_route;
-use crate::routing::routing_variant_snippets;
+use crate::{root::get_default_route, routing::routing_variant_snippets};
 use proc_macro::TokenStream;
 
-use crate::init::module_init_snippets;
-use crate::modules::modules_path;
-use crate::view::modules_view_snippets;
+use crate::{init::module_init_snippets, modules::modules_path, view::modules_view_snippets};
 use proc_macro_error::{abort, proc_macro_error, Diagnostic, Level};
 use quote::quote;
 use syn::{
@@ -37,15 +34,13 @@ mod view;
 ///
 ///
 /// ```rust
-///
-///     #[derive(Debug, PartialEq, Copy, Clone, AsUrl)]
-///     pub enum DashboardAdminRoutes {
-///         #[as_path = "my_stuff"]  // "/my_stuff"
-///         Other,
-///         #[as_path = ""]
-///         Root,  // "/"
-///     }
-///
+/// #[derive(Debug, PartialEq, Copy, Clone, AsUrl)]
+/// pub enum DashboardAdminRoutes {
+///     #[as_path = "my_stuff"] // "/my_stuff"
+///     Other,
+///     #[as_path = ""]
+///     Root, // "/"
+/// }
 ///
 /// fn test_url() {
 ///     let mut query_search: IndexMap<String, String> = IndexMap::new();
@@ -56,15 +51,13 @@ mod view;
 ///     let url = ExampleRoutes::Admin {
 ///         query: query_search.clone(),
 ///     }
-///         .to_url();
+///     .to_url();
 ///     let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway"
 ///         .parse()
 ///         .unwrap();
 ///     assert_eq!(url, url_to_compare);
 /// }
-///
 /// ```
-///
 #[proc_macro_error]
 #[proc_macro_derive(AsUrl, attributes(as_path))]
 pub fn derive_as_url(item: TokenStream) -> TokenStream {
@@ -130,7 +123,8 @@ fn get_string_from_attribute(attribute_name: &str, attr: &Attribute) -> Result<O
     .ok_or_else(|| Error::new_spanned(attr, &format!("expected #[{} = \"...\"]", attribute_name)))
 }
 
-/// Rebuild the content of a variant depending of the fields present in the original enum
+/// Rebuild the content of a variant depending of the fields present in the
+/// original enum
 fn build_structs(structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>)) -> TokenStream2 {
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
@@ -230,17 +224,15 @@ fn build_string_payload(structs_tuple: (Option<&Field>, Option<&Field>, Option<&
     }
 }
 /// Define a routing config as root for your navigation.
-/// It will contain the default route used by the router when it cannot find the right url
-/// ```rust
-///
-///     #[derive(Debug, PartialEq, Copy, Clone, Root)]
-///     pub enum DashboardAdminRoutes {
-///         #[default_route]
-///         NotFound,  // -> /blablablalbla -> /not_found
-///         Root,  
-///     }
+/// It will contain the default route used by the router when it cannot find the
+/// right url ```rust
+/// #[derive(Debug, PartialEq, Copy, Clone, Root)]
+/// pub enum DashboardAdminRoutes {
+///     #[default_route]
+///     NotFound, // -> /blablablalbla -> /not_found
+///     Root,
+/// }
 /// ```
-///
 #[proc_macro_error]
 #[proc_macro_derive(Root, attributes(default_route))]
 pub fn define_as_root(item: TokenStream) -> TokenStream {
@@ -288,19 +280,19 @@ pub fn define_as_root(item: TokenStream) -> TokenStream {
     })
 }
 
-/// The RoutingModule makes the enum variants representing modules loaded by the routes
-/// By default, an enum variant snake case is equal to its module name
+/// The RoutingModule makes the enum variants representing modules loaded by the
+/// routes By default, an enum variant snake case is equal to its module name
 ///
 ///  You can rename the path
-///  You can specify routes that does not load module ( no init, no specific Model & Msg and no view )
+///  You can specify routes that does not load module ( no init, no specific
+/// Model & Msg and no view )
 ///
-/// The derive macro will call the init function , Model, Msg, Routes, Update, and View
+/// The derive macro will call the init function , Model, Msg, Routes, Update,
+/// and View
 ///
-/// Todo :
-/// - Could add as_module
-/// - Could generate the code for fn update as well ?
+///
+///
 /// ```rust
-///  
 /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 ///     orders
 ///         .subscribe(Msg::UrlChanged)
@@ -331,36 +323,71 @@ pub fn define_as_root(item: TokenStream) -> TokenStream {
 ///     theme: Theme,
 /// }
 ///
+///
 /// #[derive(Debug, PartialEq, Clone, RoutingModules)]
-///     pub enum Routes {
-///         Other {
-///             id: String,
-///             children: Settings,
-///         },
-///         #[guard = "logged_user => admin_guard => not_authorized_view"]
-///         Admin { // will load module "admin.rs"
-///          // will load model.admin and as well
-///          // will check init has correct arguments
-///          // will check viewt has correct arguments
-///             query: IndexMap<String, String>,
-///         },
-///         #[guard = "logged_user => user_guard => not_logged_user_view"]
-///         Dashboard(DashboardRoutes), // will load module "dashboard"
-///         Profile { // will load module "profile"
-///             id: String,
-///         },
-///         #[guard = "logged_user => admin_guard => not_authorized_view"]
-///         #[view = " => my_stuff"]
-///         MyStuff,
-///         #[view = " => not_found"]
-///         #[default_route]
-///         NotFound,
-///         #[view = " => home"]
-///         #[as_path = ""]
-///         Root,
+/// #[modules_path = "pages"]
+/// pub enum Routes {
+///     Login {
+///         query: IndexMap<String, String,>, /// -> http:///localhost:8000/login?name=JohnDoe
+///     },
+///     #[guard = " => guard => forbidden"]
+///     Dashboard(pages::dashboard::Routes,), /// -> http:///localhost:8000/dashboard/*
+///     #[guard = " => admin_guard => forbidden_user"]
+///     Admin {
+///         /// -> /admin/:id/*
+///         id: String,
+///         children: pages::admin::Routes,
+///     },
+///     #[default_route]
+///     #[view = " => not_found"] /// -> http:///localhost:8000/not_found*
+///     NotFound,
+///     #[view = " => forbidden"] /// -> http:///localhost:8000/forbidden*
+///     Forbidden,
+///     #[as_path = ""]
+///     #[view = "theme => home"] /// -> http:///localhost:8000/
+///     Home,
+/// }
+///
+/// fn guard(model: &Model,) -> Option<bool,> {
+///     /// could check local storage, cookie or what ever you want
+///     if model.logged_user.is_some() {
+///         Some(true,)
+///     } else {
+///         None
 ///     }
+/// }
 ///
+/// fn admin_guard(model: &Model,) -> Option<bool,> {
+///     /// could check local storage, cookie or what ever you want
+///     if let Some(user,) = &model.logged_user {
+///         match user.role {
+///             Role::StandardUser => Some(false,),
+///             Role::Admin => Some(true,),
+///         }
+///     } else {
+///         None
+///     }
+/// }
 ///
+/// fn not_found(_: &Model,) -> Node<Msg,> {
+///     div!["404 page not found"]
+/// }
+///
+/// fn forbidden(_: &Model,) -> Node<Msg,> {
+///     div!["401 access denied"]
+/// }
+///
+/// fn forbidden_user(model: &Model,) -> Node<Msg,> {
+///     if let Some(user,) = &model.logged_user {
+///         p![format!(
+///             "Sorry {} {} , but you are missing the Admin Role. Ask your administrator for more \
+///              information. ",
+///             user.first_name, user.last_name
+///         )]
+///     } else {
+///         div!["401"]
+///     }
+/// }
 ///
 /// fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
 ///     match msg {
@@ -369,8 +396,7 @@ pub fn define_as_root(item: TokenStream) -> TokenStream {
 ///             if let Some(current_route) = model.router.current_route.clone() {
 ///                 current_route.init(model, orders);
 ///             }
-///         }
-///         // ...remaining arms
+///         } // ...remaining arms
 ///     }
 /// }
 ///
@@ -384,10 +410,14 @@ pub fn define_as_root(item: TokenStream) -> TokenStream {
 ///         },
 ///     ]
 /// }
-///
 /// ```
 ///
 ///
+/// --------------------
+/// Todo :
+/// - Could add as_module to rename a module
+/// - Could generate the code for fn update as well ?
+/// --------------------
 #[proc_macro_error]
 #[proc_macro_derive(
     RoutingModules,
