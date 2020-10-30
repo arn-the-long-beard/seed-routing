@@ -31,12 +31,26 @@ pub enum Move {
     IsReady,
 }
 
+/// Router that management navigation between routes
+/// Store the history
+/// Can go back and forward
+/// Manage the default route
 pub struct Router<Routes: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
+    /// The actual route , which should be the one displaying the view in Seed
     pub current_route: Option<Routes>,
+    /// The index of the history
+    /// It will change when navigation or pushing back or forward
     pub current_history_index: usize,
+    /// The default route extracted from the attribute #[default_route] on your
+    /// enum This route is equivalent to 404 . In other web framework it
+    /// would be matching path pattern "*" for example
     pub default_route: Routes,
+    /// The route url of the route
+    /// ∕∕todo add protocol, domain and extrat info later
     base_url: Url,
+    /// The current operation the router is doing
     pub current_move: Move,
+    /// The full history with all the routes the user has visited
     history: Vec<Routes>,
 }
 
@@ -56,15 +70,18 @@ impl<Routes: Debug + PartialEq + Default + ParsePath + Clone + Navigation> Defau
 }
 
 impl<Routes: Debug + PartialEq + ParsePath + Default + Clone + Navigation> Router<Routes> {
+    /// Same as default for now
     pub fn new() -> Router<Routes> {
         Router::default()
     }
 
+    /// set base url, useless for now
     pub fn set_base_url(&mut self, url: Url) -> &mut Self {
         self.base_url = url;
         self
     }
 
+    /// Init navigation with the given url
     pub fn init_url_and_navigation(&mut self, url: Url) -> &mut Self {
         self.set_base_url(url.to_base_url());
         self.navigate_to_url(url);
@@ -79,6 +96,7 @@ impl<Routes: Debug + PartialEq + ParsePath + Default + Clone + Navigation> Route
     //     self
     // }
 
+    /// Push the route to the history so you can go back to it later
     fn push_to_history(&mut self, route: Routes) {
         self.history.push(route);
         self.current_history_index = self.history.len() - 1;
@@ -152,6 +170,8 @@ impl<Routes: Debug + PartialEq + ParsePath + Default + Clone + Navigation> Route
         }
     }
 
+    /// Check the route is the current route
+    /// Could be use directly with url as well
     pub fn is_current_route(&self, route: &Routes) -> bool {
         if let Some(current_route) = &self.current_route {
             route.eq(&current_route)
@@ -180,12 +200,15 @@ impl<Routes: Debug + PartialEq + ParsePath + Default + Clone + Navigation> Route
         }
     }
 
+    /// Ask Seed the new request url back in history
     pub fn request_moving_back<F: FnOnce(Url) -> R, R>(&mut self, func: F) {
         self.current_move = Move::IsMovingBack;
         if let Some(next_route) = &self.can_back_with_route() {
             func(next_route.to_url());
         }
     }
+
+    /// Ask Seed the new request url forward in history
     pub fn request_moving_forward<F: FnOnce(Url) -> R, R>(&mut self, func: F) {
         self.current_move = Move::IsMovingForward;
         if let Some(next_route) = &self.can_forward_with_route() {
@@ -198,7 +221,9 @@ impl<Routes: Debug + PartialEq + ParsePath + Default + Clone + Navigation> Route
 
     /// This method accept a given url and choose the appropriate update for the
     /// history
-    /// It also reset the current move
+    /// It also reset the current move to Ready
+    /// This tiny lifecycle is useless because we can know if we had be going
+    /// back in time or forward or notmal navigation
     pub fn confirm_navigation(&mut self, url: Url) {
         match self.current_move {
             Move::IsNavigating => {
