@@ -104,8 +104,20 @@ pub fn extract_query_params(url_string: String) -> IndexMap<String, String> {
 
         for pair in key_value {
             let mut sub = pair.split('=');
-            let key = sub.next().expect("we should have a key for the parameter");
-            let value = sub.next().expect("we should have a value for this key");
+            let key = sub.next().expect(
+                format!(
+                    "we should have a key for the parameter key but got {:?}",
+                    url_string
+                )
+                .as_str(),
+            );
+            let value = sub.next().expect(
+                format!(
+                    "we should have a value for the key but got {:?}",
+                    url_string
+                )
+                .as_str(),
+            );
             query.insert(key.to_string(), value.to_string());
         }
     }
