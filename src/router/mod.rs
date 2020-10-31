@@ -10,18 +10,6 @@ pub use path::*;
 pub use url::*;
 pub use view::*;
 
-// ------ ------
-//     Urls
-// ------ ------
-use seed::*;
-
-struct_urls!();
-/// Construct url injected in the web browser with path
-impl<'a> Urls<'a> {
-    pub fn build_url(self, segments: Vec<&str>) -> Url {
-        self.base_url().set_path(segments)
-    }
-}
 // pub mod children;
 // pub mod route;
 pub enum Move {
