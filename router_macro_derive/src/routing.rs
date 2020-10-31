@@ -2,8 +2,8 @@ use convert_case::{Case, Casing};
 use proc_macro_error::{abort, Diagnostic, Level};
 
 use crate::builder::{
-    build_advanced, build_string_with_path_name, build_string_without_path_name, build_structs,
-    get_string_from_attribute,
+    build_string_with_path_name, build_string_without_path_name, build_variant_arguments,
+    get_string_from_attribute, unwrap_url_payload_matching_field,
 };
 use quote::quote;
 
@@ -136,7 +136,7 @@ fn as_struct_variant(ident: Ident, name: Option<String>, fields: Iter<'_, Field>
 
     let structs_tuple = (id_param, query_parameters, children);
 
-    let structs = build_structs(structs_tuple);
+    let structs = build_variant_arguments(structs_tuple);
 
     // let string_enum_with_no_name = build_string(structs_tuple );
     let format = match &name {
@@ -196,7 +196,7 @@ fn parse_struct_variant(
     let with_id_param = structs_tuple.0.is_some();
     let with_query_params = structs_tuple.1.is_some();
     let with_children = structs_tuple.2.is_some();
-    let structs = build_advanced(structs_tuple);
+    let structs = unwrap_url_payload_matching_field(structs_tuple);
     let parser = match name {
         Some(name) => {
             quote! {      next.strip_prefix(#name).ok_or(err)

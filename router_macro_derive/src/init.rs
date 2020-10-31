@@ -3,7 +3,7 @@ use convert_case::{Case, Casing};
 use proc_macro_error::{abort, Diagnostic, Level};
 
 use crate::{
-    builder::{build_string_payload, build_structs},
+    builder::{build_variant_arguments, inject_variant_payload_in_function_call},
     view::variant_view_path_tuple,
 };
 use quote::quote;
@@ -154,12 +154,12 @@ fn init_for_init_struct_variant(
 
     let structs_tuple = (id_param, query_parameters, children);
 
-    let structs = build_structs(structs_tuple);
+    let structs = build_variant_arguments(structs_tuple);
     let module_name = ident.to_string().to_case(Case::Snake);
 
     // do stuff also for children init maybe
     //  let string_enum = build_string(structs_tuple, name.clone());
-    let payload: String = build_string_payload(structs_tuple);
+    let payload: String = inject_variant_payload_in_function_call(structs_tuple);
 
     let init_to_load = match local_view {
         Some((_, _)) => {

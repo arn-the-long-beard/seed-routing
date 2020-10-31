@@ -3,7 +3,7 @@ use convert_case::{Case, Casing};
 use proc_macro_error::{abort, Diagnostic, Level};
 
 use crate::{
-    builder::{build_structs, get_string_from_attribute},
+    builder::{build_variant_arguments, get_string_from_attribute},
     guard::{add_guard_to_view, variant_guard_path_tuple},
 };
 use quote::quote;
@@ -216,7 +216,7 @@ fn view_as_struct_variant(
 
     let structs_tuple = (id_param, query_parameters, children);
 
-    let structs = build_structs(structs_tuple);
+    let structs = build_variant_arguments(structs_tuple);
 
     // do stuff also for children init maybe
     //  let string_enum = build_string(structs_tuple, name.clone());

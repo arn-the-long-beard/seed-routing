@@ -4,7 +4,7 @@ use syn::{
 };
 /// Rebuild the content of a variant depending of the fields present in the
 /// original enum
-pub fn build_structs(
+pub fn build_variant_arguments(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
 ) -> TokenStream2 {
     match structs_tuple {
@@ -41,7 +41,7 @@ pub fn build_structs(
 }
 
 /// Assign only the payload defined by the field in the enu,
-pub fn build_advanced(
+pub fn unwrap_url_payload_matching_field(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
 ) -> TokenStream2 {
     match structs_tuple {
@@ -77,7 +77,7 @@ pub fn build_advanced(
         }
     }
 }
-pub fn build_string_payload(
+pub fn inject_variant_payload_in_function_call(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
 ) -> String {
     match structs_tuple {
@@ -109,7 +109,7 @@ pub fn build_string_payload(
     }
 }
 
-pub fn build_query() -> TokenStream2 {
+pub fn extract_query_field_to_string() -> TokenStream2 {
     quote! { convert_to_string(query.clone())}
 }
 pub fn build_string_without_path_name(
@@ -117,17 +117,17 @@ pub fn build_string_without_path_name(
 ) -> TokenStream2 {
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
-            let query_string = build_query();
+            let query_string = extract_query_field_to_string();
             quote! { format!("{}?{}",  id, children.clone().as_path() , #query_string)}
         }
 
         (id, query, children) if id.is_some() && query.is_some() && children.is_none() => {
-            let query_string = build_query();
+            let query_string = extract_query_field_to_string();
 
             quote! { format!("/{}?{}",  id, #query_string)}
         }
         (id, query, children) if id.is_none() && query.is_some() && children.is_some() => {
-            let query_string = build_query();
+            let query_string = extract_query_field_to_string();
 
             quote! { format!("/{}?{}",   children.clone().as_path(),#query_string)}
         }
@@ -138,7 +138,7 @@ pub fn build_string_without_path_name(
             quote! { format!("/{}", id)}
         }
         (id, query, children) if id.is_none() && query.is_some() && children.is_none() => {
-            let query_string = build_query();
+            let query_string = extract_query_field_to_string();
             quote! { format!("/?{}",#query_string)}
         }
         (id, query, children) if id.is_none() && query.is_none() && children.is_some() => {
@@ -157,17 +157,17 @@ pub fn build_string_with_path_name(
 ) -> TokenStream2 {
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
-            let query_string = build_query();
+            let query_string = extract_query_field_to_string();
             quote! { format!("/{}/{}{}?{}", #name, id, children.clone().as_path() , #query_string)}
         }
 
         (id, query, children) if id.is_some() && query.is_some() && children.is_none() => {
-            let query_string = build_query();
+            let query_string = extract_query_field_to_string();
 
             quote! { format!("/{}/{}?{}", #name, id, #query_string)}
         }
         (id, query, children) if id.is_none() && query.is_some() && children.is_some() => {
-            let query_string = build_query();
+            let query_string = extract_query_field_to_string();
 
             quote! { format!("/{}/{}?{}", #name,  children.clone().as_path(),#query_string)}
         }
@@ -178,7 +178,7 @@ pub fn build_string_with_path_name(
             quote! { format!("/{}/{}", #name, id)}
         }
         (id, query, children) if id.is_none() && query.is_some() && children.is_none() => {
-            let query_string = build_query();
+            let query_string = extract_query_field_to_string();
             quote! { format!("/{}?{}", #name,#query_string)}
         }
         (id, query, children) if id.is_none() && query.is_none() && children.is_some() => {
