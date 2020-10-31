@@ -3,9 +3,7 @@
 #![cfg(target_arch = "wasm32")]
 
 extern crate wasm_bindgen_test;
-use seed::Url;
 use wasm_bindgen_test::*;
-use web_sys::window;
 
 wasm_bindgen_test_configure!(run_in_browser);
 

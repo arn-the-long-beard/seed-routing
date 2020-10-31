@@ -1,11 +1,9 @@
-use super::*;
 extern crate router_macro_derive;
 extern crate seed_routing;
 use router_macro_derive::*;
 use seed_routing::*;
 
 use seed::{prelude::*, *};
-use wasm_bindgen_test::*;
 
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
 pub enum Routes {
@@ -17,28 +15,22 @@ pub enum Routes {
     #[view = " => video"]
     Video,
 }
-pub fn init(
-    url: Url,
-    model: &mut Model,
-    id: &String,
-    children: &Routes,
-    orders: &mut impl Orders<Msg>,
-) -> Model {
+pub fn init(_: Url, _: &mut Model, _: &String, _: &Routes, _: &mut impl Orders<Msg>) -> Model {
     Model {}
 }
 
 pub struct Model {}
 
-pub fn view(children: &Routes, model: &Model) -> Node<Msg> {
+pub fn view(_: &Routes, _: &Model) -> Node<Msg> {
     div![]
 }
 pub enum Msg {}
-pub fn root(model: &Model) -> Node<Msg> {
+pub fn root(_: &Model) -> Node<Msg> {
     div![]
 }
-pub fn video(model: &Model) -> Node<Msg> {
+pub fn video(_: &Model) -> Node<Msg> {
     div![]
 }
-pub fn files(model: &Model) -> Node<Msg> {
+pub fn files(_: &Model) -> Node<Msg> {
     div![]
 }

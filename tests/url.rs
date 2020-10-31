@@ -5,10 +5,7 @@ mod test {
     extern crate router_macro_derive;
     extern crate seed_routing;
     use router_macro_derive::*;
-    use seed::{
-        prelude::{IndexMap, *},
-        *,
-    };
+    use seed::prelude::{IndexMap, *};
     use seed_routing::*;
 
     use wasm_bindgen_test::*;
@@ -93,7 +90,7 @@ mod test {
             .parse()
             .unwrap();
 
-        let mut query: IndexMap<String, String> = IndexMap::new();
+        let query: IndexMap<String, String> = IndexMap::new();
 
         let url_to_compare = Routes::Olives {
             children: ProcessRoutes::Flowering {
@@ -106,7 +103,7 @@ mod test {
 
         let url: Url = "http://localhost/olives/flowering".parse().unwrap();
 
-        let mut query: IndexMap<String, String> = IndexMap::new();
+        let query: IndexMap<String, String> = IndexMap::new();
 
         let url_to_compare = Routes::Olives {
             children: ProcessRoutes::Flowering {
@@ -380,6 +377,8 @@ mod test {
         let route = ExampleRoutes::Dashboard(DashboardRoutes::Stuff {
             id: "123".to_string(),
         });
+
+        assert_eq!(url_to_compare, route.to_url());
     }
 
     #[wasm_bindgen_test]

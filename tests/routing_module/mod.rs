@@ -10,13 +10,11 @@ pub mod test {
     extern crate seed_routing;
     use crate::routing_module::pages::{admin, dashboard, other, profile};
     use router_macro_derive::*;
-    use seed::{prelude::*, *};
+
     use seed_routing::*;
 
-    use wasm_bindgen_test::*;
-
     pub struct UserLogged {
-        name: String,
+        _name: String,
     }
 
     pub struct Model {
@@ -57,22 +55,22 @@ pub mod test {
         Root,
     }
 
-    pub fn init() {}
+    pub fn _init() {}
 
-    pub fn view(model: &Model) -> Node<Msg> {
+    pub fn _view(_: &Model) -> Node<Msg> {
         div![]
     }
 
-    pub fn home(model: &Model) -> Node<Msg> {
+    pub fn home(_: &Model) -> Node<Msg> {
         div![]
     }
 
-    pub fn update() {}
+    pub fn _update() {}
 
-    pub fn not_found(model: &Model) -> Node<Msg> {
+    pub fn not_found(_: &Model) -> Node<Msg> {
         div![]
     }
-    pub fn forbidden(user: Option<&UserLogged>) -> Node<Msg> {
+    pub fn forbidden(_: Option<&UserLogged>) -> Node<Msg> {
         div![]
     }
     pub fn guard(user: Option<&UserLogged>) -> Option<bool> {
@@ -82,11 +80,4 @@ pub mod test {
             None
         }
     }
-    // pub fn guard(model : &Model) -> Option<bool> {
-    //     if  model.user.is_some() {
-    //         Some(true)
-    //     } else {
-    //         None
-    //     }
-    // }
 }
