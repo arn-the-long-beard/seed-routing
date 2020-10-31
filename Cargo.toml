@@ -1,9 +1,16 @@
 [package]
 name = "seed_routing"
+description = "Routing management for Seed"
 version = "0.0.1"
 authors = ["arn-the-long-beard <arn.menant@gmail.com>"]
 edition = "2018"
-
+repository = "https://github.com/arn-the-long-beard/seed-routing"
+license = "MIT"
+#homepage = ""
+#documentation = ""
+readme = "README.md"
+keywords = ["wasm", "webassembly", "frontend", "framework", "web" , "routing", "navigation" ]
+categories = ["wasm", "web-programming"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 crate-type = ["cdylib" ,"rlib"]
