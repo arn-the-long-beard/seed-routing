@@ -63,7 +63,7 @@ This repos actually contains 2 distinct but linked concepts :
     - You know if you can go back of forward and display it on UI easy.
 
 
-- Derive macro for generating Url and/or call (almost)full TEA Module functions( init & view and parent Model for now ) .
+- Derive macro for generating Url and call to init & view with guard functions
 
     - With **AsUrl** , you can easily convert URL for all your enums and vis versa.
     - With **RoutingModules**, you will get :
