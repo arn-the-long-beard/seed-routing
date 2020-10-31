@@ -3,8 +3,6 @@ use proc_macro_error::{abort, Diagnostic, Level};
 use crate::builder::get_string_from_attribute;
 use syn::{Attribute, Ident};
 
-// todo make a tuple with view + guard + init I think it is the best
-
 pub fn modules_path(_: Ident, attrs: std::slice::Iter<'_, Attribute>) -> Option<String> {
     let mut attrs =
         attrs.filter_map(
