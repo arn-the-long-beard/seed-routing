@@ -1,11 +1,14 @@
-use crate::{build_structs, get_string_from_attribute};
 use convert_case::{Case, Casing};
 
 use proc_macro_error::{abort, Diagnostic, Level};
 
-use crate::guard::{add_guard_to_view, variant_guard_path_tuple};
+use crate::{
+    builder::{build_structs, get_string_from_attribute},
+    guard::{add_guard_to_view, variant_guard_path_tuple},
+};
 use quote::quote;
 use syn::{export::TokenStream2, punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
+
 pub fn modules_view_snippets(
     variants: Iter<'_, Variant>,
     modules_path: Option<String>,

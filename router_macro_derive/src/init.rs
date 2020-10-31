@@ -1,9 +1,11 @@
-use crate::{build_string_payload, build_structs};
 use convert_case::{Case, Casing};
 
 use proc_macro_error::{abort, Diagnostic, Level};
 
-use crate::view::variant_view_path_tuple;
+use crate::{
+    builder::{build_string_payload, build_structs},
+    view::variant_view_path_tuple,
+};
 use quote::quote;
 use syn::{export::TokenStream2, punctuated::Iter, Field, Fields, Ident, Variant};
 

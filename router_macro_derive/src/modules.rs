@@ -1,6 +1,6 @@
 use proc_macro_error::{abort, Diagnostic, Level};
 
-use crate::get_string_from_attribute;
+use crate::builder::get_string_from_attribute;
 use syn::{Attribute, Ident};
 
 // todo make a tuple with view + guard + init I think it is the best

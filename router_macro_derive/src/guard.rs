@@ -1,7 +1,6 @@
-use crate::get_string_from_attribute;
-
 use proc_macro_error::{abort, Diagnostic, Level};
 
+use crate::builder::get_string_from_attribute;
 use quote::quote;
 use syn::{export::TokenStream2, Attribute, Ident};
 
@@ -30,21 +29,27 @@ pub fn variant_guard_path_tuple(
         let string_to_parse = guard_scope;
         let guard_scope_string: Vec<&str> = string_to_parse.split("=>").collect();
         let mut guard_scope_string_iter = guard_scope_string.iter();
-        let guard_path = guard_scope_string_iter.next().unwrap_or_else(||
+        let guard_path = guard_scope_string_iter.next().unwrap_or_else(|| {
             panic!(
-                "expect path for  #[guard_path = PATH => GUARD_FUNCTION => REDIRECT_VIEW] but got this {:?}",
+                "expect path for  #[guard_path = PATH => GUARD_FUNCTION => REDIRECT_VIEW] but got \
+                 this {:?}",
                 string_to_parse
             )
-        );
-        let guard_function = guard_scope_string_iter.next()
-            .unwrap_or_else(||
-                panic!(
-                    "expect path for  #[guard_path = PATH => GUARD_FUNCTION => REDIRECT_VIEW] but got this {:?}", 
-                    string_to_parse));
-        let guard_redirect = guard_scope_string_iter.next()
-            .unwrap_or_else(||
-                panic!("expect path for  #[guard_path = PATH => GUARD_FUNCTION => REDIRECT_VIEW] but got this {:?}", 
-                       string_to_parse));
+        });
+        let guard_function = guard_scope_string_iter.next().unwrap_or_else(|| {
+            panic!(
+                "expect path for  #[guard_path = PATH => GUARD_FUNCTION => REDIRECT_VIEW] but got \
+                 this {:?}",
+                string_to_parse
+            )
+        });
+        let guard_redirect = guard_scope_string_iter.next().unwrap_or_else(|| {
+            panic!(
+                "expect path for  #[guard_path = PATH => GUARD_FUNCTION => REDIRECT_VIEW] but got \
+                 this {:?}",
+                string_to_parse
+            )
+        });
         Some((
             guard_path.trim().to_string(),
             guard_function.trim().to_string(),
@@ -53,7 +58,8 @@ pub fn variant_guard_path_tuple(
     }
 }
 
-/// Add a guard on the view if guard_scope contains value from [#guard  = "model_prop => guard_function"]
+/// Add a guard on the view if guard_scope contains value from [#guard  =
+/// "model_prop => guard_function"]
 pub fn add_guard_to_view(
     view_to_load: TokenStream2,
     guard_scope: (String, String, String),

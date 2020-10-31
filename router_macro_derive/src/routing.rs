@@ -1,8 +1,12 @@
-use crate::{build_advanced, build_structs, get_string_from_attribute};
 use convert_case::{Case, Casing};
 use proc_macro_error::{abort, Diagnostic, Level};
 
+use crate::builder::{
+    build_advanced, build_string_with_path_name, build_string_without_path_name, build_structs,
+    get_string_from_attribute,
+};
 use quote::quote;
+
 use syn::{export::TokenStream2, punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
 
 pub fn routing_variant_snippets(
@@ -141,88 +145,6 @@ fn as_struct_variant(ident: Ident, name: Option<String>, fields: Iter<'_, Field>
     };
     quote! {
         Self::#ident{#structs} => #format
-    }
-}
-
-fn build_query() -> TokenStream2 {
-    quote! { convert_to_string(query.clone())}
-}
-fn build_string_without_path_name(
-    structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
-) -> TokenStream2 {
-    match structs_tuple {
-        (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
-            let query_string = build_query();
-            quote! { format!("{}?{}",  id, children.clone().as_path() , #query_string)}
-        }
-
-        (id, query, children) if id.is_some() && query.is_some() && children.is_none() => {
-            let query_string = build_query();
-
-            quote! { format!("/{}?{}",  id, #query_string)}
-        }
-        (id, query, children) if id.is_none() && query.is_some() && children.is_some() => {
-            let query_string = build_query();
-
-            quote! { format!("/{}?{}",   children.clone().as_path(),#query_string)}
-        }
-        (id, query, children) if id.is_some() && query.is_none() && children.is_some() => {
-            quote! { format!("/{}{}", id,  children.clone().as_path())}
-        }
-        (id, query, children) if id.is_some() && query.is_none() && children.is_none() => {
-            quote! { format!("/{}", id)}
-        }
-        (id, query, children) if id.is_none() && query.is_some() && children.is_none() => {
-            let query_string = build_query();
-            quote! { format!("/?{}",#query_string)}
-        }
-        (id, query, children) if id.is_none() && query.is_none() && children.is_some() => {
-            quote! { format!("/{}",    children.clone().as_path())}
-        }
-
-        (_, _, _) => {
-            quote! { format!("/")}
-        }
-    }
-}
-
-fn build_string_with_path_name(
-    structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
-    name: Option<String>,
-) -> TokenStream2 {
-    match structs_tuple {
-        (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
-            let query_string = build_query();
-            quote! { format!("/{}/{}{}?{}", #name, id, children.clone().as_path() , #query_string)}
-        }
-
-        (id, query, children) if id.is_some() && query.is_some() && children.is_none() => {
-            let query_string = build_query();
-
-            quote! { format!("/{}/{}?{}", #name, id, #query_string)}
-        }
-        (id, query, children) if id.is_none() && query.is_some() && children.is_some() => {
-            let query_string = build_query();
-
-            quote! { format!("/{}/{}?{}", #name,  children.clone().as_path(),#query_string)}
-        }
-        (id, query, children) if id.is_some() && query.is_none() && children.is_some() => {
-            quote! { format!("/{}/{}{}", #name, id,  children.clone().as_path())}
-        }
-        (id, query, children) if id.is_some() && query.is_none() && children.is_none() => {
-            quote! { format!("/{}/{}", #name, id)}
-        }
-        (id, query, children) if id.is_none() && query.is_some() && children.is_none() => {
-            let query_string = build_query();
-            quote! { format!("/{}?{}", #name,#query_string)}
-        }
-        (id, query, children) if id.is_none() && query.is_none() && children.is_some() => {
-            quote! { format!("/{}/{}", #name,   children.clone().as_path())}
-        }
-
-        (_, _, _) => {
-            quote! { format!("/{}", #name)}
-        }
     }
 }
 
