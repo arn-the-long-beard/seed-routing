@@ -11,6 +11,9 @@ license = "MIT"
 readme = "README.md"
 keywords = ["wasm", "webassembly", "frontend", "framework", "web" , "routing", "navigation" ]
 categories = ["wasm", "web-programming"]
+exclude = [
+    "assets",
+]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
 crate-type = ["cdylib" ,"rlib"]
