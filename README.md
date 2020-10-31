@@ -179,17 +179,17 @@ This repos actually contains 2 distinct but linked concepts :
 
 #### The router listens to Url changes
 
-![Entity Diagram](./static/router_listening.svg)
+![Entity Diagram](assets/router_listening.svg)
 
 #### You can request to move back
 
-![Entity Diagram](./static/router_go_back.svg)
+![Entity Diagram](assets/router_go_back.svg)
 
 Then we go back to the router listening
 
 #### You can request to move forward
 
-![Entity Diagram](./static/router_go_forward.svg)
+![Entity Diagram](assets/router_go_forward.svg)
 
 Then we go back to the router listening
 
