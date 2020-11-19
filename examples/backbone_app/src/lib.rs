@@ -263,97 +263,149 @@ fn make_query_for_john_doe() -> IndexMap<String, String,> {
 
 fn render_route(model: &Model,) -> Node<Msg,> {
     ul![
-
         generate_root_nodes(&model.router),
         li![a![C!["route"], "Admin",]],
-        ul![
-            generate_admin_nodes(&model , &model.router)
-        ],
+        ul![generate_admin_nodes(&model, &model.router)],
         li![a![C!["route"], "Dashboard",]],
-        ul![
-          generate_dashboard_nodes(&model, &model.router)
-        ],
+        ul![generate_dashboard_nodes(&model, &model.router)],
     ]
 }
 
-fn generate_root_routes()  ->Vec<(Routes,&'static  str)>{
-    let mut vec :Vec<(Routes,&'static  str)> = vec![];
-    vec.push((Routes::Login { query : IndexMap::new()} , "Login"));
-    vec.push((Routes::Login { query : make_query_for_john_doe() , } ,"Login for JohnDoe"));
-    vec.push((Routes::NotFound , "NotFound"));
-    vec.push((Routes::Home, "Home"));
+fn generate_root_routes() -> Vec<(Routes, &'static str,),> {
+    let mut vec: Vec<(Routes, &'static str,),> = vec![];
+    vec.push((
+        Routes::Login {
+            query: IndexMap::new(),
+        },
+        "Login",
+    ),);
+    vec.push((
+        Routes::Login {
+            query: make_query_for_john_doe(),
+        },
+        "Login for JohnDoe",
+    ),);
+    vec.push((Routes::NotFound, "NotFound",),);
+    vec.push((Routes::Home, "Home",),);
     vec
 }
 
-fn generate_root_nodes(router : &Router<Routes>)  -> Vec<Node<Msg>>{
-
-    let mut list:  Vec<Node<Msg>> = vec![];
-    for route in generate_root_routes().iter()  {
-     list.push(   li![a![
+fn generate_root_nodes(router: &Router<Routes,>,) -> Vec<Node<Msg,>,> {
+    let mut list: Vec<Node<Msg,>,> = vec![];
+    for route in generate_root_routes().iter() {
+        list.push(li![a![
             C![
                 "route",
                 IF!( router.is_current_route(&route.0 ) => "active-route" )
             ],
             attrs! { At::Href => &route.0.to_url() },
-           route.1,
-        ]])
+            route.1,
+        ]],)
     }
     list
 }
 
-
-fn generate_admin_routes()  ->Vec<(Routes,&'static  str)>{
-    let mut vec :Vec<(Routes,&'static  str)> = vec![];
-    vec.push((Routes::Admin { id : "1".to_string() , children : pages::admin::Routes::Root} , "Admin Project 1"));
-    vec.push((Routes::Admin { id : "2".to_string() , children : pages::admin::Routes::Root} , "Admin Project 2"));
-    vec.push((Routes::Admin { id : "3".to_string() , children : pages::admin::Routes::Root} , "Admin Project 3"));
-    vec.push((Routes::Admin { id : "3".to_string() , children : pages::admin::Routes::NotFound } , "Not found project 3"));
-    vec.push((  Routes::Admin { id : "1".to_string() , children : pages::admin::Routes::Manager} , "Manage project 1"));
+fn generate_admin_routes() -> Vec<(Routes, &'static str,),> {
+    let mut vec: Vec<(Routes, &'static str,),> = vec![];
+    vec.push((
+        Routes::Admin {
+            id: "1".to_string(),
+            children: pages::admin::Routes::Root,
+        },
+        "Admin Project 1",
+    ),);
+    vec.push((
+        Routes::Admin {
+            id: "2".to_string(),
+            children: pages::admin::Routes::Root,
+        },
+        "Admin Project 2",
+    ),);
+    vec.push((
+        Routes::Admin {
+            id: "3".to_string(),
+            children: pages::admin::Routes::Root,
+        },
+        "Admin Project 3",
+    ),);
+    vec.push((
+        Routes::Admin {
+            id: "3".to_string(),
+            children: pages::admin::Routes::NotFound,
+        },
+        "Not found project 3",
+    ),);
+    vec.push((
+        Routes::Admin {
+            id: "1".to_string(),
+            children: pages::admin::Routes::Manager,
+        },
+        "Manage project 1",
+    ),);
     vec
 }
 
-fn generate_admin_nodes( model : &Model, router : &Router<Routes>)  -> Vec<Node<Msg>>{
-    let mut list:  Vec<Node<Msg>> = vec![];
-    for route in generate_admin_routes().iter()  {
-        list.push(   li![a![
+fn generate_admin_nodes(model: &Model, router: &Router<Routes,>,) -> Vec<Node<Msg,>,> {
+    let mut list: Vec<Node<Msg,>,> = vec![];
+    for route in generate_admin_routes().iter() {
+        list.push(li![a![
             C![
                 "route",
-                IF!( router.is_current_route(&route.0 ) => "active-route" )
-                           IF!(admin_guard(model).is_none() => "locked-route"   ),
-                    IF!(admin_guard(model).is_some() && !admin_guard(model).unwrap() => "locked-admin-route" )
+                IF!( router.is_current_route(&route.0 ) => "active-route")
+                           IF!(admin_guard(model).is_none() => "locked-route"),
+                    IF!(admin_guard(model).is_some() && !admin_guard(model).unwrap()
+                    => "locked-admin-route" )
             ],
             attrs! { At::Href => &route.0.to_url() },
-           route.1,
-        ]])
+            route.1,
+        ]],)
     }
     list
 }
 
-
-fn generate_dashboard_routes()  ->Vec<(Routes,&'static  str)>{
-    let mut vec :Vec<(Routes,&'static  str)> = vec![];
-    vec.push((Routes::Dashboard(pages::dashboard::Routes::Root), "Profile"));
-    vec.push((Routes::Dashboard(pages::dashboard::Routes::Message) , "Message"));
-    vec.push((Routes::Dashboard(pages::dashboard::Routes::Statistics) , "Statistics"));
-    vec.push((Routes::Dashboard(pages::dashboard::Routes::Tasks { query: IndexMap::new() ,
-        children :  pages::dashboard::tasks::Routes::Root  }) , "Tasks"));
-    vec.push(( Routes::Dashboard(pages::dashboard::Routes::Tasks { query: make_query() ,
-        children :  pages::dashboard::tasks::Routes::Root  }) , "Tasks with url query"));
+fn generate_dashboard_routes() -> Vec<(Routes, &'static str,),> {
+    let mut vec: Vec<(Routes, &'static str,),> = vec![];
+    vec.push((
+        Routes::Dashboard(pages::dashboard::Routes::Root,),
+        "Profile",
+    ),);
+    vec.push((
+        Routes::Dashboard(pages::dashboard::Routes::Message,),
+        "Message",
+    ),);
+    vec.push((
+        Routes::Dashboard(pages::dashboard::Routes::Statistics,),
+        "Statistics",
+    ),);
+    vec.push((
+        Routes::Dashboard(pages::dashboard::Routes::Tasks {
+            query: IndexMap::new(),
+            children: pages::dashboard::tasks::Routes::Root,
+        },),
+        "Tasks",
+    ),);
+    vec.push((
+        Routes::Dashboard(pages::dashboard::Routes::Tasks {
+            query: make_query(),
+            children: pages::dashboard::tasks::Routes::Root,
+        },),
+        "Tasks with url query",
+    ),);
     vec
 }
 
-fn generate_dashboard_nodes( model : &Model, router : &Router<Routes>)  -> Vec<Node<Msg>>{
-    let mut list:  Vec<Node<Msg>> = vec![];
-    for route in generate_dashboard_routes().iter()  {
-        list.push(   li![a![
+fn generate_dashboard_nodes(model: &Model, router: &Router<Routes,>,) -> Vec<Node<Msg,>,> {
+    let mut list: Vec<Node<Msg,>,> = vec![];
+    for route in generate_dashboard_routes().iter() {
+        list.push(li![a![
             C![
                 "route",
                 IF!( router.is_current_route(&route.0 ) => "active-route" )
                            IF!(guard(model).is_none() => "locked-route"   ),
             ],
             attrs! { At::Href => &route.0.to_url() },
-           route.1,
-        ]])
+            route.1,
+        ]],)
     }
     list
 }
