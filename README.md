@@ -3,6 +3,16 @@
 A try to make a Router that we could use to make a good routing for Seed equivalent to what we have in Angular/React/Vue.
 
 
+### Summary
+
+- [Rules](#rules)
+- [Motivation](#motivations)
+- [Description](#description)
+- [Example AsUrl](#example-code-with-asurl)
+- [Example Root](#example-code-with-root)
+- [Example Modules](#example-code-with-routingmodules)
+
+
 ### Rules
 
 Here are the rules I try to respect
@@ -83,7 +93,56 @@ This repos actually contains 2 distinct but linked concepts :
             - Is accessible only if condition are true from the guard.
        
 
-### Example code
+
+
+### Example code with AsUrl
+
+ Derive an enum as Routing for navigation
+ You can change the value of a path for a given route this way
+
+
+ ```rust
+ #[derive(Debug, PartialEq, Copy, Clone, AsUrl)]
+ pub enum DashboardAdminRoutes {
+     #[as_path = "my_stuff"] // "/my_stuff"
+     Other,
+     #[as_path = ""]
+     Root, // "/"
+ }
+
+ fn test_url() {
+     let mut query_search: IndexMap<String, String> = IndexMap::new();
+
+     query_search.insert("user".to_string(), "arn".to_string());
+     query_search.insert("role".to_string(), "baby_programmer".to_string());
+     query_search.insert("location".to_string(), "norway".to_string());
+     let url = ExampleRoutes::Admin {
+         query: query_search.clone(),
+     }
+     .to_url();
+     let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway"
+         .parse()
+         .unwrap();
+     assert_eq!(url, url_to_compare);
+ }
+ ```
+### Example code with Root
+
+ Define a routing config as root for your navigation.
+ It will contain the default route used by the router when it cannot find the
+ right url
+
+ ```rust
+ #[derive(Debug, PartialEq, Copy, Clone, Root)]
+ pub enum DashboardAdminRoutes {
+     #[default_route]
+     NotFound, // -> /blablablalbla -> /not_found
+     Root,
+ }
+ ```
+### Example code with RoutingModules
+
+RoutingModule contains Root and AsUrl as well.
 
  ```rust
 
@@ -172,8 +231,6 @@ This repos actually contains 2 distinct but linked concepts :
  }
 
  ```
-
-
 
 ### Router life cycle
 
