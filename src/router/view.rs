@@ -4,7 +4,7 @@ use seed::prelude::Node;
 /// route and guards if needed
 ///
 /// # Routes
-/// The routes enum that when matching will give view a specific view   
+/// The routes enum that when matching will give view a specific view
 /// Nested Routes and children Routes are passed to the view to call view() on
 /// them as well
 /// # Model
@@ -17,8 +17,8 @@ use seed::prelude::Node;
 /// Should we pass query and id parameter to view as well or having it in
 /// init is enough ?
 /// _______________________________________________________________________________
-pub trait View<Routes, Model, Msg> {
-    fn view(&self, scoped_state: &Model) -> Node<Msg>;
+pub trait View<Routes, Model, Msg,> {
+    fn view(&self, scoped_state: &Model,) -> Node<Msg,>;
 }
 
 // pub trait Guarded<Routes, State, Msg> {
