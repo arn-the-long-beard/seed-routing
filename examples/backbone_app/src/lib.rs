@@ -13,8 +13,15 @@ pub mod models;
 mod pages;
 mod theme;
 mod top_bar;
-
 use std::fmt::Debug;
+
+thread_local! {
+    pub(crate) static ROUTER: Router<Routes> = Router::new();
+}
+
+fn router() -> Router<Routes,> {
+    ROUTER.with(Clone::clone,)
+}
 
 // ------ ------
 //     Init
@@ -26,15 +33,18 @@ fn init(url: Url, orders: &mut impl Orders<Msg,>,) -> Model {
         .subscribe(Msg::UrlRequested,)
         .subscribe(Msg::UserLogged,);
 
-    let mut router: Router<Routes,> = Router::new();
-    router.init_url_and_navigation(url,);
+    router()
+        .set_handler(orders, move |subs::UrlChanged(changed_url,)| {
+            router().confirm_navigation(changed_url,)
+        },)
+        .init(url,);
 
     Model {
         theme: Theme::default(),
         login: Default::default(),
         dashboard: Default::default(),
         admin: Default::default(),
-        router,
+
         logged_user: None,
     }
 }
@@ -111,7 +121,6 @@ struct Model {
     pub login: pages::login::Model,
     pub dashboard: pages::dashboard::Model,
     pub admin: pages::admin::Model,
-    router: Router<Routes,>,
     logged_user: Option<LoggedData,>,
     theme: Theme,
 }
@@ -140,10 +149,7 @@ pub enum Msg {
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg,>,) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url,),) => {
-            model.router.confirm_navigation(url,);
-            if let Some(current_route,) = model.router.current_route.clone() {
-                current_route.init(model, orders,);
-            }
+            router().current_route().init(model, orders,);
         },
         Msg::UrlRequested(_,) => {},
         Msg::Login(login_message,) => pages::login::update(
@@ -167,20 +173,16 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg,>,) {
         Msg::SwitchToTheme(theme,) => model.theme = theme,
 
         Msg::GoBack => {
-            model
-                .router
-                .request_moving_back(|r| orders.notify(subs::UrlRequested::new(r,),),);
+            router().request_moving_back(|r| orders.notify(subs::UrlRequested::new(r,),),);
         },
         Msg::GoForward => {
-            model
-                .router
-                .request_moving_forward(|r| orders.notify(subs::UrlRequested::new(r,),),);
+            router().request_moving_forward(|r| orders.notify(subs::UrlRequested::new(r,),),);
         },
         Msg::Logout => model.logged_user = None,
         Msg::GoLogin => {
-            model.router.current_route = Some(Routes::Login {
-                query: IndexMap::new(),
-            },)
+            // model.router.current_route = Some(Routes::Login {
+            //     query: IndexMap::new(),
+            // },)
         },
     }
 }
@@ -190,14 +192,7 @@ fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg,>,) {
 // ------ ------
 /// View function which renders stuff to html
 fn view(model: &Model,) -> impl IntoNodes<Msg,> {
-    vec![
-        header(&model,),
-        if let Some(route,) = &model.router.current_route {
-            route.view(model,)
-        } else {
-            home(&model.theme,)
-        },
-    ]
+    vec![header(&model,), router().current_route().view(model,)]
 }
 
 fn header(model: &Model,) -> Node<Msg,> {
@@ -210,14 +205,14 @@ fn header(model: &Model,) -> Node<Msg,> {
                 button![
                     "back",
                     attrs! {
-                        At::Disabled  =>   (!model.router.can_back()).as_at_value(),
+                        At::Disabled  =>   (!  router().can_back()).as_at_value(),
                     },
                     ev(Ev::Click, |_| Msg::GoBack)
                 ],
                 button![
                     "forward",
                     attrs! {
-                        At::Disabled =>  (!model.router.can_forward()).as_at_value(),
+                        At::Disabled =>  (!  router().can_forward()).as_at_value(),
                     },
                     ev(Ev::Click, |_| Msg::GoForward)
                 ],
@@ -263,11 +258,11 @@ fn make_query_for_john_doe() -> IndexMap<String, String,> {
 
 fn render_route(model: &Model,) -> Node<Msg,> {
     ul![
-        generate_root_nodes(&model.router),
+        generate_root_nodes(),
         li![a![C!["route"], "Admin",]],
-        ul![generate_admin_nodes(&model, &model.router)],
+        ul![generate_admin_nodes(&model)],
         li![a![C!["route"], "Dashboard",]],
-        ul![generate_dashboard_nodes(&model, &model.router)],
+        ul![generate_dashboard_nodes(&model)],
     ]
 }
 
@@ -290,13 +285,13 @@ fn generate_root_routes() -> Vec<(Routes, &'static str,),> {
     vec
 }
 
-fn generate_root_nodes(router: &Router<Routes,>,) -> Vec<Node<Msg,>,> {
+fn generate_root_nodes() -> Vec<Node<Msg,>,> {
     let mut list: Vec<Node<Msg,>,> = vec![];
     for route in generate_root_routes().iter() {
         list.push(li![a![
             C![
                 "route",
-                IF!( router.is_current_route(&route.0 ) => "active-route" )
+                IF!(    router().is_current_route(&route.0 ) => "active-route" )
             ],
             attrs! { At::Href => &route.0.to_url() },
             route.1,
@@ -345,13 +340,13 @@ fn generate_admin_routes() -> Vec<(Routes, &'static str,),> {
     vec
 }
 
-fn generate_admin_nodes(model: &Model, router: &Router<Routes,>,) -> Vec<Node<Msg,>,> {
+fn generate_admin_nodes(model: &Model,) -> Vec<Node<Msg,>,> {
     let mut list: Vec<Node<Msg,>,> = vec![];
     for route in generate_admin_routes().iter() {
         list.push(li![a![
             C![
                 "route",
-                IF!( router.is_current_route(&route.0 ) => "active-route")
+                IF!(    router().is_current_route(&route.0 ) => "active-route")
                            IF!(admin_guard(model).is_none() => "locked-route"),
                     IF!(admin_guard(model).is_some() && !admin_guard(model).unwrap()
                     => "locked-admin-route" )
@@ -394,13 +389,13 @@ fn generate_dashboard_routes() -> Vec<(Routes, &'static str,),> {
     vec
 }
 
-fn generate_dashboard_nodes(model: &Model, router: &Router<Routes,>,) -> Vec<Node<Msg,>,> {
+fn generate_dashboard_nodes(model: &Model,) -> Vec<Node<Msg,>,> {
     let mut list: Vec<Node<Msg,>,> = vec![];
     for route in generate_dashboard_routes().iter() {
         list.push(li![a![
             C![
                 "route",
-                IF!( router.is_current_route(&route.0 ) => "active-route" )
+                IF!(   router().is_current_route(&route.0 ) => "active-route" )
                            IF!(guard(model).is_none() => "locked-route"   ),
             ],
             attrs! { At::Href => &route.0.to_url() },
