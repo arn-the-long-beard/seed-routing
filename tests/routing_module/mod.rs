@@ -18,7 +18,7 @@ pub mod test {
     }
 
     pub struct Model {
-        user: Option<UserLogged>,
+        user: Option<UserLogged,>,
         other: other::Model,
         dashboard: dashboard::Model,
         admin: admin::Model,
@@ -26,10 +26,10 @@ pub mod test {
     }
 
     pub enum Msg {
-        Other(other::Msg),
-        Dashboard(dashboard::Msg),
-        Admin(admin::Msg),
-        Profile(profile::Msg),
+        Other(other::Msg,),
+        Dashboard(dashboard::Msg,),
+        Admin(admin::Msg,),
+        Profile(profile::Msg,),
     }
 
     #[derive(Debug, PartialEq, Clone, RoutingModules)]
@@ -40,10 +40,10 @@ pub mod test {
             children: pages::other::Routes,
         },
         Admin {
-            query: IndexMap<String, String>,
+            query: IndexMap<String, String,>,
         },
         #[guard = "user => guard => forbidden"]
-        Dashboard(dashboard::Routes),
+        Dashboard(dashboard::Routes,),
         Profile {
             id: String,
         },
@@ -57,27 +57,23 @@ pub mod test {
 
     pub fn _init() {}
 
-    pub fn _view(_: &Model) -> Node<Msg> {
+    pub fn _view(_: &Model,) -> Node<Msg,> {
         div![]
     }
 
-    pub fn home(_: &Model) -> Node<Msg> {
+    pub fn home(_: &Model,) -> Node<Msg,> {
         div![]
     }
 
     pub fn _update() {}
 
-    pub fn not_found(_: &Model) -> Node<Msg> {
+    pub fn not_found(_: &Model,) -> Node<Msg,> {
         div![]
     }
-    pub fn forbidden(_: Option<&UserLogged>) -> Node<Msg> {
+    pub fn forbidden(_: Option<&UserLogged,>,) -> Node<Msg,> {
         div![]
     }
-    pub fn guard(user: Option<&UserLogged>) -> Option<bool> {
-        if user.is_some() {
-            Some(true)
-        } else {
-            None
-        }
+    pub fn guard(user: Option<&UserLogged,>,) -> Option<bool,> {
+        if user.is_some() { Some(true,) } else { None }
     }
 }

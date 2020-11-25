@@ -15,22 +15,22 @@ pub enum Routes {
     #[view = " => video"]
     Video,
 }
-pub fn init(_: Url, _: &mut Model, _: &String, _: &Routes, _: &mut impl Orders<Msg>) -> Model {
+pub fn init(_: Url, _: &mut Model, _: &String, _: &Routes, _: &mut impl Orders<Msg,>,) -> Model {
     Model {}
 }
 
 pub struct Model {}
 
-pub fn view(_: &Routes, _: &Model) -> Node<Msg> {
+pub fn view(_: &Routes, _: &Model,) -> Node<Msg,> {
     div![]
 }
 pub enum Msg {}
-pub fn root(_: &Model) -> Node<Msg> {
+pub fn root(_: &Model,) -> Node<Msg,> {
     div![]
 }
-pub fn video(_: &Model) -> Node<Msg> {
+pub fn video(_: &Model,) -> Node<Msg,> {
     div![]
 }
-pub fn files(_: &Model) -> Node<Msg> {
+pub fn files(_: &Model,) -> Node<Msg,> {
     div![]
 }

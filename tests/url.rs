@@ -18,10 +18,10 @@ mod test {
             children: Settings,
         },
         Admin {
-            query: IndexMap<String, String>,
+            query: IndexMap<String, String,>,
         },
 
-        Dashboard(DashboardRoutes),
+        Dashboard(DashboardRoutes,),
         Profile {
             id: String,
         },
@@ -33,16 +33,16 @@ mod test {
     #[derive(Debug, PartialEq, Clone, AsUrl)]
     pub enum DashboardRoutes {
         #[as_path = "my_stuff"]
-        Stuff { id: String },
+        Stuff { id: String, },
         #[as_path = ""]
         Root,
     }
     #[derive(Debug, PartialEq, Clone, AsUrl)]
     pub enum Settings {
-        Api(Apis),
+        Api(Apis,),
         Projects {
             id: String,
-            query: IndexMap<String, String>,
+            query: IndexMap<String, String,>,
             children: Apis,
         },
     }
@@ -56,27 +56,28 @@ mod test {
     #[derive(Debug, PartialEq, Clone, AsUrl)]
     pub enum Routes {
         Stuff,
-        Olives { children: ProcessRoutes },
+        Olives { children: ProcessRoutes, },
     }
 
     #[derive(Debug, PartialEq, Clone, AsUrl)]
     pub enum ProcessRoutes {
         DoingProcessN1,
         Flowering {
-            id: String,                      /* 2019/units/Camor  or
-                                              * 2019/units/Camor/farms/Cacalsoh */
-            query: IndexMap<String, String>, //from-year=2018&kpi=Average
+            id: String,                       /* 2019/units/Camor  or
+                                               * 2019/units/Camor/farms/Cacalsoh */
+            query: IndexMap<String, String,>, // from-year=2018&kpi=Average
         },
     }
 
     #[wasm_bindgen_test]
     fn test_url_for_tatrix() {
-        let url : Url = "http://localhost/olives/flowering/2019/units/Camor/farms/Cacalsoh?from-year=2018&kpi=Average"
-            .parse().unwrap();
+        let url: Url = "http://localhost/olives/flowering/2019/units/Camor/farms/Cacalsoh?from-year=2018&kpi=Average"
+            .parse()
+            .unwrap();
 
-        let mut query: IndexMap<String, String> = IndexMap::new();
-        query.insert("from-year".to_string(), "2018".to_string());
-        query.insert("kpi".to_string(), "Average".to_string());
+        let mut query: IndexMap<String, String,> = IndexMap::new();
+        query.insert("from-year".to_string(), "2018".to_string(),);
+        query.insert("kpi".to_string(), "Average".to_string(),);
         let url_to_compare = Routes::Olives {
             children: ProcessRoutes::Flowering {
                 id: "2019/units/Camor/farms/Cacalsoh".to_string(),
@@ -86,11 +87,9 @@ mod test {
         .to_url();
         assert_eq!(url, url_to_compare);
 
-        let url: Url = "http://localhost/olives/flowering/2019/units/Camor"
-            .parse()
-            .unwrap();
+        let url: Url = "http://localhost/olives/flowering/2019/units/Camor".parse().unwrap();
 
-        let query: IndexMap<String, String> = IndexMap::new();
+        let query: IndexMap<String, String,> = IndexMap::new();
 
         let url_to_compare = Routes::Olives {
             children: ProcessRoutes::Flowering {
@@ -103,13 +102,10 @@ mod test {
 
         let url: Url = "http://localhost/olives/flowering".parse().unwrap();
 
-        let query: IndexMap<String, String> = IndexMap::new();
+        let query: IndexMap<String, String,> = IndexMap::new();
 
         let url_to_compare = Routes::Olives {
-            children: ProcessRoutes::Flowering {
-                id: "".to_string(),
-                query,
-            },
+            children: ProcessRoutes::Flowering { id: "".to_string(), query, },
         }
         .to_url();
         assert_eq!(url, url_to_compare);
@@ -117,21 +113,19 @@ mod test {
 
     #[wasm_bindgen_test]
     fn test_to_url() {
-        let mut query_search: IndexMap<String, String> = IndexMap::new();
+        let mut query_search: IndexMap<String, String,> = IndexMap::new();
 
-        query_search.insert("user".to_string(), "arn".to_string());
-        query_search.insert("role".to_string(), "baby_programmer".to_string());
-        query_search.insert("location".to_string(), "norway".to_string());
+        query_search.insert("user".to_string(), "arn".to_string(),);
+        query_search.insert("role".to_string(), "baby_programmer".to_string(),);
+        query_search.insert("location".to_string(), "norway".to_string(),);
         let url = ExampleRoutes::Admin {
             query: query_search.clone(),
         }
         .to_url();
-        let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway"
-            .parse()
-            .unwrap();
+        let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway".parse().unwrap();
         assert_eq!(url, url_to_compare);
 
-        let query_search: IndexMap<String, String> = IndexMap::new();
+        let query_search: IndexMap<String, String,> = IndexMap::new();
 
         let url = ExampleRoutes::Admin {
             query: query_search.clone(),
@@ -140,18 +134,15 @@ mod test {
         let url_to_compare: Url = "/admin".parse().unwrap();
         assert_eq!(url, url_to_compare);
 
-        let url: Url = ExampleRoutes::Profile {
-            id: "1".to_string(),
-        }
-        .to_url();
+        let url: Url = ExampleRoutes::Profile { id: "1".to_string(), }.to_url();
 
         let url_to_compare: Url = "/profile/1".parse().unwrap();
         assert_eq!(url, url_to_compare);
-        let mut query_search: IndexMap<String, String> = IndexMap::new();
+        let mut query_search: IndexMap<String, String,> = IndexMap::new();
 
-        query_search.insert("user".to_string(), "arn".to_string());
-        query_search.insert("role".to_string(), "baby_programmer".to_string());
-        query_search.insert("location".to_string(), "norway".to_string());
+        query_search.insert("user".to_string(), "arn".to_string(),);
+        query_search.insert("role".to_string(), "baby_programmer".to_string(),);
+        query_search.insert("location".to_string(), "norway".to_string(),);
         let url: Url = ExampleRoutes::Other {
             id: "2".to_string(),
             children: Settings::Projects {
@@ -162,15 +153,14 @@ mod test {
         }
         .to_url();
 
-        let url_to_compare: Url = "/other/2/projects/14/facebook?user=arn&role=baby_programmer&\
-                                   location=norway"
+        let url_to_compare: Url = "/other/2/projects/14/facebook?user=arn&role=baby_programmer&location=norway"
             .parse()
             .unwrap();
         assert_eq!(url, url_to_compare);
 
         let url: Url = ExampleRoutes::Other {
             id: "2".to_string(),
-            children: Settings::Api(Apis::Facebook),
+            children: Settings::Api(Apis::Facebook,),
         }
         .to_url();
 
@@ -182,59 +172,38 @@ mod test {
     fn test_from_path_to_enum() {
         let string = "/admin?user=arn&role=baby_programmer&location=norway";
 
-        let route = ExampleRoutes::parse_path(string).unwrap();
-        let mut query_search: IndexMap<String, String> = IndexMap::new();
+        let route = ExampleRoutes::parse_path(string,).unwrap();
+        let mut query_search: IndexMap<String, String,> = IndexMap::new();
 
-        query_search.insert("user".to_string(), "arn".to_string());
-        query_search.insert("role".to_string(), "baby_programmer".to_string());
-        query_search.insert("location".to_string(), "norway".to_string());
-        assert_eq!(
-            route,
-            ExampleRoutes::Admin {
-                query: query_search
-            }
-        );
+        query_search.insert("user".to_string(), "arn".to_string(),);
+        query_search.insert("role".to_string(), "baby_programmer".to_string(),);
+        query_search.insert("location".to_string(), "norway".to_string(),);
+        assert_eq!(route, ExampleRoutes::Admin { query: query_search });
 
         let string = "/admin?";
 
-        let route = ExampleRoutes::parse_path(string).unwrap();
-        let query_search: IndexMap<String, String> = IndexMap::new();
-        assert_eq!(
-            route,
-            ExampleRoutes::Admin {
-                query: query_search
-            }
-        );
+        let route = ExampleRoutes::parse_path(string,).unwrap();
+        let query_search: IndexMap<String, String,> = IndexMap::new();
+        assert_eq!(route, ExampleRoutes::Admin { query: query_search });
 
         let string = "/admin?";
 
-        let route = ExampleRoutes::parse_path(string).unwrap();
-        let query_search: IndexMap<String, String> = IndexMap::new();
-        assert_eq!(
-            route,
-            ExampleRoutes::Admin {
-                query: query_search
-            }
-        );
+        let route = ExampleRoutes::parse_path(string,).unwrap();
+        let query_search: IndexMap<String, String,> = IndexMap::new();
+        assert_eq!(route, ExampleRoutes::Admin { query: query_search });
 
         let string = "/profile/1/repos";
 
-        let route = ExampleRoutes::parse_path(string).unwrap();
-        assert_eq!(
-            route,
-            ExampleRoutes::Profile {
-                id: "1".to_string(),
-            }
-        );
+        let route = ExampleRoutes::parse_path(string,).unwrap();
+        assert_eq!(route, ExampleRoutes::Profile { id: "1".to_string(), });
 
-        let mut query: IndexMap<String, String> = IndexMap::new();
+        let mut query: IndexMap<String, String,> = IndexMap::new();
 
-        query.insert("user".to_string(), "arn".to_string());
-        query.insert("role".to_string(), "baby_programmer".to_string());
-        query.insert("location".to_string(), "norway".to_string());
+        query.insert("user".to_string(), "arn".to_string(),);
+        query.insert("role".to_string(), "baby_programmer".to_string(),);
+        query.insert("location".to_string(), "norway".to_string(),);
 
-        let string_to_compare =
-            "/other/2/projects/14/facebook?user=arn&role=baby_programmer&location=norway";
+        let string_to_compare = "/other/2/projects/14/facebook?user=arn&role=baby_programmer&location=norway";
         assert_eq!(
             ExampleRoutes::parse_path(string_to_compare).unwrap(),
             ExampleRoutes::Other {
@@ -249,35 +218,24 @@ mod test {
     }
     #[wasm_bindgen_test]
     fn test_convert_to_url() {
-        let mut query_search: IndexMap<String, String> = IndexMap::new();
+        let mut query_search: IndexMap<String, String,> = IndexMap::new();
 
-        query_search.insert("user".to_string(), "arn".to_string());
-        query_search.insert("role".to_string(), "baby_programmer".to_string());
-        query_search.insert("location".to_string(), "norway".to_string());
-        let url = ExampleRoutes::Dashboard(DashboardRoutes::Root).to_url();
+        query_search.insert("user".to_string(), "arn".to_string(),);
+        query_search.insert("role".to_string(), "baby_programmer".to_string(),);
+        query_search.insert("location".to_string(), "norway".to_string(),);
+        let url = ExampleRoutes::Dashboard(DashboardRoutes::Root,).to_url();
         let url_to_compare: Url = "/dashboard/".parse().unwrap();
 
         assert_eq!(url, url_to_compare);
-        let url = ExampleRoutes::Admin {
-            query: query_search,
-        }
-        .to_url();
-        let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway"
-            .parse()
-            .unwrap();
+        let url = ExampleRoutes::Admin { query: query_search, }.to_url();
+        let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway".parse().unwrap();
         assert_eq!(url, url_to_compare);
 
-        let url = ExampleRoutes::Admin {
-            query: IndexMap::new(),
-        }
-        .to_url();
+        let url = ExampleRoutes::Admin { query: IndexMap::new(), }.to_url();
         let url_to_compare: Url = "/admin".parse().unwrap();
         assert_eq!(url, url_to_compare);
 
-        let url = ExampleRoutes::Admin {
-            query: IndexMap::new(),
-        }
-        .to_url();
+        let url = ExampleRoutes::Admin { query: IndexMap::new(), }.to_url();
         let url_to_compare: Url = "/admin?".parse().unwrap();
 
         let string_url = url.to_string();
@@ -287,50 +245,43 @@ mod test {
     #[wasm_bindgen_test]
     fn test_convert_from_url() {
         let url_to_compare: Url = "/dashboard/".parse().unwrap();
-        let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
-        let route = ExampleRoutes::Dashboard(DashboardRoutes::Root);
+        let route_to_compare = ExampleRoutes::from_url(url_to_compare,).unwrap();
+        let route = ExampleRoutes::Dashboard(DashboardRoutes::Root,);
         assert_eq!(route, route_to_compare);
 
-        let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway"
-            .parse()
-            .unwrap();
-        let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
-        let mut query: IndexMap<String, String> = IndexMap::new();
+        let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway".parse().unwrap();
+        let route_to_compare = ExampleRoutes::from_url(url_to_compare,).unwrap();
+        let mut query: IndexMap<String, String,> = IndexMap::new();
 
-        query.insert("user".to_string(), "arn".to_string());
-        query.insert("role".to_string(), "baby_programmer".to_string());
-        query.insert("location".to_string(), "norway".to_string());
-        let route = ExampleRoutes::Admin { query };
+        query.insert("user".to_string(), "arn".to_string(),);
+        query.insert("role".to_string(), "baby_programmer".to_string(),);
+        query.insert("location".to_string(), "norway".to_string(),);
+        let route = ExampleRoutes::Admin { query, };
         assert_eq!(route, route_to_compare);
 
         let url_to_compare: Url = "/admin".parse().unwrap();
-        let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
+        let route_to_compare = ExampleRoutes::from_url(url_to_compare,).unwrap();
 
-        let query: IndexMap<String, String> = IndexMap::new();
-        let route = ExampleRoutes::Admin { query };
+        let query: IndexMap<String, String,> = IndexMap::new();
+        let route = ExampleRoutes::Admin { query, };
         assert_eq!(route, route_to_compare);
 
         let url_to_compare: Url = "/profile/1".parse().unwrap();
 
-        let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
-        let route = ExampleRoutes::Profile {
-            id: "1".to_string(),
-        };
+        let route_to_compare = ExampleRoutes::from_url(url_to_compare,).unwrap();
+        let route = ExampleRoutes::Profile { id: "1".to_string(), };
         assert_eq!(route, route_to_compare);
 
         let url_to_compare: Url = "/dashboard/my_stuff/123".parse().unwrap();
-        let route = ExampleRoutes::Dashboard(DashboardRoutes::Stuff {
-            id: "123".to_string(),
-        });
+        let route = ExampleRoutes::Dashboard(DashboardRoutes::Stuff { id: "123".to_string(), },);
         assert_eq!(route.to_url(), url_to_compare);
-        let mut query: IndexMap<String, String> = IndexMap::new();
+        let mut query: IndexMap<String, String,> = IndexMap::new();
 
-        query.insert("user".to_string(), "arn".to_string());
-        query.insert("role".to_string(), "baby_programmer".to_string());
-        query.insert("location".to_string(), "norway".to_string());
+        query.insert("user".to_string(), "arn".to_string(),);
+        query.insert("role".to_string(), "baby_programmer".to_string(),);
+        query.insert("location".to_string(), "norway".to_string(),);
 
-        let url_to_compare: Url = "/other/2/projects/14/facebook?user=arn&role=baby_programmer&\
-                                   location=norway"
+        let url_to_compare: Url = "/other/2/projects/14/facebook?user=arn&role=baby_programmer&location=norway"
             .parse()
             .unwrap();
         assert_eq!(
@@ -349,34 +300,28 @@ mod test {
     #[wasm_bindgen_test]
     fn test_convert_from_url_with_children() {
         let url_to_compare: Url = "/dashboard/".parse().unwrap();
-        let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
-        let route = ExampleRoutes::Dashboard(DashboardRoutes::Root);
+        let route_to_compare = ExampleRoutes::from_url(url_to_compare,).unwrap();
+        let route = ExampleRoutes::Dashboard(DashboardRoutes::Root,);
         assert_eq!(route, route_to_compare);
 
-        let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway"
-            .parse()
-            .unwrap();
-        let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
-        let mut query: IndexMap<String, String> = IndexMap::new();
+        let url_to_compare: Url = "/admin?user=arn&role=baby_programmer&location=norway".parse().unwrap();
+        let route_to_compare = ExampleRoutes::from_url(url_to_compare,).unwrap();
+        let mut query: IndexMap<String, String,> = IndexMap::new();
 
-        query.insert("user".to_string(), "arn".to_string());
-        query.insert("role".to_string(), "baby_programmer".to_string());
-        query.insert("location".to_string(), "norway".to_string());
-        let route = ExampleRoutes::Admin { query };
+        query.insert("user".to_string(), "arn".to_string(),);
+        query.insert("role".to_string(), "baby_programmer".to_string(),);
+        query.insert("location".to_string(), "norway".to_string(),);
+        let route = ExampleRoutes::Admin { query, };
         assert_eq!(route, route_to_compare);
 
         let url_to_compare: Url = "/profile/1".parse().unwrap();
 
-        let route_to_compare = ExampleRoutes::from_url(url_to_compare).unwrap();
-        let route = ExampleRoutes::Profile {
-            id: "1".to_string(),
-        };
+        let route_to_compare = ExampleRoutes::from_url(url_to_compare,).unwrap();
+        let route = ExampleRoutes::Profile { id: "1".to_string(), };
         assert_eq!(route, route_to_compare);
 
         let url_to_compare: Url = "/dashboard/my_stuff/123".parse().unwrap();
-        let route = ExampleRoutes::Dashboard(DashboardRoutes::Stuff {
-            id: "123".to_string(),
-        });
+        let route = ExampleRoutes::Dashboard(DashboardRoutes::Stuff { id: "123".to_string(), },);
 
         assert_eq!(url_to_compare, route.to_url());
     }
