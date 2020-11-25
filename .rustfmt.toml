@@ -20,3 +20,4 @@ error_on_unformatted = true
 report_todo = "Always"
 report_fixme = "Always"
 version = "Two"
+max_width=150
