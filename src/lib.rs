@@ -1,7 +1,7 @@
 pub mod router;
 
 pub use router::*;
-pub use router_macro_derive::{AsUrl, Root, RoutingModules};
+pub use router_macro_derive::{add_router, AsUrl, Root, RoutingModules};
 #[cfg(test)]
 mod tests {
     #[test]
