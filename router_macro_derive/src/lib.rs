@@ -26,6 +26,35 @@ mod root;
 mod routing;
 mod view;
 
+/// Add the router to the web application
+///
+/// ```rust
+/// add_router!();
+///
+///
+/// enum Route {
+///     Home,
+///     NotFound
+/// }
+///
+/// router().set_current_route(Route::Home);
+/// assert!(router().current_route(),Route::Home);
+/// ```
+///
+///
+#[proc_macro]
+pub fn add_router(_item: TokenStream) -> TokenStream {
+    "thread_local! {
+    pub(crate) static ROUTER: Router<Routes> = Router::new();
+}
+
+/// Access the router from global state
+fn router() -> Router<Routes,> {
+    ROUTER.with(Clone::clone,)
+}"
+    .parse()
+    .unwrap()
+}
 /// Derive an enum as Routing for navigation
 /// You can change the value of a path for a given route this way
 ///
