@@ -45,11 +45,11 @@ mod view;
 #[proc_macro]
 pub fn add_router(_item: TokenStream) -> TokenStream {
     "thread_local! {
-    pub(crate) static ROUTER: Router<Routes> = Router::new();
+    pub(crate) static ROUTER: Router<Route> = Router::new();
 }
 
 /// Access the router from global state
-fn router() -> Router<Routes,> {
+fn router() -> Router<Route,> {
     ROUTER.with(Clone::clone,)
 }"
     .parse()

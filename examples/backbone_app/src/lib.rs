@@ -39,7 +39,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 }
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
 #[modules_path = "pages"]
-pub enum Routes {
+pub enum Route {
     Login {
         query: IndexMap<String, String>, // -> http://localhost:8000/login?name=JohnDoe
     },
@@ -253,22 +253,22 @@ fn render_route(model: &Model) -> Node<Msg> {
     ]
 }
 
-fn generate_root_routes() -> Vec<(Routes, &'static str)> {
-    let mut vec: Vec<(Routes, &'static str)> = vec![];
+fn generate_root_routes() -> Vec<(Route, &'static str)> {
+    let mut vec: Vec<(Route, &'static str)> = vec![];
     vec.push((
-        Routes::Login {
+        Route::Login {
             query: IndexMap::new(),
         },
         "Login",
     ));
     vec.push((
-        Routes::Login {
+        Route::Login {
             query: make_query_for_john_doe(),
         },
         "Login for JohnDoe",
     ));
-    vec.push((Routes::NotFound, "NotFound"));
-    vec.push((Routes::Home, "Home"));
+    vec.push((Route::NotFound, "NotFound"));
+    vec.push((Route::Home, "Home"));
     vec
 }
 
@@ -287,38 +287,38 @@ fn generate_root_nodes() -> Vec<Node<Msg>> {
     list
 }
 
-fn generate_admin_routes() -> Vec<(Routes, &'static str)> {
-    let mut vec: Vec<(Routes, &'static str)> = vec![];
+fn generate_admin_routes() -> Vec<(Route, &'static str)> {
+    let mut vec: Vec<(Route, &'static str)> = vec![];
     vec.push((
-        Routes::Admin {
+        Route::Admin {
             id: "1".to_string(),
             children: pages::admin::Routes::Root,
         },
         "Admin Project 1",
     ));
     vec.push((
-        Routes::Admin {
+        Route::Admin {
             id: "2".to_string(),
             children: pages::admin::Routes::Root,
         },
         "Admin Project 2",
     ));
     vec.push((
-        Routes::Admin {
+        Route::Admin {
             id: "3".to_string(),
             children: pages::admin::Routes::Root,
         },
         "Admin Project 3",
     ));
     vec.push((
-        Routes::Admin {
+        Route::Admin {
             id: "3".to_string(),
             children: pages::admin::Routes::NotFound,
         },
         "Not found project 3",
     ));
     vec.push((
-        Routes::Admin {
+        Route::Admin {
             id: "1".to_string(),
             children: pages::admin::Routes::Manager,
         },
@@ -345,26 +345,26 @@ fn generate_admin_nodes(model: &Model) -> Vec<Node<Msg>> {
     list
 }
 
-fn generate_dashboard_routes() -> Vec<(Routes, &'static str)> {
-    let mut vec: Vec<(Routes, &'static str)> = vec![];
-    vec.push((Routes::Dashboard(pages::dashboard::Routes::Root), "Profile"));
+fn generate_dashboard_routes() -> Vec<(Route, &'static str)> {
+    let mut vec: Vec<(Route, &'static str)> = vec![];
+    vec.push((Route::Dashboard(pages::dashboard::Routes::Root), "Profile"));
     vec.push((
-        Routes::Dashboard(pages::dashboard::Routes::Message),
+        Route::Dashboard(pages::dashboard::Routes::Message),
         "Message",
     ));
     vec.push((
-        Routes::Dashboard(pages::dashboard::Routes::Statistics),
+        Route::Dashboard(pages::dashboard::Routes::Statistics),
         "Statistics",
     ));
     vec.push((
-        Routes::Dashboard(pages::dashboard::Routes::Tasks {
+        Route::Dashboard(pages::dashboard::Routes::Tasks {
             query: IndexMap::new(),
             children: pages::dashboard::tasks::Routes::Root,
         }),
         "Tasks",
     ));
     vec.push((
-        Routes::Dashboard(pages::dashboard::Routes::Tasks {
+        Route::Dashboard(pages::dashboard::Routes::Tasks {
             query: make_query(),
             children: pages::dashboard::tasks::Routes::Root,
         }),
