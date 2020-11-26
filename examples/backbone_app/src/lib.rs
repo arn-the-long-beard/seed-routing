@@ -21,23 +21,19 @@ add_router!();
 // ------ ------
 
 fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-    orders
-        .subscribe(Msg::UrlChanged)
-        .subscribe(Msg::UrlRequested)
-        .subscribe(Msg::UserLogged);
+    orders.subscribe(Msg::UrlChanged).subscribe(Msg::UserLogged);
 
     router()
-        .set_handler(orders, move |subs::UrlChanged(changed_url)| {
-            router().confirm_navigation(changed_url)
-        })
-        .init(url);
+        .init(url)
+        .set_handler(orders, move |subs::UrlRequested(requested_url, _)| {
+            router().confirm_navigation(requested_url)
+        });
 
     Model {
         theme: Theme::default(),
         login: Default::default(),
         dashboard: Default::default(),
         admin: Default::default(),
-
         logged_user: None,
     }
 }
@@ -126,7 +122,6 @@ struct Model {
 
 pub enum Msg {
     UrlChanged(subs::UrlChanged),
-    UrlRequested(subs::UrlRequested),
     Login(pages::login::Msg),
     Admin(pages::admin::Msg),
     UserLogged(LoggedData),
@@ -141,9 +136,9 @@ pub enum Msg {
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
+            log!(url);
             router().current_route().init(model, orders);
         }
-        Msg::UrlRequested(_) => {}
         Msg::Login(login_message) => pages::login::update(
             login_message,
             &mut model.login,
