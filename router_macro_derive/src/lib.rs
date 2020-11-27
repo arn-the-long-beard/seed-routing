@@ -61,7 +61,7 @@ fn router() -> Router<Route,> {
 ///
 ///
 /// ```rust
-/// #[derive(Debug, PartialEq, Copy, Clone, AsUrl)]
+/// #[derive(Debug, PartialEq, Copy, Clone, ParseUrl)]
 /// pub enum DashboardAdminRoutes {
 ///     #[as_path = "my_stuff"] // "/my_stuff"
 ///     Other,
@@ -86,7 +86,7 @@ fn router() -> Router<Route,> {
 /// }
 /// ```
 #[proc_macro_error]
-#[proc_macro_derive(AsUrl, attributes(as_path))]
+#[proc_macro_derive(ParseUrl, attributes(as_path))]
 pub fn derive_as_url(item: TokenStream) -> TokenStream {
     let DeriveInput { ident, data, .. } = parse_macro_input!(item as DeriveInput);
     let variants = match data {
