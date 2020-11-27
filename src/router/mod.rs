@@ -1,3 +1,4 @@
+mod default_route;
 mod model;
 mod path;
 mod url;
@@ -5,6 +6,7 @@ mod view;
 use seed::Url;
 use std::fmt::Debug;
 
+pub use default_route::*;
 pub use model::*;
 pub use path::*;
 use seed::prelude::{

@@ -193,6 +193,12 @@ pub fn define_as_root(item: TokenStream) -> TokenStream {
                 #ident::#default_variant_ident
             }
         }
+
+      impl DefaultRoute<#ident> for #ident {
+            fn is_default(&self) -> bool {
+                self == &#ident::#default_variant_ident
+            }
+      }
     })
 }
 

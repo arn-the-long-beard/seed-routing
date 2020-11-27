@@ -52,7 +52,7 @@ impl Default for Model {
         }
     }
 }
-#[derive(Debug, PartialEq, Clone, AsUrl)]
+#[derive(Debug, PartialEq, Clone, ParseUrl)]
 pub enum Routes {
     Task { id: String },
     //     #[as_path = ""] this makes run time error
