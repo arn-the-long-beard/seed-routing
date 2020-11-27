@@ -327,7 +327,7 @@ mod test {
 
     #[wasm_bindgen_test]
     fn test_router_default_route() {
-        let mut router = Router::<ExampleRoutes>::new();
+        let router = Router::<ExampleRoutes>::new();
         let url = Url::new().add_path_part("example");
         router.navigate_to_url(url);
 
@@ -338,7 +338,7 @@ mod test {
 
     #[wasm_bindgen_test]
     fn test_build_url() {
-        let mut router: Router<ExampleRoutes> = Router::new();
+        let router: Router<ExampleRoutes> = Router::new();
         let url = router.base_url().clone().add_path_part("");
         router.navigate_to_url(url);
         assert_eq!(
@@ -371,7 +371,7 @@ mod test {
 
     #[wasm_bindgen_test]
     fn test_navigation_to_route() {
-        let mut router: Router<ExampleRoutes> = Router::new();
+        let router: Router<ExampleRoutes> = Router::new();
         router.navigate_to_new(ExampleRoutes::parse_path("/dashboard/profile/1").unwrap());
 
         assert_eq!(
@@ -398,7 +398,7 @@ mod test {
 
     #[wasm_bindgen_test]
     fn test_backward() {
-        let mut router: Router<ExampleRoutes> = Router::new();
+        let router: Router<ExampleRoutes> = Router::new();
 
         let back = router.back();
         assert_eq!(back, false, "We should Not have gone backwards");
@@ -445,7 +445,7 @@ mod test {
 
     #[wasm_bindgen_test]
     fn test_forward() {
-        let mut router: Router<ExampleRoutes> = Router::new();
+        let router: Router<ExampleRoutes> = Router::new();
 
         let back = router.forward();
         assert_eq!(back, false, "We should Not have gone backwards");
