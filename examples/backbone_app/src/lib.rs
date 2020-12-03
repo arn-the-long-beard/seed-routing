@@ -136,7 +136,6 @@ pub enum Msg {
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(url)) => {
-            log!(url);
             router().current_route().init(model, orders);
         }
         Msg::Login(login_message) => pages::login::update(
