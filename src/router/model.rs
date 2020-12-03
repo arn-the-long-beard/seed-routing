@@ -14,6 +14,6 @@ use seed::prelude::Orders;
 /// The model will be used by the init called and get updated
 /// # Msg
 /// The standard Msg Enum that we can use to triggers events or actions
-pub trait Init<Routes, Model, Msg: 'static,> {
-    fn init(&self, previous_state: &mut Model, orders: &mut impl Orders<Msg,>,);
+pub trait Init<Routes, Model, Msg: 'static> {
+    fn init(&self, previous_state: &mut Model, orders: &mut impl Orders<Msg>);
 }

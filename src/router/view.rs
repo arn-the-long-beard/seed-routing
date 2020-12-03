@@ -17,8 +17,8 @@ use seed::prelude::Node;
 /// Should we pass query and id parameter to view as well or having it in
 /// init is enough ?
 /// _______________________________________________________________________________
-pub trait View<Routes, Model, Msg,> {
-    fn view(&self, scoped_state: &Model,) -> Node<Msg,>;
+pub trait View<Routes, Model, Msg> {
+    fn view(&self, scoped_state: &Model) -> Node<Msg>;
 }
 
 // pub trait Guarded<Routes, State, Msg> {
