@@ -25,7 +25,7 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 
     router()
         .init(url)
-        .set_handler(orders, move |subs::UrlRequested(requested_url, _)| {
+        .subscribe(orders, move |subs::UrlRequested(requested_url, _)| {
             router().confirm_navigation(requested_url)
         });
 
