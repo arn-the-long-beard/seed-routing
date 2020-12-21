@@ -9,6 +9,7 @@ use std::fmt::Debug;
 pub use default_route::*;
 pub use model::*;
 pub use path::*;
+use seed::prelude::wasm_bindgen::__rt::core::ops::Sub;
 use seed::prelude::{
     subs,
     wasm_bindgen::__rt::std::{cell::RefCell, rc::Rc},
@@ -108,13 +109,9 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     }
 
     /// Register a subscribe handle to confirm navigation when Url changed
-    pub fn set_handler<Msg: 'static>(
-        &self,
-        orders: &mut impl Orders<Msg>,
-        callback: impl FnOnce(subs::UrlRequested) + Clone + 'static,
-    ) -> &Self {
+    pub fn subscribe(&self, sub_handle: SubHandle) -> &Self {
         self.clone()
-            .update_data(|data| data.sub_handle = Some(orders.subscribe_with_handle(callback)));
+            .update_data(|data| data.sub_handle = Some(sub_handle));
         self
     }
 
