@@ -30,11 +30,8 @@ pub fn get_default_route(variants: Iter<'_, Variant>) -> Result<Variant> {
 
 /// Check if default_route exist
 fn variant_default_route(_: Ident, attrs: std::slice::Iter<'_, Attribute>) -> bool {
-    let mut attrs = attrs.filter_map(|attr| Some(attr.path.is_ident("default_route")));
-
-    if let Some(exist) = attrs.next() {
-        exist
-    } else {
-        false
-    }
+    attrs
+        .map(|attr| attr.path.is_ident("default_route"))
+        .next()
+        .unwrap_or(false)
 }
