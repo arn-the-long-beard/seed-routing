@@ -13,7 +13,7 @@ extern crate proc_macro_error;
 use crate::{root::get_default_route, routing::routing_variant_snippets};
 use proc_macro::TokenStream;
 
-use crate::{init::module_init_snippets, modules::modules_path, view::modules_view_snippets};
+use crate::{init::module_init_snippets, view::modules_view_snippets};
 use proc_macro_error::{abort, proc_macro_error, Diagnostic, Level};
 use quote::quote;
 use syn::{export::TokenStream2, parse_macro_input, Data, DeriveInput, Fields};
@@ -364,7 +364,7 @@ pub fn derive_add_module_load(item: TokenStream) -> TokenStream {
     let default_route_impl = TokenStream2::from(root);
     let variants = variants.iter();
 
-    let modules_path = modules_path(ident.clone(), attrs.iter());
+    let modules_path = modules::path(ident.clone(), attrs.iter());
 
     let modules_snippets = modules_view_snippets(variants.clone(), modules_path.clone());
 

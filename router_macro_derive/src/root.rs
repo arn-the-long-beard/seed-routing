@@ -7,7 +7,7 @@ pub fn get_default_route(variants: Iter<'_, Variant>) -> Result<Variant> {
     let mut i = 0;
     let mut default_variant: Option<Variant> = None;
     for v in variants {
-        let default = variant_default_route(v.ident.clone(), v.attrs.iter());
+        let default = variant_default_route(v.ident.clone(), &v.attrs);
         if default {
             i += 1;
             default_variant = Some(v.clone());
@@ -29,12 +29,9 @@ pub fn get_default_route(variants: Iter<'_, Variant>) -> Result<Variant> {
 }
 
 /// Check if default_route exist
-fn variant_default_route(_: Ident, attrs: std::slice::Iter<'_, Attribute>) -> bool {
-    let mut attrs = attrs.filter_map(|attr| Some(attr.path.is_ident("default_route")));
+fn variant_default_route(_: Ident, attrs: &[Attribute]) -> bool {
+    attrs
+        .iter()
+        .any(|attr| attr.path.is_ident("default_route"))
 
-    if let Some(exist) = attrs.next() {
-        exist
-    } else {
-        false
-    }
 }

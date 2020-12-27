@@ -1,6 +1,8 @@
 use crate::ParseError;
 use seed::{prelude::IndexMap, Url};
 
+#[allow(clippy::missing_errors_doc)]
+/// Used by `#[derive(ParseUrl)]`
 pub trait Navigation {
     fn from_url(url: Url) -> std::result::Result<Self, ParseError>
     where
@@ -8,7 +10,7 @@ pub trait Navigation {
     fn to_url(&self) -> Url;
 }
 
-pub fn convert_to_string(query: IndexMap<String, String>) -> String {
+pub fn convert_to_string(query: &IndexMap<String, String>) -> String {
     let mut query_string = "".to_string();
     for (i, q) in query.iter().enumerate() {
         query_string += format!("{}={}", q.0, q.1).as_str();
@@ -31,13 +33,13 @@ pub fn extract_url_payload(
     Option<String>,
 ) {
     let param_id = if with_id_param {
-        Some(extract_id_parameter(url_string.clone()))
+        Some(extract_id_parameter(&url_string))
     } else {
         None
     };
 
     let query_parameters = if with_query_parameters {
-        Some(extract_query_params(url_string.clone()))
+        Some(extract_query_params(&url_string))
     } else {
         None
     };
@@ -51,7 +53,7 @@ pub fn extract_url_payload(
     (param_id, query_parameters, children_path)
 }
 
-pub fn extract_id_parameter(url_string: String) -> String {
+pub fn extract_id_parameter(url_string: &str) -> String {
     let mut single_paths = url_string.split('/');
 
     let root = single_paths.next();
@@ -62,14 +64,14 @@ pub fn extract_id_parameter(url_string: String) -> String {
     // make error if root is not empty
     let mut param_id = single_paths
         .next()
-        .map(|r| r.to_string())
+        .map(std::string::ToString::to_string)
         .expect("Should have param id");
 
     if param_id.contains('?') {
         param_id = param_id
             .split('?')
             .next()
-            .map(|r| r.to_string())
+            .map(std::string::ToString::to_string)
             .expect("We should have a id parameter but got empty string")
     }
     param_id
@@ -77,24 +79,24 @@ pub fn extract_id_parameter(url_string: String) -> String {
 
 pub fn extract_children_string(url_string: String, param_id: Option<String>) -> String {
     let full_query = url_string;
-    let mut _children_path: Option<String> = None;
+    let children_path: Option<String>;
 
     if param_id.is_some() {
         println!("We have id param");
-        _children_path = full_query
+        children_path = full_query
             .trim_start_matches('/')
             .to_string()
             .strip_prefix(&param_id.expect("should have id parameter"))
-            .map(|r| r.to_string());
+            .map(std::string::ToString::to_string);
     } else {
         println!("No id param");
-        _children_path = Some(full_query)
+        children_path = Some(full_query)
     }
 
-    _children_path.expect("We should have a children path")
+    children_path.expect("We should have a children path")
 }
 
-pub fn extract_query_params(url_string: String) -> IndexMap<String, String> {
+pub fn extract_query_params(url_string: &str) -> IndexMap<String, String> {
     let mut query: IndexMap<String, String> = IndexMap::new();
     let url_parts: Vec<&str> = url_string.split('?').collect();
     let mut parts_iter = url_parts.iter();
@@ -111,16 +113,15 @@ pub fn extract_query_params(url_string: String) -> IndexMap<String, String> {
 
             for pair in key_value {
                 let mut sub = pair.split('=');
-                let key = sub.next().expect(
-                    format!(
+                let key = sub.next().unwrap_or_else(|| {
+                    panic!(
                         "we should have a key for the parameter key but got {}",
                         url_string
                     )
-                    .as_str(),
-                );
-                let value = sub.next().expect(
-                    format!("we should have a value for the key but got {}", url_string).as_str(),
-                );
+                });
+                let value = sub.next().unwrap_or_else(|| {
+                    panic!("we should have a value for the key but got {}", url_string)
+                });
                 query.insert(key.to_string(), value.to_string());
             }
         }
@@ -159,13 +160,13 @@ mod test {
     fn test_extract_id_param() {
         let url_string = "/12/stuff?user=arn&role=programmer";
 
-        let id_param = extract_id_parameter(url_string.to_string());
+        let id_param = extract_id_parameter(&url_string.to_string());
 
         assert_eq!(id_param, "12");
 
         let url_string = "/12?user=arn&role=programmer";
 
-        let id_param = extract_id_parameter(url_string.to_string());
+        let id_param = extract_id_parameter(&url_string.to_string());
 
         assert_eq!(id_param, "12");
     }
@@ -174,7 +175,7 @@ mod test {
     fn test_extract_query_params() {
         let url_string = "/12/stuff?user=arn&role=programmer";
 
-        let params = extract_query_params(url_string.to_string());
+        let params = extract_query_params(&url_string.to_string());
         let mut query_to_compare: IndexMap<String, String> = IndexMap::new();
 
         query_to_compare.insert("user".to_string(), "arn".to_string());
@@ -183,14 +184,14 @@ mod test {
 
         let url_string = "/12/stuff";
 
-        let params = extract_query_params(url_string.to_string());
+        let params = extract_query_params(&url_string.to_string());
         let query_to_compare: IndexMap<String, String> = IndexMap::new();
 
         assert_eq!(params, query_to_compare);
 
         let url_string = "/12/stuff?";
 
-        let params = extract_query_params(url_string.to_string());
+        let params = extract_query_params(&url_string.to_string());
         let query_to_compare: IndexMap<String, String> = IndexMap::new();
 
         assert_eq!(params, query_to_compare);
