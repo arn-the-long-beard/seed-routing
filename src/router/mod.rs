@@ -330,6 +330,29 @@ mod test {
     }
 
     #[wasm_bindgen_test]
+    fn test_init_router() {
+        let router = Router::<ExampleRoutes>::new();
+        // We should get the right route when the Url is valid
+        {
+            let url = ExampleRoutes::Login.to_url();
+            let router = router.init(url.clone());
+            let current = router.current_route();
+            let router_data = router.data.borrow();
+            assert_eq!(current, ExampleRoutes::Login);
+            assert_eq!(router_data.base_url, url.to_base_url());
+        }
+        // We should get default route when the Url does not match a route
+        {
+            let url: Url = "http://localhost/profile".parse().unwrap();
+            let router = router.init(url.clone());
+            let current = router.current_route();
+            let router_data = router.data.borrow();
+            assert_eq!(current, ExampleRoutes::NotFound);
+            assert_eq!(router_data.base_url, url.to_base_url());
+        }
+    }
+
+    #[wasm_bindgen_test]
     fn test_router_default_route() {
         let router = Router::<ExampleRoutes>::new();
         let url = Url::new().add_path_part("example");
