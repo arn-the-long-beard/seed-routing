@@ -324,6 +324,8 @@ mod test {
         assert_eq!(router_data.current_history_index, 0);
         assert_eq!(router_data.history.is_empty(), true);
         assert_eq!(router_data.current_move, MoveStatus::Ready);
+        assert_eq!(router_data.current_route, current);
+        assert_eq!(router_data.default_route, default);
         assert_eq!(current, default);
     }
 
