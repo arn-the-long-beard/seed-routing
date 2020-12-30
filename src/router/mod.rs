@@ -9,11 +9,9 @@ use std::fmt::Debug;
 pub use default_route::*;
 pub use model::*;
 pub use path::*;
-use seed::prelude::wasm_bindgen::__rt::core::ops::Sub;
 use seed::prelude::{
-    subs,
     wasm_bindgen::__rt::std::{cell::RefCell, rc::Rc},
-    Orders, SubHandle,
+    SubHandle,
 };
 pub use url::*;
 pub use view::*;
@@ -21,17 +19,18 @@ pub use view::*;
 // pub mod children;
 // pub mod route;
 #[derive(Clone)]
-pub enum Move {
-    IsNavigating,
-    IsMovingBack,
-    IsMovingForward,
-    IsReady,
+pub enum MoveStatus {
+    Navigating,
+    MovingBack,
+    MovingForward,
+    Ready,
 }
 
 /// Router that manages navigation between routes
 /// Store the history
 /// Can go back and forward
 /// Manage the default route
+#[allow(clippy::module_name_repetitions)]
 pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
     /// The actual route , which should be the one displaying the view in Seed
     pub current_route: Route,
@@ -46,7 +45,7 @@ pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + N
     /// ∕∕todo add protocol, domain and extract info later
     base_url: Url,
     /// The current operation the router is doing
-    pub current_move: Move,
+    pub current_move: MoveStatus,
 
     pub sub_handle: Option<SubHandle>,
     /// The full history with all the routes the user has visited
@@ -69,18 +68,25 @@ pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + Navig
     data: Rc<RefCell<RouterData<Route>>>,
 }
 
+impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigation> Default
+    for Router<Route>
+{
+    fn default() -> Self {
+        Self::new()
+    }
+}
 impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigation> Router<Route> {
     /// Create a new Router with no url, no history and current route is default
     /// route
-    pub fn new() -> Router<Route> {
-        Router {
+    pub fn new() -> Self {
+        Self {
             data: Rc::new(RefCell::new(RouterData {
                 current_history_index: 0,
                 default_route: Route::default(),
                 history: Vec::new(),
                 current_route: Route::default(),
                 base_url: Url::new(), // should replace with current ,maybe ?
-                current_move: Move::IsReady,
+                current_move: MoveStatus::Ready,
                 sub_handle: None,
             })),
         }
@@ -97,13 +103,13 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// Init navigation with the given url
     pub fn init(&self, url: Url) -> &Self {
         // self.set_handler(orders);
-        self.set_base_url(url.clone());
+        self.set_base_url(&url);
 
         self.navigate_to_url(url);
         self
     }
 
-    fn set_base_url(&self, url: Url) -> &Self {
+    fn set_base_url(&self, url: &Url) -> &Self {
         self.update_data(|data| data.base_url = url.to_base_url());
         self
     }
@@ -123,13 +129,11 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// Go back in history and navigate back to the previous route
     ///  # Note for now it does not add to history since we navigate inside
     pub fn back(&self) -> bool {
-        if let Some(next_route) = self.can_back_with_route() {
-            self.update_data(|data| data.current_route = next_route);
+        self.can_back_with_route().map_or(false, |next_route| {
+            self.set_current_route(&next_route);
             self.update_data(|data| data.current_history_index -= 1);
             true
-        } else {
-            false
-        }
+        })
     }
 
     /// Check if you can go back in history and give you the right route
@@ -143,7 +147,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         if self.map_data(|data| data.current_history_index) == 0 {
             return None;
         }
-        let next_index: usize = *&self.map_data(|data| data.current_history_index - 1);
+        let next_index: usize = self.map_data(|data| data.current_history_index - 1);
         let history = &self.map_data(|data| data.history.clone());
         let route = history.get(next_index).unwrap();
         Some(route.clone())
@@ -164,7 +168,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
             return None;
         }
         // If we are on the last index, we cannot go forward neither
-        if self.map_data(|data| data.is_on_last_index()) {
+        if self.map_data(RouterData::is_on_last_index) {
             return None;
         }
         let next_index = self.map_data(|data| data.current_history_index + 1);
@@ -184,23 +188,17 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// to move forward in the history
     /// # Note for now it does not add to history since we navigate inside
     pub fn forward(&self) -> bool {
-        if let Some(next_route) = self.can_forward_with_route() {
+        self.can_forward_with_route().map_or(false, |next_route| {
             self.update_data(|data| data.current_route = next_route);
             self.update_data(|data| data.current_history_index += 1);
             true
-        } else {
-            false
-        }
+        })
     }
 
     /// Check the route is the current route
     /// Could be use directly with url as well
     pub fn is_current_route(&self, route: &Route) -> bool {
-        if let current_route = self.current_route() {
-            route.eq(&current_route)
-        } else {
-            false
-        }
+        route.eq(&self.current_route())
     }
 
     /// Go to the next url with the associated route
@@ -208,8 +206,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// navigate and then go back, you will not get the previous page, but the
     /// one just pushed into history before
     pub fn navigate_to_new(&self, route: Route) {
-        self.set_current_route(route.clone());
-        self.push_to_history(route.clone());
+        self.set_current_route(&route);
+        self.push_to_history(route);
     }
 
     /// Match the url that change and update the router with the new current
@@ -217,16 +215,16 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     pub fn navigate_to_url(&self, url: Url) {
         if let Ok(route_match) = Route::from_url(url) {
             // log!("found route");
-            self.navigate_to_new(route_match.clone());
+            self.navigate_to_new(route_match);
         } else {
             let default = self.default_route();
-            self.navigate_to_new(default.clone());
+            self.navigate_to_new(default);
         }
     }
 
     /// Ask Seed the new request url back in history
     pub fn request_moving_back<F: FnOnce(Url) -> R, R>(&self, func: F) {
-        self.update_data(|data| data.current_move = Move::IsMovingBack);
+        self.update_data(|data| data.current_move = MoveStatus::MovingBack);
 
         if let Some(next_route) = &self.can_back_with_route() {
             func(next_route.to_url());
@@ -235,7 +233,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
 
     /// Ask Seed the new request url forward in history
     pub fn request_moving_forward<F: FnOnce(Url) -> R, R>(&self, func: F) {
-        self.update_data(|data| data.current_move = Move::IsMovingForward);
+        self.update_data(|data| data.current_move = MoveStatus::MovingForward);
 
         if let Some(next_route) = &self.can_forward_with_route() {
             func(next_route.to_url());
@@ -249,23 +247,20 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// back in time or forward or notmal navigation
     pub fn confirm_navigation(&self, url: Url) {
         match self.map_data(|data| data.current_move.clone()) {
-            Move::IsNavigating => {
+            MoveStatus::Navigating | MoveStatus::Ready => {
                 self.navigate_to_url(url);
             }
-            Move::IsMovingBack => {
+            MoveStatus::MovingBack => {
                 self.back();
             }
-            Move::IsMovingForward => {
+            MoveStatus::MovingForward => {
                 self.forward();
             }
-            Move::IsReady => {
-                self.navigate_to_url(url);
-            }
         }
-        self.update_data(|data| data.current_move = Move::IsReady);
+        self.update_data(|data| data.current_move = MoveStatus::Ready);
     }
 
-    pub fn set_current_route(&self, route: Route) {
+    pub fn set_current_route(&self, route: &Route) {
         self.update_data(|data| data.current_route = route.clone());
     }
 

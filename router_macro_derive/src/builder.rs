@@ -110,7 +110,7 @@ pub fn inject_variant_payload_in_function_call(
 }
 
 pub fn extract_query_field_to_string() -> TokenStream2 {
-    quote! { convert_to_string(query.clone())}
+    quote! { convert_to_string(&query)}
 }
 pub fn build_string_without_path_name(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
