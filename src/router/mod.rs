@@ -26,19 +26,16 @@ pub enum MoveStatus {
     Ready,
 }
 
-/// Router that manages navigation between routes
-/// Store the history
-/// Can go back and forward
-/// Manage the default route
+/// The contained inside the Router.
 #[allow(clippy::module_name_repetitions)]
 pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
-    /// The actual route , which should be the one displaying the view in Seed
+    /// The actual route, which should be the one displaying the view in Seed.
     pub current_route: Route,
     /// The index of the history.
-    /// It will change when navigation or pushing back or forward..
+    /// It will change when navigation or pushing back or forward.
     pub current_history_index: usize,
     /// The default route extracted from the attribute #[default_route] on your
-    /// enum This route is equivalent to 404 . In other web framework it
+    /// enum. This route is equivalent to 404. In other web framework it
     /// would be matching path pattern "*" for example.
     pub default_route: Route,
     /// The route url of the route
@@ -53,6 +50,7 @@ pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + N
 }
 
 impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> RouterData<Route> {
+    /// Add the route to the history
     pub fn push_to_history(&mut self, route: Route) {
         self.history.push(route);
         self.current_history_index = self.history.len() - 1;
@@ -63,6 +61,10 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> Router
     }
 }
 
+/// Router that manages navigation between routes,
+/// Store the history,
+/// Can go back and forward,
+/// Manage the default route.
 #[derive(Clone)]
 pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
     data: Rc<RefCell<RouterData<Route>>>,
