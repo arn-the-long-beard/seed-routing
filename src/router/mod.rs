@@ -70,13 +70,6 @@ pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + Navig
     data: Rc<RefCell<RouterData<Route>>>,
 }
 
-impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigation> Default
-    for Router<Route>
-{
-    fn default() -> Self {
-        Self::new()
-    }
-}
 impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigation> Router<Route> {
     /// Create a new Router with no url, no history and current route is default
     /// route
