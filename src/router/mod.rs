@@ -34,21 +34,21 @@ pub enum MoveStatus {
 pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
     /// The actual route , which should be the one displaying the view in Seed
     pub current_route: Route,
-    /// The index of the history
-    /// It will change when navigation or pushing back or forward
+    /// The index of the history.
+    /// It will change when navigation or pushing back or forward..
     pub current_history_index: usize,
     /// The default route extracted from the attribute #[default_route] on your
     /// enum This route is equivalent to 404 . In other web framework it
-    /// would be matching path pattern "*" for example
+    /// would be matching path pattern "*" for example.
     pub default_route: Route,
     /// The route url of the route
-    /// ∕∕todo add protocol, domain and extract info later
+    /// ∕∕todo add protocol, domain and extract info later.
     base_url: Url,
-    /// The current operation the router is doing
+    /// The current operation the router is doing.
     pub current_move: MoveStatus,
 
     pub sub_handle: Option<SubHandle>,
-    /// The full history with all the routes the user has visited
+    /// The full history with all the routes the user has visited.
     history: Vec<Route>,
 }
 
@@ -57,7 +57,7 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> Router
         self.history.push(route);
         self.current_history_index = self.history.len() - 1;
     }
-
+    /// Check the current page is the last one in the history
     pub fn is_on_last_index(&self) -> bool {
         self.current_history_index == self.history.len() - 1
     }
@@ -114,19 +114,19 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         self
     }
 
-    /// Register a subscribe handle to confirm navigation when Url changed
+    /// Register a subscribe handle to confirm navigation when Url Requested.
     pub fn subscribe(&self, sub_handle: SubHandle) -> &Self {
         self.clone()
             .update_data(|data| data.sub_handle = Some(sub_handle));
         self
     }
 
-    /// Push the route to the history so you can go back to it later
+    /// Push the route to the history so you can go back to it later.
     fn push_to_history(&self, route: Route) {
         self.update_data(|data| data.push_to_history(route));
     }
 
-    /// Go back in history and navigate back to the previous route
+    /// Go back in history and navigate back to the previous route.
     ///  # Note for now it does not add to history since we navigate inside
     pub fn back(&self) -> bool {
         self.can_back_with_route().map_or(false, |next_route| {
@@ -136,7 +136,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         })
     }
 
-    /// Check if you can go back in history and give you the right route
+    /// Check if you can go back in history and give you the previous route.
     pub fn can_back_with_route(&self) -> Option<Route> {
         // If we have no history, cannot go back
 
@@ -161,7 +161,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         self.can_forward_with_route().is_some()
     }
 
-    /// Check if you can navigate forward in the history
+    /// Check if you can navigate forward in the history and give you the next route.
     pub fn can_forward_with_route(&self) -> Option<Route> {
         // if there is no route, cannot go forward
         if self.map_data(|data| data.history.is_empty()) {
@@ -195,23 +195,23 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         })
     }
 
-    /// Check the route is the current route
-    /// Could be use directly with url as well
+    /// Check the route is the current route.
+    /// Could be use directly with url as well.
     pub fn is_current_route(&self, route: &Route) -> bool {
         route.eq(&self.current_route())
     }
 
-    /// Go to the next url with the associated route
+    /// Go to the next url with the associated route.
     /// This will push to history. So If you go back multiple time and then use
     /// navigate and then go back, you will not get the previous page, but the
-    /// one just pushed into history before
+    /// one just pushed into history before.
     pub fn navigate_to_new(&self, route: Route) {
         self.set_current_route(&route);
         self.push_to_history(route);
     }
 
     /// Match the url that change and update the router with the new current
-    /// Route
+    /// Route.
     pub fn navigate_to_url(&self, url: Url) {
         if let Ok(route_match) = Route::from_url(url) {
             // log!("found route");
@@ -222,7 +222,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         }
     }
 
-    /// Ask Seed the new request url back in history
+    /// Ask Seed the new request url back in history.
     pub fn request_moving_back<F: FnOnce(Url) -> R, R>(&self, func: F) {
         self.update_data(|data| data.current_move = MoveStatus::MovingBack);
 
@@ -231,7 +231,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         }
     }
 
-    /// Ask Seed the new request url forward in history
+    /// Ask Seed the new request url forward in history.
     pub fn request_moving_forward<F: FnOnce(Url) -> R, R>(&self, func: F) {
         self.update_data(|data| data.current_move = MoveStatus::MovingForward);
 
@@ -241,10 +241,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     }
 
     /// This method accept a given url and choose the appropriate update for the
-    /// history
-    /// It also reset the current move to Ready
-    /// This tiny lifecycle is useless because we can know if we had be going
-    /// back in time or forward or notmal navigation
+    /// history depending of the MoveStatus.
+    /// It also resets the current move to Ready.
     pub fn confirm_navigation(&self, url: Url) {
         match self.map_data(|data| data.current_move.clone()) {
             MoveStatus::Navigating | MoveStatus::Ready => {
