@@ -292,6 +292,7 @@ mod test {
         #[as_path = ""]
         Root,
     }
+
     #[derive(Debug, PartialEq, Clone, ParseUrl)]
     pub enum DashboardRoutes {
         Admin(DashboardAdminRoutes),
