@@ -97,13 +97,12 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
 
     /// Init navigation with the given url
     pub fn init(&self, url: Url) -> &Self {
-        // self.set_handler(orders);
         self.set_base_url(&url);
-
         self.navigate_to_url(url);
         self
     }
 
+    /// Set the root URL which all paths are built from.
     fn set_base_url(&self, url: &Url) -> &Self {
         self.update_data(|data| data.base_url = url.to_base_url());
         self
