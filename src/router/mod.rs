@@ -18,7 +18,7 @@ pub use view::*;
 
 // pub mod children;
 // pub mod route;
-#[derive(Clone)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum MoveStatus {
     Navigating,
     MovingBack,
@@ -278,6 +278,7 @@ mod test {
     use seed::Url;
 
     extern crate router_macro_derive;
+
     use super::*;
     use crate::{router, ParseError};
     use router_macro_derive::{ParseUrl, Root};
@@ -309,6 +310,20 @@ mod test {
         NotFound,
         #[as_path = ""]
         Home,
+    }
+
+    #[wasm_bindgen_test]
+    fn test_new_router() {
+        let router = Router::<ExampleRoutes>::new();
+        let current = router.current_route();
+        let default = router.default_route();
+        let router_data = router.data.borrow();
+
+        assert_eq!(router_data.sub_handle.is_none(), true);
+        assert_eq!(router_data.current_history_index, 0);
+        assert_eq!(router_data.history.is_empty(), true);
+        assert_eq!(router_data.current_move, MoveStatus::Ready);
+        assert_eq!(current, default);
     }
 
     #[wasm_bindgen_test]
