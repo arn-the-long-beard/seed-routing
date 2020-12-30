@@ -26,7 +26,7 @@ pub enum MoveStatus {
     Ready,
 }
 
-/// The contained inside the Router.
+/// The contained data inside the Router.
 #[allow(clippy::module_name_repetitions)]
 pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
     /// The actual route, which should be the one displaying the view in Seed.
@@ -95,7 +95,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         mapper(&self.data.borrow())
     }
 
-    /// Init navigation with the given url
+    /// Init navigation with the given url.
     pub fn init(&self, url: Url) -> &Self {
         self.set_base_url(&url);
         self.navigate_to_url(url);
