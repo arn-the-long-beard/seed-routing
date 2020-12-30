@@ -353,6 +353,16 @@ mod test {
     }
 
     #[wasm_bindgen_test]
+    fn test_set_base_url() {
+        let router = Router::<ExampleRoutes>::new();
+
+        let url: Url = "http://localhost/profile".parse().unwrap();
+        let router = router.set_base_url(&url);
+        let router_data = router.data.borrow();
+        assert_eq!(router_data.base_url, "http://localhost".parse().unwrap());
+    }
+
+    #[wasm_bindgen_test]
     fn test_router_default_route() {
         let router = Router::<ExampleRoutes>::new();
         let url = Url::new().add_path_part("example");
