@@ -120,18 +120,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         self.update_data(|data| data.push_to_history(route));
     }
 
-    /// Go back in history and navigate back to the previous route.
-    ///  # Note for now it does not add to history since we navigate inside
-    pub fn back(&self) -> bool {
-        self.can_back_with_route().map_or(false, |next_route| {
-            self.set_current_route(&next_route);
-            self.update_data(|data| data.current_history_index -= 1);
-            true
-        })
-    }
-
-    /// Check if you can go back in history and give you the previous route.
-    pub fn can_back_with_route(&self) -> Option<Route> {
+    /// If a previous `Route` in history exists, return it. Otherwise return `None`
+    pub fn peek_back(&self) -> Option<Route> {
         // If we have no history, cannot go back
 
         if self.map_data(|data| data.history.is_empty()) {
@@ -147,16 +137,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         Some(route.clone())
     }
 
-    pub fn can_back(&self) -> bool {
-        self.can_back_with_route().is_some()
-    }
-
-    pub fn can_forward(&self) -> bool {
-        self.can_forward_with_route().is_some()
-    }
-
-    /// Check if you can navigate forward in the history and give you the next route.
-    pub fn can_forward_with_route(&self) -> Option<Route> {
+    /// If a next `Route` in history exists, return it. Otherwise return `None`
+    pub fn peek_forward(&self) -> Option<Route> {
         // if there is no route, cannot go forward
         if self.map_data(|data| data.history.is_empty()) {
             return None;
@@ -179,13 +161,25 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         Some(route.clone())
     }
 
-    /// to move forward in the history
+    /// Same as [Router::peek_back], with the addition of navigating to a resulting `Some(Route)`
+    ///
+    ///  # Note for now it does not add to history since we navigate inside
+    pub fn back(&self) -> Option<Route> {
+        self.peek_back().map(|next_route| {
+            self.set_current_route(&next_route);
+            self.update_data(|data| data.current_history_index -= 1);
+            next_route
+        })
+    }
+
+    /// Same as [Router::peek_forward], with the addition of navigating to a resulting `Some(Route)`
+    ///
     /// # Note for now it does not add to history since we navigate inside
-    pub fn forward(&self) -> bool {
-        self.can_forward_with_route().map_or(false, |next_route| {
-            self.update_data(|data| data.current_route = next_route);
+    pub fn forward(&self) -> Option<Route> {
+        self.peek_forward().map(|next_route| {
+            self.set_current_route(&next_route);
             self.update_data(|data| data.current_history_index += 1);
-            true
+            next_route
         })
     }
 
@@ -220,18 +214,15 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     pub fn request_moving_back<F: FnOnce(Url) -> R, R>(&self, func: F) {
         self.update_data(|data| data.current_move = MoveStatus::MovingBack);
 
-        if let Some(next_route) = &self.can_back_with_route() {
-            func(next_route.to_url());
-        }
+        self.peek_back().map(|next_route| func(next_route.to_url()));
     }
 
     /// Ask Seed the new request url forward in history.
     pub fn request_moving_forward<F: FnOnce(Url) -> R, R>(&self, func: F) {
         self.update_data(|data| data.current_move = MoveStatus::MovingForward);
 
-        if let Some(next_route) = &self.can_forward_with_route() {
-            func(next_route.to_url());
-        }
+        self.peek_forward()
+            .map(|next_route| func(next_route.to_url()));
     }
 
     /// This method accept a given url and choose the appropriate update for the
@@ -433,12 +424,15 @@ mod test {
         assert_eq!(router.current_history_index(), 2);
     }
 
+    // Testing return value and side effects of Router::back
+    //
+    // After running back, check the option it returns, and that current_path() and is_current_route() is still correct
     #[wasm_bindgen_test]
     fn test_backward() {
         let router: Router<ExampleRoutes> = Router::new();
 
         let back = router.back();
-        assert_eq!(back, false, "We should Not have gone backwards");
+        assert!(back.is_none(), "We should Not have gone backwards");
         assert_eq!(
             router.current_history_index(),
             0,
@@ -451,17 +445,23 @@ mod test {
         assert_eq!(router.current_history_index(), 2);
 
         let back = router.back();
-        assert_eq!(back, true, "We should have gone backwards");
-        assert_eq!(router.current_history_index(), 1);
-        assert_eq!(router.current_route(), ExampleRoutes::Register);
-        assert_eq!(router.is_current_route(&ExampleRoutes::Register), true);
-        let back = router.back();
-        assert_eq!(back, true, "We should have gone backwards");
-        assert_eq!(router.current_history_index(), 0);
         assert_eq!(
-            router.current_route(),
-            ExampleRoutes::parse_path("").unwrap()
+            back,
+            Some(ExampleRoutes::Register),
+            "We should have gone backwards to \"register\""
         );
+        assert_eq!(back, Some(router.current_route()));
+        assert_eq!(router.current_history_index(), 1);
+        assert_eq!(router.is_current_route(&ExampleRoutes::Register), true);
+
+        let back = router.back();
+        assert_eq!(
+            back,
+            Some(ExampleRoutes::parse_path("").unwrap()),
+            "We should have gone back to root path"
+        );
+        assert_eq!(back, Some(router.current_route()));
+        assert_eq!(router.current_history_index(), 0);
 
         router.navigate_to_new(ExampleRoutes::Dashboard(DashboardRoutes::Root));
         assert_eq!(
@@ -470,25 +470,30 @@ mod test {
         );
 
         let back = router.back();
-        assert_eq!(back, true);
+        assert_eq!(
+            back,
+            Some(ExampleRoutes::parse_path("dashboard/admin/other").unwrap()),
+            "We should have gone back to \"dashboard/admin/other\""
+        );
+        assert_eq!(back, Some(router.current_route()));
         // Here is tricky part, after navigate we go back to the end of history, so if
         // we go back, we go to the previous index
         assert_eq!(router.current_history_index(), 2);
-        assert_eq!(
-            router.current_route(),
-            ExampleRoutes::parse_path("dashboard/admin/other").unwrap()
-        );
     }
 
+    // assumes correct functioning of back() in the case of not currently at most recent history
     #[wasm_bindgen_test]
     fn test_forward() {
         let router: Router<ExampleRoutes> = Router::new();
 
-        let back = router.forward();
-        assert_eq!(back, false, "We should Not have gone backwards");
+        let pre_cond_idx = router.current_history_index();
+        assert_eq!(pre_cond_idx, 0);
+        let forward = router.forward();
+        assert_eq!(forward, None, "We should Not have gone forwards");
+
         assert_eq!(
             router.current_history_index(),
-            0,
+            pre_cond_idx,
             "We should have current index 0"
         );
 
@@ -500,19 +505,37 @@ mod test {
         let _ = router.back();
         let _ = router.back();
 
-        let forward = router.forward();
-        assert_eq!(forward, true, "We should have gone forward");
-        assert_eq!(router.current_history_index(), 1);
-        assert_eq!(router.current_route(), ExampleRoutes::Register);
-
-        let forward = router.forward();
-        assert_eq!(forward, true, "We should have gone forward");
-        assert_eq!(router.current_history_index(), 2);
         assert_eq!(
-            router.current_route(),
-            ExampleRoutes::Dashboard(DashboardRoutes::Profile(55))
+            router.current_history_index(),
+            0,
+            "Sanity check we don't already meet a forward() pre-condition"
+        );
+        assert_ne!(
+            forward,
+            Some(ExampleRoutes::Register),
+            "Sanity check we don't already meet a forward() pre-condition"
         );
         let forward = router.forward();
-        assert_eq!(forward, false, "We should Not have gone forward");
+        assert_eq!(
+            forward,
+            Some(ExampleRoutes::Register),
+            "We should have gone forward to \"register\""
+        );
+        assert_eq!(router.current_history_index(), 1);
+
+        let forward = router.forward();
+        assert_eq!(
+            forward,
+            Some(ExampleRoutes::Dashboard(DashboardRoutes::Profile(55))),
+            "We should have gone forward to \"/dashboard/profile/55\""
+        );
+        assert_eq!(router.current_history_index(), 2);
+        let forward = router.forward();
+        assert_eq!(forward, None, "We should Not have gone forward");
+        assert_eq!(
+            router.current_history_index(),
+            2,
+            "History index should not change after empty-action forward()"
+        );
     }
 }

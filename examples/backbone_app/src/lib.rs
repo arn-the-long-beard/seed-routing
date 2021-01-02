@@ -189,14 +189,14 @@ fn header(model: &Model) -> Node<Msg> {
                 button![
                     "back",
                     attrs! {
-                        At::Disabled  =>   (!  router().can_back()).as_at_value(),
+                        At::Disabled  =>   (!  router().peek_back().is_some()).as_at_value(),
                     },
                     ev(Ev::Click, |_| Msg::GoBack)
                 ],
                 button![
                     "forward",
                     attrs! {
-                        At::Disabled =>  (!  router().can_forward()).as_at_value(),
+                        At::Disabled =>  (!  router().peek_forward().is_some()).as_at_value(),
                     },
                     ev(Ev::Click, |_| Msg::GoForward)
                 ],
