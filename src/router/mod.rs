@@ -354,6 +354,15 @@ mod test {
     }
 
     #[wasm_bindgen_test]
+    fn test_push_to_history() {
+        let router = Router::<ExampleRoutes>::new();
+        let route = ExampleRoutes::Dashboard(DashboardRoutes::Profile(23));
+        router.push_to_history(route.clone());
+
+        let history = router.map_data(|data| data.history.clone());
+        assert_eq!(history.get(0).unwrap(), &route);
+    }
+    #[wasm_bindgen_test]
     fn test_router_default_route() {
         let router = Router::<ExampleRoutes>::new();
         let url = Url::new().add_path_part("example");
