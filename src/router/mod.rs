@@ -362,6 +362,20 @@ mod test {
         let history = router.map_data(|data| data.history.clone());
         assert_eq!(history.get(0).unwrap(), &route);
     }
+
+    #[wasm_bindgen_test]
+    fn test_peek_back() {
+        let router = Router::<ExampleRoutes>::new();
+        let previous_route = router.peek_back();
+        assert_eq!(previous_route.is_none(), true);
+        let route_1 = ExampleRoutes::Dashboard(DashboardRoutes::Profile(23));
+        router.push_to_history(route_1.clone());
+        let route_2 = ExampleRoutes::Login;
+        router.push_to_history(route_2);
+        let previous_route = router.peek_back().unwrap();
+        assert_eq!(previous_route, route_1);
+    }
+
     #[wasm_bindgen_test]
     fn test_router_default_route() {
         let router = Router::<ExampleRoutes>::new();
