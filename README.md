@@ -253,7 +253,7 @@ Then we go back to the router listening
 
 ### Use the example
 ```bash
-cd exanples/backbone_app
+cd examples/backbone_app
 ```
 
 
