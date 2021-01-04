@@ -344,6 +344,14 @@ mod test {
     }
 
     #[wasm_bindgen_test]
+    fn test_set_current_route() {
+        let router = Router::<ExampleRoutes>::new();
+        assert_eq!(router.current_route(), ExampleRoutes::NotFound);
+        router.set_current_route(&ExampleRoutes::Login);
+        assert_eq!(router.current_route(), ExampleRoutes::Login);
+    }
+
+    #[wasm_bindgen_test]
     fn test_set_base_url() {
         let router = Router::<ExampleRoutes>::new();
 
@@ -441,7 +449,7 @@ mod test {
     }
 
     #[wasm_bindgen_test]
-    fn test_navigation_to_route() {
+    fn test_navigation_to_new() {
         let router: Router<ExampleRoutes> = Router::new();
         router.navigate_to_new(ExampleRoutes::parse_path("/dashboard/profile/1").unwrap());
 
@@ -465,6 +473,17 @@ mod test {
             ExampleRoutes::parse_path("").unwrap()
         );
         assert_eq!(router.current_history_index(), 2);
+    }
+
+    #[wasm_bindgen_test]
+    fn test_navigation_to_url() {
+        let router: Router<ExampleRoutes> = Router::new();
+        let url = Url::new().add_path_part("doesn't exist");
+        router.navigate_to_url(url);
+        assert_eq!(router.current_route(), router.default_route());
+        let url = Url::new().add_path_part("dashboard");
+        router.navigate_to_url(url);
+        assert_eq!(router.current_route(), ExampleRoutes::Dashboard(DashboardRoutes::Root));
     }
 
     // Testing return value and side effects of Router::back
