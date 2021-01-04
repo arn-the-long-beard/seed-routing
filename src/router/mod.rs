@@ -367,13 +367,16 @@ mod test {
     fn test_peek_back() {
         let router = Router::<ExampleRoutes>::new();
         let previous_route = router.peek_back();
-        assert_eq!(previous_route.is_none(), true);
+        assert_eq!(previous_route.is_none(), true, "There is no previous route");
         let route_1 = ExampleRoutes::Dashboard(DashboardRoutes::Profile(23));
         router.push_to_history(route_1.clone());
         let route_2 = ExampleRoutes::Login;
         router.push_to_history(route_2);
         let previous_route = router.peek_back().unwrap();
-        assert_eq!(previous_route, route_1);
+        assert_eq!(
+            previous_route, route_1,
+            "There is a previous route and it should be route_1"
+        );
     }
 
     #[wasm_bindgen_test]
