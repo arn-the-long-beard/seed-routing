@@ -437,9 +437,7 @@ mod test {
             ExampleRoutes::parse_path("/dashboard/admin/other").unwrap()
         );
 
-        let admin_url = router
-            .base_url()
-            .set_path("dashboard/profile/1".split('/'));
+        let admin_url = router.base_url().set_path("dashboard/profile/1".split('/'));
 
         router.navigate_to_url(admin_url);
         assert_eq!(
@@ -483,7 +481,10 @@ mod test {
         assert_eq!(router.current_route(), router.default_route());
         let url = Url::new().add_path_part("dashboard");
         router.navigate_to_url(url);
-        assert_eq!(router.current_route(), ExampleRoutes::Dashboard(DashboardRoutes::Root));
+        assert_eq!(
+            router.current_route(),
+            ExampleRoutes::Dashboard(DashboardRoutes::Root)
+        );
     }
 
     // Testing return value and side effects of Router::back
