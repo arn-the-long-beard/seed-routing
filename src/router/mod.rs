@@ -377,6 +377,25 @@ mod test {
     }
 
     #[wasm_bindgen_test]
+    fn test_peek_forward() {
+        let router = Router::<ExampleRoutes>::new();
+        let next_route = router.peek_forward();
+        assert_eq!(next_route.is_none(), true, "There is no next route");
+        let route_1 = ExampleRoutes::Dashboard(DashboardRoutes::Profile(23));
+        router.push_to_history(route_1.clone());
+        let route_2 = ExampleRoutes::Login;
+        router.push_to_history(route_2.clone());
+
+        router.update_data(|data| data.current_route = route_1.clone());
+        router.update_data(|data| data.current_history_index = 0);
+        let next_route = router.peek_forward().unwrap();
+        assert_eq!(
+            next_route, route_2,
+            "There is a next route and it should be route_2"
+        );
+    }
+
+    #[wasm_bindgen_test]
     fn test_router_default_route() {
         let router = Router::<ExampleRoutes>::new();
         let url = Url::new().add_path_part("example");
