@@ -408,6 +408,71 @@ mod test {
     }
 
     #[wasm_bindgen_test]
+    fn test_request_moving_back() {
+        let router = Router::<ExampleRoutes>::new();
+        let route_1 = ExampleRoutes::Dashboard(DashboardRoutes::Profile(23));
+        let route_2 = ExampleRoutes::Login;
+        router.push_to_history(route_1);
+
+        let mut will_move_back = false;
+        router.request_moving_back(|_| will_move_back = true);
+        assert_eq!(
+            will_move_back, false,
+            "Will not move back because there is no previous route"
+        );
+        {
+            let router_data = router.data.borrow();
+            assert_eq!(router_data.current_move, MoveStatus::Ready);
+        }
+
+        router.push_to_history(route_2);
+        router.request_moving_back(|_| will_move_back = true);
+        assert_eq!(will_move_back, true, "Will move back to route_1");
+        {
+            let router_data = router.data.borrow();
+            assert_eq!(router_data.current_move, MoveStatus::MovingBack);
+        }
+    }
+    #[wasm_bindgen_test]
+    fn test_request_moving_forward() {
+        let router = Router::<ExampleRoutes>::new();
+        let route_1 = ExampleRoutes::Dashboard(DashboardRoutes::Profile(23));
+        let route_2 = ExampleRoutes::Login;
+        router.push_to_history(route_1.clone());
+        router.push_to_history(route_2.clone());
+
+        // Updating router so current route is route_1.
+        router.update_data(|data| data.current_route = route_1);
+        router.update_data(|data| data.current_history_index = 0);
+
+        let mut will_move_forward = false;
+        router.request_moving_forward(|_| will_move_forward = true);
+        assert_eq!(will_move_forward, true, "Will move forward to route_2");
+        {
+            let router_data = router.data.borrow();
+            assert_eq!(router_data.current_move, MoveStatus::MovingForward);
+        }
+
+        // Updating router so current route is route_2.
+        router.update_data(|data| data.current_route = route_2);
+        router.update_data(|data| data.current_history_index = 1);
+        // Reset MoveStatus to ready
+        router.update_data(|data| data.current_move = MoveStatus::Ready);
+        // Reset check
+        will_move_forward = false;
+
+        router.request_moving_forward(|_| will_move_forward = true);
+        assert_eq!(
+            will_move_forward, false,
+            "Will not move forward because there is no next route"
+        );
+        {
+            let router_data = router.data.borrow();
+            assert_eq!(router_data.current_move, MoveStatus::Ready);
+        }
+    }
+
+    #[wasm_bindgen_test]
     fn test_router_default_route() {
         let router = Router::<ExampleRoutes>::new();
         let current = router.current_route();
