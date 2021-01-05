@@ -409,9 +409,6 @@ mod test {
     #[wasm_bindgen_test]
     fn test_router_default_route() {
         let router = Router::<ExampleRoutes>::new();
-        let url = Url::new().add_path_part("example");
-        router.navigate_to_url(url);
-
         let current = router.current_route();
         let default = router.default_route();
         assert_eq!(current, default);
