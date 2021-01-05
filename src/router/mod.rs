@@ -212,17 +212,18 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
 
     /// Ask Seed the new request url back in history.
     pub fn request_moving_back<F: FnOnce(Url) -> R, R>(&self, func: F) {
-        self.update_data(|data| data.current_move = MoveStatus::MovingBack);
-
-        self.peek_back().map(|next_route| func(next_route.to_url()));
+        self.peek_back().map(|next_route| {
+            self.update_data(|data| data.current_move = MoveStatus::MovingBack);
+            func(next_route.to_url())
+        });
     }
 
     /// Ask Seed the new request url forward in history.
     pub fn request_moving_forward<F: FnOnce(Url) -> R, R>(&self, func: F) {
-        self.update_data(|data| data.current_move = MoveStatus::MovingForward);
-
-        self.peek_forward()
-            .map(|next_route| func(next_route.to_url()));
+        self.peek_forward().map(|next_route| {
+            self.update_data(|data| data.current_move = MoveStatus::MovingForward);
+            func(next_route.to_url())
+        });
     }
 
     /// This method accept a given url and choose the appropriate update for the
