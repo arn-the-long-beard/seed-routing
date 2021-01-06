@@ -57,7 +57,7 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> Router
     }
     /// Check the current page is the last one in the history
     pub fn is_on_last_index(&self) -> bool {
-        self.current_history_index == self.history.len() - 1
+        self.current_history_index + 1 == self.history.len()
     }
 }
 
@@ -319,6 +319,9 @@ mod test {
         assert_eq!(router_data.current_route, current);
         assert_eq!(router_data.default_route, default);
         assert_eq!(current, default);
+
+        // TODO: currently fails.
+        assert!(router_data.is_on_last_index());
     }
 
     #[wasm_bindgen_test]
@@ -433,6 +436,8 @@ mod test {
             assert_eq!(router_data.current_move, MoveStatus::MovingBack);
         }
     }
+
+    // Also tests is_on_last_index
     #[wasm_bindgen_test]
     fn test_request_moving_forward() {
         let router = Router::<ExampleRoutes>::new();
@@ -553,6 +558,8 @@ mod test {
     // Testing return value and side effects of Router::back
     //
     // After running back, check the option it returns, and that current_path() and is_current_route() is still correct
+    //
+    // Also tests is_on_last_index
     #[wasm_bindgen_test]
     fn test_backward() {
         let router: Router<ExampleRoutes> = Router::new();
@@ -564,13 +571,20 @@ mod test {
             0,
             "We should have current index 0"
         );
+
+        // TODO: A fresh router should be on the last index, no?
+        assert!(router.data.borrow().is_on_last_index());
         router.navigate_to_new(ExampleRoutes::parse_path("").unwrap());
+        assert!(router.data.borrow().is_on_last_index());
         router.navigate_to_new(ExampleRoutes::parse_path("register").unwrap());
+        assert!(router.data.borrow().is_on_last_index());
         router.navigate_to_new(ExampleRoutes::parse_path("dashboard/admin/other").unwrap());
+        assert!(router.data.borrow().is_on_last_index());
 
         assert_eq!(router.current_history_index(), 2);
 
         let back = router.back();
+        assert!(!router.data.borrow().is_on_last_index());
         assert_eq!(
             back,
             Some(ExampleRoutes::Register),
@@ -581,6 +595,7 @@ mod test {
         assert_eq!(router.is_current_route(&ExampleRoutes::Register), true);
 
         let back = router.back();
+        assert!(!router.data.borrow().is_on_last_index());
         assert_eq!(
             back,
             Some(ExampleRoutes::parse_path("").unwrap()),
@@ -596,6 +611,7 @@ mod test {
         );
 
         let back = router.back();
+        assert!(!router.data.borrow().is_on_last_index());
         assert_eq!(
             back,
             Some(ExampleRoutes::parse_path("dashboard/admin/other").unwrap()),
@@ -605,6 +621,7 @@ mod test {
         // Here is tricky part, after navigate we go back to the end of history, so if
         // we go back, we go to the previous index
         assert_eq!(router.current_history_index(), 2);
+        assert!(!router.data.borrow().is_on_last_index());
     }
 
     // assumes correct functioning of back() in the case of not currently at most recent history
@@ -641,7 +658,9 @@ mod test {
             Some(ExampleRoutes::Register),
             "Sanity check we don't already meet a forward() pre-condition"
         );
+        assert!(!router.data.borrow().is_on_last_index());
         let forward = router.forward();
+        assert!(!router.data.borrow().is_on_last_index());
         assert_eq!(
             forward,
             Some(ExampleRoutes::Register),
@@ -650,6 +669,7 @@ mod test {
         assert_eq!(router.current_history_index(), 1);
 
         let forward = router.forward();
+        assert!(router.data.borrow().is_on_last_index());
         assert_eq!(
             forward,
             Some(ExampleRoutes::Dashboard(DashboardRoutes::Profile(55))),
@@ -657,6 +677,7 @@ mod test {
         );
         assert_eq!(router.current_history_index(), 2);
         let forward = router.forward();
+        assert!(router.data.borrow().is_on_last_index());
         assert_eq!(forward, None, "We should Not have gone forward");
         assert_eq!(
             router.current_history_index(),
