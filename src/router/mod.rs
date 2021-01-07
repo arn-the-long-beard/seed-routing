@@ -57,7 +57,7 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> Router
     }
     /// Check the current page is the last one in the history
     pub fn is_on_last_index(&self) -> bool {
-        self.current_history_index + 1 == self.history.len()
+        !self.history.is_empty() && self.current_history_index + 1 == self.history.len()
     }
 }
 
@@ -320,8 +320,7 @@ mod test {
         assert_eq!(router_data.default_route, default);
         assert_eq!(current, default);
 
-        // TODO: currently fails.
-        assert!(router_data.is_on_last_index());
+        assert!(!router_data.is_on_last_index());
     }
 
     #[wasm_bindgen_test]
@@ -330,7 +329,9 @@ mod test {
         // We should get the right route when the Url is valid
         {
             let url = ExampleRoutes::Login.to_url();
+            assert!(!router.data.borrow().is_on_last_index());
             let router = router.init(url.clone());
+            assert!(router.data.borrow().is_on_last_index());
             let current = router.current_route();
             let router_data = router.data.borrow();
             assert_eq!(current, ExampleRoutes::Login);
@@ -564,6 +565,7 @@ mod test {
     fn test_backward() {
         let router: Router<ExampleRoutes> = Router::new();
 
+        assert!(!router.data.borrow().is_on_last_index());
         let back = router.back();
         assert!(back.is_none(), "We should Not have gone backwards");
         assert_eq!(
@@ -571,9 +573,7 @@ mod test {
             0,
             "We should have current index 0"
         );
-
-        // TODO: A fresh router should be on the last index, no?
-        assert!(router.data.borrow().is_on_last_index());
+        assert!(!router.data.borrow().is_on_last_index());
         router.navigate_to_new(ExampleRoutes::parse_path("").unwrap());
         assert!(router.data.borrow().is_on_last_index());
         router.navigate_to_new(ExampleRoutes::parse_path("register").unwrap());
@@ -641,8 +641,9 @@ mod test {
         );
 
         router.navigate_to_new(ExampleRoutes::parse_path("").unwrap());
+        assert!(router.data.borrow().is_on_last_index());
         router.navigate_to_new(ExampleRoutes::parse_path("register").unwrap());
-        router.navigate_to_new(ExampleRoutes::parse_path("/dashboard/profile/55").unwrap());
+        router.navigate_to_new(ExampleRoutes::parse_path("/dashboard/profile/55").unwrap()); // Sanity check post-codition
         assert_eq!(router.current_history_index(), 2);
 
         let _ = router.back();
