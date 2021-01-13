@@ -107,10 +107,34 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// - Navigate to the given url and add it to the history.
     /// Mostly to be used inside the init() in Seed.
     /// ```rust
+    /// extern crate seed_routing;
+    /// #[macro_use]
+    ///
+    /// use seed_routing::{View, *};
+    /// use seed::prelude::*;
     /// add_router!();
+    /// // Empty Model for example
+    /// struct Model {
+    ///
+    /// }
+    ///
     /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-    ///     router().init(url)
-    ///         //...
+    ///     orders.subscribe(Msg::UrlChanged);
+    ///     router().init(url);     
+    ///
+    /// Model {
+    /// // Empty Model for example
+    /// }
+    ///
+    /// }  
+    /// enum Msg {
+    ///      UrlChanged(subs::UrlChanged),
+    /// }
+    ///
+    /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
+    /// enum Route {
+    /// #[default_route]
+    /// NotFound
     /// }
     /// ```
     pub fn init(&self, url: Url) -> &Self {
@@ -128,18 +152,39 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// Register a subscribe handle to confirm navigation when Url Requested.
     /// Mostly to be used inside init() in Seed.
     /// ```rust
-    /// add_router!();
-    /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-    ///     orders.subscribe(Msg::UrlChanged).subscribe(Msg::UserLogged);
+    /// extern crate seed_routing;
+    /// #[macro_use]
     ///
-    ///     router().init(url).subscribe(orders.subscribe_with_handle(
+    /// use seed_routing::{View, *};
+    /// use seed::prelude::*;
+    /// add_router!();
+    /// // Empty Model for example
+    /// struct Model {
+    /// // Empty for example
+    /// }
+    ///
+    /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    ///     orders.subscribe(Msg::UrlChanged);
+    ///     router()
+    ///     .init(url)
+    ///     .subscribe(orders.subscribe_with_handle(
     ///         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
     ///     ));
     ///
-    ///     Model {
-    ///         //...
-    ///     }
+    /// Model {
+    /// // Empty for example
+    /// }
+    ///
     /// }  
+    /// enum Msg {
+    ///      UrlChanged(subs::UrlChanged),
+    /// }
+    ///
+    /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
+    /// enum Route {
+    /// #[default_route]
+    /// NotFound
+    /// }
     /// ```
     pub fn subscribe(&self, sub_handle: SubHandle) -> &Self {
         self.clone()
@@ -263,20 +308,41 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// It also resets the current move to Ready.
     /// Mostly this method is used with the subscribe() in the init() in Seed.
     /// ```rust
+    /// extern crate seed_routing;
+    /// #[macro_use]
+    ///
+    /// use seed_routing::{View, *};
+    /// use seed::prelude::*;
     /// add_router!();
-    /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-    ///     orders.subscribe(Msg::UrlChanged).subscribe(Msg::UserLogged);
-    ///
-    ///     router().init(url).subscribe(orders.subscribe_with_handle(
-    ///         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
-    ///     ));
-    ///
-    ///     Model {
-    ///         //...
-    ///     }
+    /// // Empty Model for example
+    /// struct Model {
+    /// // Empty for example
     /// }
     ///
-    /// ```
+    /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    ///     orders.subscribe(Msg::UrlChanged);
+    ///     router()
+    ///     .init(url)
+    ///     .subscribe(orders.subscribe_with_handle(
+    ///         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url), // <-- Confirmation called when we request a Url
+    ///     ));
+    ///
+    /// Model {
+    /// // Empty for example
+    /// }
+    ///
+    /// }  
+    /// enum Msg {
+    ///      UrlChanged(subs::UrlChanged),
+    /// }
+    ///
+    /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
+    /// enum Route {
+    /// #[default_route]
+    /// NotFound
+    /// }
+    ///
+    ///```
     pub fn confirm_navigation(&self, url: Url) {
         match self.map_data(|data| data.current_move.clone()) {
             MoveStatus::Navigating | MoveStatus::Ready => {
