@@ -251,7 +251,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         self.update_data(|data| data.current_move = MoveStatus::Ready);
     }
 
-    pub fn set_current_route(&self, route: &Route) {
+    /// Set the current route of the router.
+    fn set_current_route(&self, route: &Route) {
         self.update_data(|data| data.current_route = route.clone());
     }
 
