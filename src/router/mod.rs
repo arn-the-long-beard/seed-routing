@@ -686,4 +686,59 @@ mod test {
             "History index should not change after empty-action forward()"
         );
     }
+    //
+    #[wasm_bindgen_test]
+    fn test_confirm_navigation() {
+        let router: Router<ExampleRoutes> = Router::new();
+
+        // When triggering from RequestedUrl
+        let url = ExampleRoutes::Login.to_url();
+        router.confirm_navigation(url);
+        {
+            let router_data = router.data.borrow();
+            assert_eq!(router_data.current_history_index, 0);
+            assert_eq!(router_data.history.len(), 1);
+            assert_eq!(router_data.current_move, MoveStatus::Ready);
+            assert_eq!(router.current_route(), ExampleRoutes::Login);
+        }
+
+        router.navigate_to_new(ExampleRoutes::Dashboard(DashboardRoutes::Root));
+        router.navigate_to_new(ExampleRoutes::Stuff);
+
+        // When triggering from Back Button and then get RequestedUrl
+        router.update_data(|data| data.current_move = MoveStatus::MovingBack);
+        router.confirm_navigation(ExampleRoutes::Dashboard(DashboardRoutes::Root).to_url());
+        {
+            let router_data = router.data.borrow();
+            assert_eq!(router_data.current_history_index, 1);
+            assert_eq!(router_data.history.len(), 3);
+            assert_eq!(router_data.current_move, MoveStatus::Ready);
+            assert_eq!(
+                router.current_route(),
+                ExampleRoutes::Dashboard(DashboardRoutes::Root)
+            );
+        }
+
+        // When triggering from ForwardButton and then get RequestedUrl
+        router.update_data(|data| data.current_move = MoveStatus::MovingForward);
+        router.confirm_navigation(ExampleRoutes::Stuff.to_url());
+        {
+            let router_data = router.data.borrow();
+            assert_eq!(router_data.current_history_index, 2);
+            assert_eq!(router_data.history.len(), 3);
+            assert_eq!(router_data.current_move, MoveStatus::Ready);
+            assert_eq!(router.current_route(), ExampleRoutes::Stuff);
+        }
+
+        // When navigating to wrong url, should go to default ( aka not found in this example )
+        let url: Url = "/blabla/wrong_url".parse().unwrap();
+        router.confirm_navigation(url);
+        {
+            let router_data = router.data.borrow();
+            assert_eq!(router_data.current_history_index, 3);
+            assert_eq!(router_data.history.len(), 4);
+            assert_eq!(router_data.current_move, MoveStatus::Ready);
+            assert_eq!(router.current_route(), ExampleRoutes::NotFound);
+        }
+    }
 }
