@@ -92,10 +92,12 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         }
     }
 
+    /// Update the data on RouterData with the use of a closure.
     fn update_data(&self, updater: impl FnOnce(&mut RouterData<Route>)) {
         updater(&mut self.data.borrow_mut());
     }
 
+    /// Get the data from RouterData with the use of closure.
     fn map_data<T>(&self, mapper: impl FnOnce(&RouterData<Route>) -> T) -> T {
         mapper(&self.data.borrow())
     }
