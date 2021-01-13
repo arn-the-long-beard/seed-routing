@@ -132,10 +132,11 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// }
     ///
     /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
-    /// enum Route {
-    /// #[default_route]
-    /// NotFound
+    ///     enum Route {
+    ///     #[default_route]
+    ///     NotFound
     /// }
+    ///
     /// ```
     pub fn init(&self, url: Url) -> &Self {
         self.set_base_url(&url);
@@ -182,9 +183,10 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     ///
     /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
     /// enum Route {
-    /// #[default_route]
-    /// NotFound
+    ///     #[default_route]
+    ///     NotFound
     /// }
+    ///
     /// ```
     pub fn subscribe(&self, sub_handle: SubHandle) -> &Self {
         self.clone()
@@ -337,9 +339,9 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     /// }
     ///
     /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
-    /// enum Route {
-    /// #[default_route]
-    /// NotFound
+    ///     enum Route {
+    ///     #[default_route]
+    ///     NotFound
     /// }
     ///
     ///```
@@ -438,7 +440,6 @@ mod test {
         assert_eq!(router_data.current_route, current);
         assert_eq!(router_data.default_route, default);
         assert_eq!(current, default);
-
         assert!(!router_data.is_on_last_index());
     }
 
