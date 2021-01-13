@@ -251,23 +251,27 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         self.update_data(|data| data.current_move = MoveStatus::Ready);
     }
 
-    /// Set the current route of the router.
+    /// Set the current route of the router. It should be used only privately.
     fn set_current_route(&self, route: &Route) {
         self.update_data(|data| data.current_route = route.clone());
     }
 
+    /// Get the current route of the router.
     pub fn current_route(&self) -> Route {
         self.map_data(|data| data.current_route.clone())
     }
 
+    /// Get the default route of the router. The default route is used when an Url does not match the given Routes.
     pub fn default_route(&self) -> Route {
         self.map_data(|data| data.default_route.clone())
     }
 
+    /// Get the base url of the Router.
     pub fn base_url(&self) -> Url {
         self.map_data(|data| data.base_url.clone())
     }
 
+    /// Get the index in the history of the current route.
     pub fn current_history_index(&self) -> usize {
         self.map_data(|data| data.current_history_index)
     }
