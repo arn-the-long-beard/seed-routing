@@ -10,7 +10,7 @@ extern crate convert_case;
 extern crate proc_macro;
 extern crate proc_macro_error;
 
-use crate::{root::get_default_route, routing::routing_variant_snippets};
+use crate::{default_route::get_default_route, routing::routing_variant_snippets};
 use proc_macro::TokenStream;
 
 use crate::{init::module_init_snippets, view::modules_view_snippets};
@@ -19,10 +19,10 @@ use quote::quote;
 use syn::{export::TokenStream2, parse_macro_input, Data, DeriveInput, Fields};
 
 mod builder;
+mod default_route;
 mod guard;
 mod init;
 mod modules;
-mod root;
 mod routing;
 mod view;
 
@@ -142,7 +142,7 @@ pub fn derive_as_url(item: TokenStream) -> TokenStream {
 /// right url
 ///
 /// ```rust
-/// #[derive(Debug, PartialEq, Copy, Clone, Root)]
+/// #[derive(Debug, PartialEq, Copy, Clone, WithDefaultRoute)]
 /// pub enum DashboardAdminRoutes {
 ///     #[default_route]
 ///     NotFound, // -> /blablablalbla -> /not_found
@@ -150,8 +150,8 @@ pub fn derive_as_url(item: TokenStream) -> TokenStream {
 /// }
 /// ```
 #[proc_macro_error]
-#[proc_macro_derive(Root, attributes(default_route))]
-pub fn define_as_root(item: TokenStream) -> TokenStream {
+#[proc_macro_derive(WithDefaultRoute, attributes(default_route))]
+pub fn derive_add_default_route(item: TokenStream) -> TokenStream {
     let DeriveInput { ident, data, .. } = parse_macro_input!(item as DeriveInput);
     let variants = match data {
         Data::Enum(data) => data.variants,
@@ -348,7 +348,7 @@ pub fn define_as_root(item: TokenStream) -> TokenStream {
 )]
 pub fn derive_add_module_load(item: TokenStream) -> TokenStream {
     let add_url = derive_as_url(item.clone());
-    let root = define_as_root(item.clone());
+    let default_route = derive_add_default_route(item.clone());
     let DeriveInput {
         ident, data, attrs, ..
     } = parse_macro_input!(item as DeriveInput);
@@ -361,7 +361,7 @@ pub fn derive_add_module_load(item: TokenStream) -> TokenStream {
     };
 
     let url_impl = TokenStream2::from(add_url);
-    let default_route_impl = TokenStream2::from(root);
+    let default_route_impl = TokenStream2::from(default_route);
     let variants = variants.iter();
 
     let modules_path = modules::path(ident.clone(), attrs.iter());

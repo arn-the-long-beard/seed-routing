@@ -273,7 +273,7 @@ mod test {
 
     use super::*;
     use crate::{router, ParseError};
-    use router_macro_derive::{ParseUrl, Root};
+    use router_macro_derive::{ParseUrl, WithDefaultRoute};
     use wasm_bindgen_test::*;
 
     wasm_bindgen_test_configure!(run_in_browser);
@@ -293,7 +293,7 @@ mod test {
         Root,
     }
 
-    #[derive(Debug, PartialEq, Clone, ParseUrl, Root)]
+    #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
     enum ExampleRoutes {
         Login,
         Register,

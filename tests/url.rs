@@ -11,7 +11,7 @@ mod test {
     use wasm_bindgen_test::*;
     wasm_bindgen_test_configure!(run_in_browser);
 
-    #[derive(Debug, PartialEq, Clone, ParseUrl, Root)]
+    #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
     pub enum ExampleRoutes {
         Other {
             id: String,
