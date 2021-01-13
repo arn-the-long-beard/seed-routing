@@ -202,16 +202,16 @@ pub fn define_as_root(item: TokenStream) -> TokenStream {
     })
 }
 
-/// The RoutingModule makes the enum variants representing modules loaded by the
+/// The `RoutingModules` makes the enum variants representing modules loaded by the
 /// routes.
-/// By default, an enum variant snake case is equal to its module name
+/// By default, an enum variant as snake_case is equal to its module name
 ///
-///  You can rename the path
-///  You can specify routes that does not load module ( no init, no specific
-/// Model & Msg and no view )
+///  - You can rename the path.
+///  - You can specify routes that does not load module ( no init, no specific
+/// Model & Msg and no view ). They are called `local views` and use the attribute #[view]
 ///
 /// The derive macro will call the init function , Model, Msg, Routes, Update,
-/// and View
+/// and View for the related module.
 ///
 ///
 ///
