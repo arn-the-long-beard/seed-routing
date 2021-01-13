@@ -59,6 +59,11 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> Router
     pub fn is_on_last_index(&self) -> bool {
         !self.history.is_empty() && self.current_history_index + 1 == self.history.len()
     }
+
+    /// Check the current page is on the first index in the history
+    pub fn is_on_first_index(&self) -> bool {
+        !self.history.is_empty() && self.current_history_index == 0
+    }
 }
 
 /// Router that manages navigation between routes,
@@ -130,7 +135,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
             return None;
         }
         // If the current route is at index 0, we cannot go back more
-        if self.map_data(|data| data.current_history_index) == 0 {
+        if self.map_data(RouterData::is_on_first_index) {
             return None;
         }
         let next_index: usize = self.map_data(|data| data.current_history_index - 1);
@@ -141,6 +146,10 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
 
     /// If a next `Route` in history exists, return it. Otherwise return `None`
     pub fn peek_forward(&self) -> Option<Route> {
+        // if there is no route, cannot go forward
+        if self.map_data(|data| data.history.is_empty()) {
+            return None;
+        }
         // If we are on the last index, we cannot go forward neither
         if self.map_data(RouterData::is_on_last_index) {
             return None;
