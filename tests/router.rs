@@ -100,15 +100,12 @@ mod test {
     }
 
     #[wasm_bindgen_test]
-    fn test_router_without_init() {
+    fn test_router_init() {
         let my_router = router();
         assert_eq!(my_router.current_route(), Route::NotFound);
-    }
 
-    // #[wasm_bindgen_test]
-    // fn test_router_with_init() {
-    //     start();
-    //     let my_router = router();
-    //     assert_eq!(my_router.current_route(), Route::NotFound);
-    // }
+        let url = Route::Login.to_url();
+        router().init(url);
+        assert_eq!(my_router.current_route(), Route::Login);
+    }
 }
