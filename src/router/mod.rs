@@ -103,8 +103,16 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     }
 
     /// Initialize navigation with the given url:
-    /// - extract the base url from it.
-    /// - navigate to the given url and add it to the history.
+    /// - Extract the base url from it.
+    /// - Navigate to the given url and add it to the history.
+    /// Mostly to be used inside the init() in Seed.
+    /// ```rust
+    /// add_router!();
+    /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    ///     router().init(url)
+    ///         //...
+    /// }
+    /// ```
     pub fn init(&self, url: Url) -> &Self {
         self.set_base_url(&url);
         self.navigate_to_url(url);
@@ -118,6 +126,21 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     }
 
     /// Register a subscribe handle to confirm navigation when Url Requested.
+    /// Mostly to be used inside init() in Seed.
+    /// ```rust
+    /// add_router!();
+    /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    ///     orders.subscribe(Msg::UrlChanged).subscribe(Msg::UserLogged);
+    ///
+    ///     router().init(url).subscribe(orders.subscribe_with_handle(
+    ///         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
+    ///     ));
+    ///
+    ///     Model {
+    ///         //...
+    ///     }
+    /// }  
+    /// ```
     pub fn subscribe(&self, sub_handle: SubHandle) -> &Self {
         self.clone()
             .update_data(|data| data.sub_handle = Some(sub_handle));
@@ -235,9 +258,25 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         });
     }
 
-    /// This method accept a given url and choose the appropriate update for the
+    /// This method accepts a given url and chooses the appropriate update for the
     /// history depending of the MoveStatus.
     /// It also resets the current move to Ready.
+    /// Mostly this method is used with the subscribe() in the init() in Seed.
+    /// ```rust
+    /// add_router!();
+    /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    ///     orders.subscribe(Msg::UrlChanged).subscribe(Msg::UserLogged);
+    ///
+    ///     router().init(url).subscribe(orders.subscribe_with_handle(
+    ///         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
+    ///     ));
+    ///
+    ///     Model {
+    ///         //...
+    ///     }
+    /// }
+    ///
+    /// ```
     pub fn confirm_navigation(&self, url: Url) {
         match self.map_data(|data| data.current_move.clone()) {
             MoveStatus::Navigating | MoveStatus::Ready => {
