@@ -55,8 +55,8 @@ fn router() -> Router<Route,> {
     .parse()
     .unwrap()
 }
-/// Derive an enum as Routing for navigation
-/// You can change the value of a path for a given route this way
+/// Derive an enum for navigation with `ParseUrl`
+/// You can change the value of a path for a given route this way :
 ///
 ///
 ///
