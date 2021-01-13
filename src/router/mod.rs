@@ -95,7 +95,9 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         mapper(&self.data.borrow())
     }
 
-    /// Init navigation with the given url.
+    /// Initialize navigation with the given url:
+    /// - extract the base url from it.
+    /// - navigate to the given url and add it to the history.
     pub fn init(&self, url: Url) -> &Self {
         self.set_base_url(&url);
         self.navigate_to_url(url);
