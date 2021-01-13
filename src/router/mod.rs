@@ -161,7 +161,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         Some(route.clone())
     }
 
-    /// Same as [Router::peek_back], with the addition of navigating to a resulting `Some(Route)`
+    /// Same as `Router::peek_back`, with the addition of navigating to a resulting `Some(Route)`
     ///
     ///  # Note for now it does not add to history since we navigate inside
     pub fn back(&self) -> Option<Route> {
@@ -172,7 +172,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
         })
     }
 
-    /// Same as [Router::peek_forward], with the addition of navigating to a resulting `Some(Route)`
+    /// Same as `Router::peek_forward`, with the addition of navigating to a resulting `Some(Route)`
     ///
     /// # Note for now it does not add to history since we navigate inside
     pub fn forward(&self) -> Option<Route> {
