@@ -141,10 +141,6 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
 
     /// If a next `Route` in history exists, return it. Otherwise return `None`
     pub fn peek_forward(&self) -> Option<Route> {
-        // if there is no route, cannot go forward
-        if self.map_data(|data| data.history.is_empty()) {
-            return None;
-        }
         // If we are on the last index, we cannot go forward neither
         if self.map_data(RouterData::is_on_last_index) {
             return None;
