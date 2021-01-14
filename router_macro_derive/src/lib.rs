@@ -37,7 +37,7 @@ mod view;
 ///     NotFound
 /// }
 ///
-/// router().set_current_route(Route::Home);
+/// router().navigate_to_new(Route::Home);
 /// assert!(router().current_route(),Route::Home);
 /// ```
 ///
