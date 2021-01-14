@@ -43,7 +43,7 @@ pub mod test {
             query: IndexMap<String, String>,
         },
         #[guard = "user => guard => forbidden"]
-        Dashboard(dashboard::Routes),
+        Dashboard(dashboard::Route),
         Profile {
             id: String,
         },

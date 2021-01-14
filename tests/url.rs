@@ -1,3 +1,4 @@
+mod router;
 mod routing_module;
 #[cfg(test)]
 mod test {

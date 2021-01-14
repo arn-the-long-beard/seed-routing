@@ -1,7 +1,5 @@
-mod routing_module;
 #[cfg(test)]
 mod test {
-
     use wasm_bindgen_test::*;
     wasm_bindgen_test_configure!(run_in_browser);
     use seed::{prelude::*, *};
@@ -12,7 +10,6 @@ mod test {
     // ------ ------
     //     Init
     // ------ ------
-
     fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
         orders.subscribe(Msg::UrlChanged);
 
@@ -94,10 +91,10 @@ mod test {
     //     Start
     // ------ ------
 
-    #[wasm_bindgen(start)]
-    pub fn start() {
-        App::start("app", init, update, view);
-    }
+    // #[wasm_bindgen(start)]
+    // pub fn start() {
+    //     App::start("app", init, update, view);
+    // }
 
     #[wasm_bindgen_test]
     fn test_router_init() {

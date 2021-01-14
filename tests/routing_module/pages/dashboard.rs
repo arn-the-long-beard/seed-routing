@@ -6,7 +6,7 @@ use seed_routing::*;
 use seed::{prelude::*, *};
 
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
-pub enum Routes {
+pub enum Route {
     #[default_route]
     #[view = " => not_found"]
     NotFound,
@@ -14,17 +14,17 @@ pub enum Routes {
     Settings,
 }
 pub enum Msg {}
-pub fn init(_: Url, _: &mut Model, _: &Routes, _: &mut impl Orders<Msg>) -> Model {
+pub fn init(_: Url, _: &mut Model, _: &Route, _: &mut impl Orders<Msg>) -> Model {
     Model {
         _stuff: "".to_string(),
     }
 }
-
+#[derive(Default)]
 pub struct Model {
     _stuff: String,
 }
 
-pub fn view(_: &Routes, _: &Model) -> Node<Msg> {
+pub fn view(_: &Route, _: &Model) -> Node<Msg> {
     div![]
 }
 
