@@ -32,6 +32,6 @@ fn not_found(_: &Model) -> Node<Msg> {
     div![]
 }
 
-fn settings(_: &Model) -> Node<Msg> {
+pub fn settings(_: &Model) -> Node<Msg> {
     div![]
 }

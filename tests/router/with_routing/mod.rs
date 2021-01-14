@@ -7,6 +7,7 @@ mod test {
     wasm_bindgen_test_configure!(run_in_browser);
     use seed::{prelude::*, *};
     extern crate heck;
+    use crate::router::with_routing::test::Route::Dashboard;
     use crate::routing_module::test::UserLogged;
     use seed_routing::{View, *};
     use std::fmt::Debug;
@@ -145,6 +146,19 @@ mod test {
                 user: None,
             })
             .to_string()
+        );
+
+        my_router.navigate_to_new(Dashboard(dashboard::Route::Settings));
+
+        assert_eq!(
+            my_router
+                .current_route()
+                .view(&Model {
+                    dashboard: dashboard::Model::default(),
+                    user: None,
+                })
+                .to_string(),
+            dashboard::settings(&dashboard::Model::default()).to_string()
         );
     }
 }
