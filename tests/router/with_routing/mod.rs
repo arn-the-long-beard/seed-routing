@@ -77,11 +77,15 @@ mod test {
         }
     }
     pub fn forbidden(_: Option<&UserLogged>) -> Node<Msg> {
-        div![]
+        div!["401"]
     }
     pub fn guard(user: Option<&UserLogged>) -> Option<bool> {
-        if user.is_some() {
-            Some(true)
+        if let Some(user_logged) = user {
+            if user_logged.name.is_empty() {
+                Some(false)
+            } else {
+                Some(true)
+            }
         } else {
             None
         }
@@ -107,7 +111,7 @@ mod test {
     }
 
     fn header(model: &Model) -> Node<Msg> {
-        div![]
+        div!["header"]
     }
     // ------ ------
     //     Start
@@ -146,13 +150,35 @@ mod test {
         })
         .to_string();
         assert_eq!(current_view, login_view);
-
+    }
+    #[wasm_bindgen_test]
+    fn test_router_view_and_guard() {
+        let my_router: Router<Route> = router();
         my_router.navigate_to_new(Dashboard(dashboard::Route::Settings));
         let current_view = my_router
             .current_route()
             .view(&Model {
                 dashboard: dashboard::Model::default(),
                 user: None,
+            })
+            .to_string();
+        assert_eq!(
+            current_view,
+            forbidden(Some(&UserLogged {
+                name: "".to_string()
+            }))
+            .to_string()
+        );
+
+        let test_user = UserLogged {
+            name: "test_user".to_string(),
+        };
+        my_router.navigate_to_new(Dashboard(dashboard::Route::Settings));
+        let current_view = my_router
+            .current_route()
+            .view(&Model {
+                dashboard: dashboard::Model::default(),
+                user: Some(test_user),
             })
             .to_string();
         assert_eq!(

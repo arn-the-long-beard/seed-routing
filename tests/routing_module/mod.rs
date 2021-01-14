@@ -14,7 +14,7 @@ pub mod test {
     use seed_routing::*;
 
     pub struct UserLogged {
-        _name: String,
+        pub name: String,
     }
 
     pub struct Model {

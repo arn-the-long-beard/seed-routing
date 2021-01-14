@@ -24,14 +24,14 @@ pub struct Model {
     _stuff: String,
 }
 
-pub fn view(_: &Route, _: &Model) -> Node<Msg> {
-    div![]
+pub fn view(route: &Route, model: &Model) -> Node<Msg> {
+    route.view(model)
 }
 
 fn not_found(_: &Model) -> Node<Msg> {
-    div![]
+    div!["not_found"]
 }
 
 pub fn settings(_: &Model) -> Node<Msg> {
-    div![]
+    div!["settings"]
 }
