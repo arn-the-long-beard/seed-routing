@@ -133,31 +133,30 @@ mod test {
         let my_router: Router<Route> = router();
         my_router.navigate_to_new(Route::Login);
 
-        assert_eq!(
-            my_router
-                .current_route()
-                .view(&Model {
-                    dashboard: dashboard::Model::default(),
-                    user: None,
-                })
-                .to_string(),
-            login(&Model {
+        let current_view = my_router
+            .current_route()
+            .view(&Model {
                 dashboard: dashboard::Model::default(),
                 user: None,
             })
-            .to_string()
-        );
+            .to_string();
+        let login_view = login(&Model {
+            dashboard: dashboard::Model::default(),
+            user: None,
+        })
+        .to_string();
+        assert_eq!(current_view, login_view);
 
         my_router.navigate_to_new(Dashboard(dashboard::Route::Settings));
-
+        let current_view = my_router
+            .current_route()
+            .view(&Model {
+                dashboard: dashboard::Model::default(),
+                user: None,
+            })
+            .to_string();
         assert_eq!(
-            my_router
-                .current_route()
-                .view(&Model {
-                    dashboard: dashboard::Model::default(),
-                    user: None,
-                })
-                .to_string(),
+            current_view,
             dashboard::settings(&dashboard::Model::default()).to_string()
         );
     }
