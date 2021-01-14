@@ -27,7 +27,8 @@ mod test {
             user: None,
         }
     }
-
+    /// The base routes of the application.
+    /// If a submodule to load from a route has also routes, they should appear as children routes as well.
     #[derive(Debug, PartialEq, Clone, RoutingModules)]
     #[modules_path = "pages"]
     pub enum Route {
@@ -64,6 +65,7 @@ mod test {
         GoForward,
     }
 
+    /// The standard update in a seed app.
     fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         match msg {
             Msg::UrlChanged(subs::UrlChanged(_url)) => {}
@@ -73,7 +75,11 @@ mod test {
             Msg::GoForward => {
                 router().request_moving_forward(|r| orders.notify(subs::UrlRequested::new(r)));
             }
-            Msg::Dashboard(_) => {}
+            Msg::Dashboard(dashboard_message) => dashboard::update(
+                dashboard_message,
+                &mut model.dashboard,
+                &mut orders.proxy(Msg::Dashboard),
+            ),
         }
     }
     pub fn forbidden(_: Option<&UserLogged>) -> Node<Msg> {
@@ -98,18 +104,22 @@ mod test {
         vec![header(&model), router().current_route().view(model)]
     }
 
+    /// A local view login
     fn login(_: &Model) -> Node<Msg> {
         div!["login"]
     }
 
+    /// A local view home
     fn home(_: &Model) -> Node<Msg> {
         div!["home"]
     }
 
+    /// A local view for not found
     fn not_found(_: &Model) -> Node<Msg> {
         div!["not_found"]
     }
 
+    /// A header view
     fn header(model: &Model) -> Node<Msg> {
         div!["header"]
     }
@@ -149,11 +159,13 @@ mod test {
             user: None,
         })
         .to_string();
+
         assert_eq!(current_view, login_view);
     }
     #[wasm_bindgen_test]
     fn test_router_view_and_guard() {
         let my_router: Router<Route> = router();
+
         my_router.navigate_to_new(Dashboard(dashboard::Route::Settings));
         let current_view = my_router
             .current_route()
@@ -174,6 +186,7 @@ mod test {
             name: "test_user".to_string(),
         };
         my_router.navigate_to_new(Dashboard(dashboard::Route::Settings));
+
         let current_view = my_router
             .current_route()
             .view(&Model {
@@ -181,6 +194,7 @@ mod test {
                 user: Some(test_user),
             })
             .to_string();
+
         assert_eq!(
             current_view,
             dashboard::settings(&dashboard::Model::default()).to_string()

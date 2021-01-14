@@ -23,6 +23,9 @@ pub fn init(_: Url, _: &mut Model, _: &Route, _: &mut impl Orders<Msg>) -> Model
 pub struct Model {
     _stuff: String,
 }
+pub fn update(msg: Msg, _: &mut Model, _: &mut impl Orders<Msg>) {
+    match msg {}
+}
 
 pub fn view(route: &Route, model: &Model) -> Node<Msg> {
     route.view(model)
