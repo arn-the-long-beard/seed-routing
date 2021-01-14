@@ -395,7 +395,7 @@ mod test {
     use super::*;
     use crate::{router, ParseError};
     use router_macro_derive::{ParseUrl, WithDefaultRoute};
-    use wasm_bindgen_test::*;
+    use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
 
     wasm_bindgen_test_configure!(run_in_browser);
 
