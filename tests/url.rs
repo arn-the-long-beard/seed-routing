@@ -39,6 +39,13 @@ mod test {
         Root,
     }
     #[derive(Debug, PartialEq, Clone, ParseUrl)]
+    pub enum AsPathCheck {
+        #[as_path = "foobar"]
+        Things,
+        FizzBuzz,
+    }
+
+    #[derive(Debug, PartialEq, Clone, ParseUrl)]
     pub enum Settings {
         Api(Apis),
         Projects {
@@ -345,6 +352,32 @@ mod test {
                     children: Apis::Facebook
                 },
             }
+        );
+    }
+
+    #[wasm_bindgen_test]
+    fn test_as_path() {
+        let stuff_ref: Url = "/dashboard/my_stuff/123".parse().unwrap();
+        let things_ref: Url = "/foobar".parse().unwrap();
+        let fizz_ref: Url = "/fizz_buzz".parse().unwrap();
+        let root_ref: Url = "/dashboard/".parse().unwrap();
+
+        let stuff_ref_url = ExampleRoutes::from_url(stuff_ref).unwrap();
+        let things_ref_url = AsPathCheck::from_url(things_ref).unwrap();
+        let fizz_ref_url = AsPathCheck::from_url(fizz_ref).unwrap();
+        let root_ref_url = ExampleRoutes::from_url(root_ref).unwrap();
+
+        assert_eq!(
+            stuff_ref_url,
+            ExampleRoutes::Dashboard(DashboardRoutes::Stuff {
+                id: "123".to_string()
+            })
+        );
+        assert_eq!(things_ref_url, AsPathCheck::Things);
+        assert_eq!(fizz_ref_url, AsPathCheck::FizzBuzz);
+        assert_eq!(
+            root_ref_url,
+            ExampleRoutes::Dashboard(DashboardRoutes::Root)
         );
     }
 
