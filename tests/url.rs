@@ -28,8 +28,10 @@ mod test {
         },
         #[default_route]
         NotFound,
+        // any variant afer one that maps to an empty string path fails to compile
         #[as_path = ""]
         Root,
+        DoTheThing,
     }
     #[derive(Debug, PartialEq, Clone, ParseUrl)]
     pub enum DashboardRoutes {
