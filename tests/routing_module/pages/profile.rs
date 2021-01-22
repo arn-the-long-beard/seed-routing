@@ -1,4 +1,4 @@
-extern crate router_macro_derive;
+extern crate router_derive;
 extern crate seed_routing;
 use seed::{prelude::*, *};
 pub fn init(_: Url, _: &mut Model, _: &String, _: &mut impl Orders<Msg>) -> Model {

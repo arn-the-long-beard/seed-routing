@@ -1,6 +1,6 @@
 use seed::{prelude::*, *};
 
-extern crate router_macro_derive;
+extern crate router_derive;
 extern crate seed_routing;
 
 pub fn init(

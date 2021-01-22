@@ -1,5 +1,5 @@
 [package]
-name = "router_macro_derive"
+name = "router_derive"
 version = "0.1.0"
 authors = ["arn-the-long-beard <arn.menant@gmail.com>"]
 edition = "2018"

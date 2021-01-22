@@ -20,22 +20,24 @@ pub fn routing_variant_snippets(
             fields,
             ..
         } = variant;
-        let name = variant_path_segment(ident.clone(), attrs.iter());
+        let path_name = variant_path_segment(ident.clone(), attrs.iter());
         match fields {
             Fields::Unit => {
-                if name.is_none() && (i + 1) != len {
+                // enforces variant with empty-string path is last variant
+                if path_name.is_none() && (i + 1) != len {
                     abort!(Diagnostic::new(
                         Level::Error,
                         "Unit variant without a name must be declared last.".into()
                     ))
                 }
-                unit_variant_snippets(ident.clone(), name)
+
+                unit_variant_snippets(ident.clone(), path_name)
             }
             Fields::Unnamed(fields) => {
-                tuple_variant_snippets(ident.clone(), name, fields.unnamed.iter())
+                tuple_variant_snippets(ident.clone(), path_name, fields.unnamed.iter())
             }
             Fields::Named(fields) => {
-                struct_variant_snippets(ident.clone(), name, fields.named.iter())
+                struct_variant_snippets(ident.clone(), path_name, fields.named.iter())
             }
         }
     });
@@ -48,15 +50,18 @@ pub fn routing_variant_snippets(
         },
     )
 }
-fn unit_variant_snippets(ident: Ident, name: Option<String>) -> (TokenStream2, TokenStream2) {
+fn unit_variant_snippets(ident: Ident, path_name: Option<String>) -> (TokenStream2, TokenStream2) {
     (
-        as_unit_variant(ident.clone(), name.clone()),
-        parse_unit_variant(ident, name),
+        as_unit_variant(ident.clone(), path_name.clone()),
+        parse_unit_variant(ident, path_name),
     )
 }
-fn as_unit_variant(ident: Ident, name: Option<String>) -> TokenStream2 {
-    let format = match name {
-        Some(name) => quote! { format!("/{}", #name) },
+
+// if with `as_path = "foo"` set's up to get "/foo"
+// if no `as_path` gives togens to
+fn as_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream2 {
+    let format = match path_name {
+        Some(path_name) => quote! { format!("/{}", #path_name) },
         None => quote! { String::new() },
     };
     quote! {
@@ -64,10 +69,10 @@ fn as_unit_variant(ident: Ident, name: Option<String>) -> TokenStream2 {
     }
 }
 
-fn parse_unit_variant(ident: Ident, name: Option<String>) -> TokenStream2 {
-    let parser = match name {
-        Some(name) => quote! {
-            next.strip_prefix(#name).ok_or(err)
+fn parse_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream2 {
+    let parser = match path_name {
+        Some(path_name) => quote! {
+            next.strip_prefix(#path_name).ok_or(err)
         },
         None => quote! {
             if next.is_empty() {
@@ -95,23 +100,27 @@ fn tuple_variant_snippets(
 
 fn struct_variant_snippets(
     ident: Ident,
-    name: Option<String>,
+    path_name: Option<String>,
     fields: Iter<'_, Field>,
 ) -> (TokenStream2, TokenStream2) {
     (
-        as_struct_variant(ident.clone(), name.clone(), fields.clone()),
-        parse_struct_variant(ident, name, fields),
+        as_struct_variant(ident.clone(), path_name.clone(), fields.clone()),
+        parse_struct_variant(ident, path_name, fields),
     )
 }
-fn as_tuple_variant(ident: Ident, name: Option<String>, fields: Iter<'_, Field>) -> TokenStream2 {
+fn as_tuple_variant(
+    ident: Ident,
+    path_name: Option<String>,
+    fields: Iter<'_, Field>,
+) -> TokenStream2 {
     if fields.clone().count() != 1 {
         abort!(Diagnostic::new(
             Level::Error,
             "Tuple variants may only have a single field.".into()
         ))
     }
-    let format = match name {
-        Some(name) => quote! { format!("/{}{}", #name, nested.clone().as_path()) },
+    let format = match path_name {
+        Some(path_name) => quote! { format!("/{}{}", #path_name, nested.clone().as_path()) },
         None => quote! { nested.as_path() },
     };
     quote! {
@@ -119,7 +128,11 @@ fn as_tuple_variant(ident: Ident, name: Option<String>, fields: Iter<'_, Field>)
     }
 }
 
-fn as_struct_variant(ident: Ident, name: Option<String>, fields: Iter<'_, Field>) -> TokenStream2 {
+fn as_struct_variant(
+    ident: Ident,
+    path_name: Option<String>,
+    fields: Iter<'_, Field>,
+) -> TokenStream2 {
     let fields_to_extract = fields.clone();
 
     let query_parameters = fields_to_extract
@@ -139,8 +152,8 @@ fn as_struct_variant(ident: Ident, name: Option<String>, fields: Iter<'_, Field>
     let structs = build_variant_arguments(structs_tuple);
 
     // let string_enum_with_no_name = build_string(structs_tuple );
-    let format = match &name {
-        Some(_) => build_string_with_path_name(structs_tuple, name.clone()),
+    let format = match &path_name {
+        Some(_) => build_string_with_path_name(structs_tuple, path_name.clone()),
         None => build_string_without_path_name(structs_tuple),
     };
     quote! {
@@ -150,7 +163,7 @@ fn as_struct_variant(ident: Ident, name: Option<String>, fields: Iter<'_, Field>
 
 fn parse_tuple_variant(
     ident: Ident,
-    name: Option<String>,
+    path_name: Option<String>,
     fields: Iter<'_, Field>,
 ) -> TokenStream2 {
     if fields.clone().count() != 1 {
@@ -160,9 +173,9 @@ fn parse_tuple_variant(
         ))
     }
 
-    let parser = match name {
-        Some(name) => quote! {
-            next.strip_prefix(#name).ok_or(err)
+    let parser = match path_name {
+        Some(path_name) => quote! {
+            next.strip_prefix(#path_name).ok_or(err)
                 .and_then(|rest|
                     ParsePath::parse_path(rest)
                 )
@@ -177,7 +190,7 @@ fn parse_tuple_variant(
 }
 fn parse_struct_variant(
     ident: Ident,
-    name: Option<String>,
+    path_name: Option<String>,
     fields: Iter<'_, Field>,
 ) -> TokenStream2 {
     // let children = fields.find(|f| f.ident.as_ref().unwrap() == "children");
@@ -197,9 +210,9 @@ fn parse_struct_variant(
     let with_query_params = structs_tuple.1.is_some();
     let with_children = structs_tuple.2.is_some();
     let structs = unwrap_url_payload_matching_field(structs_tuple);
-    let parser = match name {
-        Some(name) => {
-            quote! {      next.strip_prefix(#name).ok_or(err)
+    let parser = match path_name {
+        Some(path_name) => {
+            quote! {      next.strip_prefix(#path_name).ok_or(err)
                      .map(|rest| extract_url_payload(rest.to_string(),#with_id_param,#with_query_params,#with_children ))
             }
         }
@@ -214,23 +227,29 @@ fn parse_struct_variant(
     }
 }
 fn variant_path_segment(ident: Ident, attrs: std::slice::Iter<'_, Attribute>) -> Option<String> {
+    // get just "as_path" attributes of an identity
     let mut attrs = attrs.filter_map(|attr| match get_string_from_attribute("as_path", attr) {
         Ok(op) => op,
         Err(err) => abort!(Diagnostic::new(Level::Error, err.to_string())),
     });
-    let name = if attrs.clone().count() > 1 {
+
+    // make sure only one path specified for each variant
+    let path_name = if attrs.clone().count() > 1 {
         abort!(Diagnostic::new(
             Level::Error,
             "Multiple path names defined.".into()
         ))
-    } else if let Some(name) = attrs.next() {
-        name.value()
+    // we have an as_path = "...", get the "..."
+    } else if let Some(path_name) = attrs.next() {
+        path_name.value()
     } else {
+        // no path specified, so use default (snake case version of ident)
         ident.to_string().to_case(Case::Snake)
     };
-    if name.is_empty() {
+
+    if path_name.is_empty() {
         None
     } else {
-        Some(name)
+        Some(path_name)
     }
 }

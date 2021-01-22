@@ -1,6 +1,6 @@
-extern crate router_macro_derive;
+extern crate router_derive;
 extern crate seed_routing;
-use router_macro_derive::*;
+use router_derive::*;
 use seed_routing::*;
 
 use seed::{prelude::*, *};
