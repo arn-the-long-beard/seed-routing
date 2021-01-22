@@ -56,6 +56,9 @@ fn unit_variant_snippets(ident: Ident, path_name: Option<String>) -> (TokenStrea
         parse_unit_variant(ident, path_name),
     )
 }
+
+// if with `as_path = "foo"` set's up to get "/foo"
+// if no `as_path` gives togens to
 fn as_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream2 {
     let format = match path_name {
         Some(path_name) => quote! { format!("/{}", #path_name) },

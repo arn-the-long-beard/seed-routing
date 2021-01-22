@@ -390,11 +390,11 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
 mod test {
     use seed::Url;
 
-    extern crate router_macro_derive;
+    extern crate router_derive;
 
     use super::*;
     use crate::{router, ParseError};
-    use router_macro_derive::{ParseUrl, WithDefaultRoute};
+    use router_derive::{ParseUrl, WithDefaultRoute};
     use wasm_bindgen_test::{wasm_bindgen_test, wasm_bindgen_test_configure};
 
     wasm_bindgen_test_configure!(run_in_browser);

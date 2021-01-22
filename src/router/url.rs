@@ -131,7 +131,7 @@ pub fn extract_query_params(url_string: &str) -> IndexMap<String, String> {
 #[cfg(test)]
 mod test {
 
-    extern crate router_macro_derive;
+    extern crate router_derive;
 
     use super::*;
 

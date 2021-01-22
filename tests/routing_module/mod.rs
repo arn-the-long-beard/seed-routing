@@ -7,10 +7,10 @@ pub mod test {
     use wasm_bindgen_test::*;
     wasm_bindgen_test_configure!(run_in_browser);
     use super::*;
-    extern crate router_macro_derive;
+    extern crate router_derive;
     extern crate seed_routing;
     use crate::routing_module::pages::{admin, dashboard, other, profile};
-    use router_macro_derive::*;
+    use router_derive::*;
 
     use seed_routing::{View, *};
 

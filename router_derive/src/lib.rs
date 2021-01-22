@@ -29,6 +29,7 @@ mod view;
 /// Add the router to the web application
 ///
 /// ```rust
+///
 /// add_router!();
 ///
 ///
