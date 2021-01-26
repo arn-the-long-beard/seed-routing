@@ -7,12 +7,15 @@ use crate::builder::{
 };
 use quote::quote;
 
+use std::collections::HashSet;
 use syn::{export::TokenStream2, punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
 
 pub fn routing_variant_snippets(
     variants: Iter<'_, Variant>,
 ) -> (Vec<TokenStream2>, Vec<TokenStream2>) {
     let len = variants.len();
+
+    let mut check_hash = HashSet::new();
     let snippets = variants.enumerate().map(|(i, variant)| {
         let Variant {
             attrs,
@@ -21,6 +24,17 @@ pub fn routing_variant_snippets(
             ..
         } = variant;
         let path_name = variant_path_segment(ident.clone(), attrs.iter());
+        let path_name_as_string = path_name.clone().unwrap_or("".to_string());
+        if !check_hash.insert(path_name_as_string.clone()) {
+            abort!(Diagnostic::new(
+                Level::Error,
+                format!(
+                    "A Path must be unique and '{}' is found multiple times",
+                    path_name_as_string
+                )
+                .into()
+            ))
+        }
         match fields {
             Fields::Unit => {
                 // enforces variant with empty-string path is last variant
