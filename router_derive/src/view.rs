@@ -21,7 +21,7 @@ pub fn modules_view_snippets(
             fields,
             ..
         } = variant;
-        let view_scope = variant_view_path_tuple(ident.clone(), attrs.iter());
+        let view_scope = variant_local_view_tuple(ident.clone(), attrs.iter());
         let guard_scope = variant_guard_path_tuple(ident.clone(), attrs.iter());
 
         match fields {
@@ -51,7 +51,8 @@ pub fn modules_view_snippets(
 }
 
 /// Get the content of #[view = model_prop => view_function]
-pub fn variant_view_path_tuple(
+/// The extracted view is a local to the module it is declared
+pub fn variant_local_view_tuple(
     _ident: Ident,
     attrs: std::slice::Iter<'_, Attribute>,
 ) -> Option<(String, String)> {
@@ -195,7 +196,7 @@ fn view_as_tuple_variant(
 
 fn view_as_struct_variant(
     ident: Ident,
-    view_scope: Option<(String, String)>,
+    local_view: Option<(String, String)>,
     guard_scope: Option<(String, String, String)>,
     fields: Iter<'_, Field>,
     modules_path: Option<String>,
@@ -219,10 +220,10 @@ fn view_as_struct_variant(
     let structs = build_variant_arguments(structs_tuple);
 
     // do stuff also for children init maybe
-    //  let string_enum = build_string(structs_tuple, name.clone());
+    // let string_enum = build_string(structs_tuple, name.clone());
     let module_name = ident.to_string().to_case(Case::Snake);
 
-    let view_to_load = if let Some((path, view)) = view_scope {
+    let view_to_load = if let Some((path, view)) = local_view {
         get_view_path_token(path, view)
     } else {
         let full_path = if let Some(modules_path) = modules_path {

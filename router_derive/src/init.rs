@@ -4,7 +4,7 @@ use proc_macro_error::{abort, Diagnostic, Level};
 
 use crate::{
     builder::{build_variant_arguments, inject_variant_payload_in_function_call},
-    view::variant_view_path_tuple,
+    view::variant_local_view_tuple,
 };
 use quote::quote;
 use syn::{export::TokenStream2, punctuated::Iter, Field, Fields, Ident, Variant};
@@ -21,7 +21,7 @@ pub fn module_init_snippets(
             fields,
             ..
         } = variant;
-        let view_scope = variant_view_path_tuple(ident.clone(), attrs.iter());
+        let view_scope = variant_local_view_tuple(ident.clone(), attrs.iter());
 
         match fields {
             Fields::Unit => init_for_unit_variant(ident.clone(), view_scope, modules_path.clone()),
