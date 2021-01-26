@@ -58,7 +58,7 @@ fn init_for_unit_variant(
         None => get_init_token(ident.clone(), modules_path),
     };
     quote! {
-        Self::#ident => # init_to_load
+        Self::#ident => #init_to_load
     }
 }
 
@@ -202,6 +202,7 @@ fn init_for_init_struct_variant(
             #token  }
         }
     };
+
     quote! {
         Self::#ident{#structs} => #init_to_load
     }

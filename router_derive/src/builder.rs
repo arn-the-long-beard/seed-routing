@@ -12,7 +12,7 @@ pub fn build_variant_arguments(
             quote! { id,query,children}
         }
 
-        (id, query, _) if id.is_some() && query.is_some() => {
+        (id, query, children) if id.is_some() && query.is_some() && children.is_none() => {
             quote! { id, query}
         }
         (id, query, children) if id.is_none() && query.is_some() && children.is_some() => {
@@ -85,7 +85,9 @@ pub fn inject_variant_payload_in_function_call(
             "id,query,children".to_string()
         }
 
-        (id, query, _) if id.is_some() && query.is_some() => "id,query".to_string(),
+        (id, query, children) if id.is_some() && query.is_some() && children.is_none() => {
+            "id,query".to_string()
+        }
         (id, query, children) if id.is_none() && query.is_some() && children.is_some() => {
             "query,children".to_string()
         }
