@@ -249,6 +249,11 @@ fn variant_path_segment(ident: Ident, attrs: std::slice::Iter<'_, Attribute>) ->
 
     if path_name.is_empty() {
         None
+    } else if path_name.contains('/') {
+        abort!(Diagnostic::new(
+            Level::Error,
+            "A renamed path cannot contain the character '/' ".into()
+        ))
     } else {
         Some(path_name)
     }
