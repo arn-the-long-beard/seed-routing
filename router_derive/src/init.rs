@@ -21,22 +21,46 @@ pub fn module_init_snippets(
             fields,
             ..
         } = variant;
-        let view_scope = variant_local_view_tuple(ident.clone(), attrs.iter());
+        let local_view = variant_local_view_tuple(ident.clone(), attrs.iter());
 
         match fields {
-            Fields::Unit => init_for_unit_variant(ident.clone(), view_scope, modules_path.clone()),
-            Fields::Unnamed(fields) => init_for_tuple_variant(
-                ident.clone(),
-                view_scope,
-                fields.unnamed.iter(),
-                modules_path.clone(),
-            ),
-            Fields::Named(fields) => init_for_init_struct_variant(
-                ident.clone(),
-                view_scope,
-                fields.named.iter(),
-                modules_path.clone(),
-            ),
+            Fields::Unit => init_for_unit_variant(ident.clone(), local_view, modules_path.clone()),
+            Fields::Unnamed(fields) => {
+                if local_view.is_some() {
+                    abort!(Diagnostic::new(
+                        Level::Warning,
+                        format!(
+                            "Arguments for {} Route are not implemented on local view for now.",
+                            ident.clone()
+                        )
+                        .into()
+                    ))
+                }
+                init_for_tuple_variant(
+                    ident.clone(),
+                    local_view,
+                    fields.unnamed.iter(),
+                    modules_path.clone(),
+                )
+            }
+            Fields::Named(fields) => {
+                if local_view.is_some() {
+                    abort!(Diagnostic::new(
+                        Level::Warning,
+                        format!(
+                            "Arguments for {} Route are not implemented on local view for now.",
+                            ident.clone()
+                        )
+                        .into()
+                    ))
+                }
+                init_for_init_struct_variant(
+                    ident.clone(),
+                    local_view,
+                    fields.named.iter(),
+                    modules_path.clone(),
+                )
+            }
         }
     });
     snippets.fold(Vec::with_capacity(len), |mut acc, x| {

@@ -21,27 +21,51 @@ pub fn modules_view_snippets(
             fields,
             ..
         } = variant;
-        let view_scope = variant_local_view_tuple(ident.clone(), attrs.iter());
+        let local_view = variant_local_view_tuple(ident.clone(), attrs.iter());
         let guard_scope = variant_guard_path_tuple(ident.clone(), attrs.iter());
 
         match fields {
             Fields::Unit => {
-                view_as_unit_variant(ident.clone(), view_scope, guard_scope, modules_path.clone())
+                view_as_unit_variant(ident.clone(), local_view, guard_scope, modules_path.clone())
             }
-            Fields::Unnamed(fields) => view_as_tuple_variant(
-                ident.clone(),
-                view_scope,
-                guard_scope,
-                fields.unnamed.iter(),
-                modules_path.clone(),
-            ),
-            Fields::Named(fields) => view_as_struct_variant(
-                ident.clone(),
-                view_scope,
-                guard_scope,
-                fields.named.iter(),
-                modules_path.clone(),
-            ),
+            Fields::Unnamed(fields) => {
+                if local_view.is_some() {
+                    abort!(Diagnostic::new(
+                        Level::Warning,
+                        format!(
+                            "Arguments for {} Route are not implemented on local view for now.",
+                            ident.clone()
+                        )
+                        .into()
+                    ))
+                }
+                view_as_tuple_variant(
+                    ident.clone(),
+                    local_view,
+                    guard_scope,
+                    fields.unnamed.iter(),
+                    modules_path.clone(),
+                )
+            }
+            Fields::Named(fields) => {
+                if local_view.is_some() {
+                    abort!(Diagnostic::new(
+                        Level::Warning,
+                        format!(
+                            "Arguments for {} Route are not implemented on local view for now.",
+                            ident.clone()
+                        )
+                        .into()
+                    ))
+                }
+                view_as_struct_variant(
+                    ident.clone(),
+                    local_view,
+                    guard_scope,
+                    fields.named.iter(),
+                    modules_path.clone(),
+                )
+            }
         }
     });
     snippets.fold(Vec::with_capacity(len), |mut acc, x| {

@@ -56,7 +56,6 @@ pub enum Route {
     Forbidden,
     #[view = " => nice_view"] // -> http://localhost:8000/forbidden*
     NiceView { id: String },
-
     #[view = "theme => home"] // -> http://localhost:8000/
     Home,
 }
