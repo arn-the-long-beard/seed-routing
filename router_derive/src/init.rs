@@ -163,7 +163,7 @@ fn init_for_init_struct_variant(
 
     let init_to_load = match local_view {
         Some((_, _)) => {
-            quote! {}
+            quote! { {} }
         }
         None => {
             let full_path = if let Some(modules_path) = modules_path {

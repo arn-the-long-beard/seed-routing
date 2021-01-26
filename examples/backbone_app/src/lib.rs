@@ -54,7 +54,9 @@ pub enum Route {
     NotFound,
     #[view = " => forbidden"] // -> http://localhost:8000/forbidden*
     Forbidden,
-    #[as_path = ""]
+    #[view = " => nice_view"] // -> http://localhost:8000/forbidden*
+    NiceView { id: String },
+
     #[view = "theme => home"] // -> http://localhost:8000/
     Home,
 }
@@ -411,6 +413,11 @@ fn home(theme: &Theme) -> Node<Msg> {
         }
     ]
 }
+
+fn nice_view(_: &Model) -> Node<Msg> {
+    div!["Nice View"]
+}
+
 // ------ ------
 //     Start
 // ------ ------
