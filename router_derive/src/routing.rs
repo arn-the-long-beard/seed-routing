@@ -35,6 +35,7 @@ pub fn routing_variant_snippets(
                 .into()
             ))
         }
+
         match fields {
             Fields::Unit => {
                 // enforces variant with empty-string path is last variant
@@ -48,9 +49,21 @@ pub fn routing_variant_snippets(
                 unit_variant_snippets(ident.clone(), path_name)
             }
             Fields::Unnamed(fields) => {
+                if path_name.is_none() {
+                    abort!(Diagnostic::new(
+                        Level::Error,
+                        "Empty path are not allowed in Routes with argument.".into()
+                    ))
+                }
                 tuple_variant_snippets(ident.clone(), path_name, fields.unnamed.iter())
             }
             Fields::Named(fields) => {
+                if path_name.is_none() {
+                    abort!(Diagnostic::new(
+                        Level::Error,
+                        "Empty path are not allowed in Routes with arguments.".into()
+                    ))
+                }
                 struct_variant_snippets(ident.clone(), path_name, fields.named.iter())
             }
         }
