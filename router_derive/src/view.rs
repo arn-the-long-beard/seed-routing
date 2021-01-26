@@ -262,6 +262,6 @@ fn view_as_struct_variant(
     };
 
     quote! {
-        Self::#ident{#structs} => # view_with_guard_or_not
+        Self::#ident{#structs} => #view_with_guard_or_not
     }
 }
