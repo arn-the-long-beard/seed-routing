@@ -56,11 +56,13 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> Router
         self.current_history_index = self.history.len() - 1;
     }
     /// Check the current page is the last one in the history
+    #[must_use]
     pub fn is_on_last_index(&self) -> bool {
         !self.history.is_empty() && self.current_history_index + 1 == self.history.len()
     }
 
     /// Check the current page is on the first index in the history
+    #[must_use]
     pub fn is_on_first_index(&self) -> bool {
         !self.history.is_empty() && self.current_history_index == 0
     }
