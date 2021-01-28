@@ -24,7 +24,7 @@ pub fn routing_variant_snippets(
             ..
         } = variant;
         let path_name = variant_path_segment(ident.clone(), attrs.iter());
-        let path_name_as_string = path_name.clone().unwrap_or("".to_string());
+        let path_name_as_string = path_name.clone().unwrap_or_else(|| "".to_string());
         if !check_hash.insert(path_name_as_string.clone()) {
             abort!(Diagnostic::new(
                 Level::Error,

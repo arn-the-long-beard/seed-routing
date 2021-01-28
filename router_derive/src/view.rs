@@ -36,7 +36,6 @@ pub fn modules_view_snippets(
                             "Arguments for {} Route are not implemented on local view for now.",
                             ident.clone()
                         )
-                        .into()
                     ))
                 }
                 view_as_tuple_variant(
@@ -55,7 +54,6 @@ pub fn modules_view_snippets(
                             "Arguments for {} Route are not implemented on local view for now.",
                             ident.clone()
                         )
-                        .into()
                     ))
                 }
                 view_as_struct_variant(
