@@ -7,6 +7,7 @@ pub trait Navigation {
     fn from_url(url: Url) -> std::result::Result<Self, ParseError>
     where
         Self: Sized;
+    #[must_use]
     fn to_url(&self) -> Url;
 }
 

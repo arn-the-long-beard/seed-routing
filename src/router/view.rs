@@ -18,6 +18,7 @@ use seed::prelude::Node;
 /// init is enough ?
 /// _______________________________________________________________________________
 pub trait View<Routes, Model, Msg> {
+    #[must_use]
     fn view(&self, scoped_state: &Model) -> Node<Msg>;
 }
 

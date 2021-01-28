@@ -2,9 +2,11 @@ use std::str::FromStr;
 
 #[allow(clippy::module_name_repetitions)]
 pub trait AsPath {
+    #[must_use]
     fn as_path(self) -> String;
 }
 impl<T: ToString> AsPath for T {
+    #[must_use]
     fn as_path(self) -> String {
         format!("/{}", self.to_string())
     }
