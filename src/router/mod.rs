@@ -200,6 +200,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     }
 
     /// If a previous `Route` in history exists, return it. Otherwise return `None`
+    #[must_use]
     pub fn peek_back(&self) -> Option<Route> {
         // If we have no history, cannot go back
 
@@ -217,6 +218,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     }
 
     /// If a next `Route` in history exists, return it. Otherwise return `None`
+    #[must_use]
     pub fn peek_forward(&self) -> Option<Route> {
         // if there is no route, cannot go forward
         if self.map_data(|data| data.history.is_empty()) {
@@ -264,6 +266,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
 
     /// Check the route is the current route.
     /// Could be use directly with url as well.
+    #[must_use]
     pub fn is_current_route(&self, route: &Route) -> bool {
         route.eq(&self.current_route())
     }
@@ -366,11 +369,13 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     }
 
     /// Get the current route of the router.
+    #[must_use]
     pub fn current_route(&self) -> Route {
         self.map_data(|data| data.current_route.clone())
     }
 
     /// Get the default route of the router. The default route is used when an Url does not match the given Routes.
+    #[must_use]
     pub fn default_route(&self) -> Route {
         self.map_data(|data| data.default_route.clone())
     }
@@ -381,6 +386,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigati
     }
 
     /// Get the index in the history of the current route.
+    #[must_use]
     pub fn current_history_index(&self) -> usize {
         self.map_data(|data| data.current_history_index)
     }
