@@ -77,6 +77,9 @@ pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + Navig
     data: Rc<RefCell<RouterData<Route>>>,
 }
 
+/// Router implementation with interior mutability.
+/// This specific mutability allows us to use the router as a global variable that we can use everywhere in the app.
+/// More information here [https://doc.rust-lang.org/book/ch15-05-interior-mutability.html](https://doc.rust-lang.org/book/ch15-05-interior-mutability.html)
 impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigation> Router<Route> {
     /// Create a new Router with no url, no history and current route is default
     /// route
