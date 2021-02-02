@@ -145,18 +145,20 @@ This repos actually contains 2 distinct but linked concepts :
 RoutingModule contains Root and AsUrl as well.
 
  ```rust
+use seed::{prelude::*, *};
+#[macro_use]
+extern crate seed_routing;
+use seed_routing::{View, *};
+add_router!();
 
  fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
-     orders
-         .subscribe(Msg::UrlChanged)
-         .subscribe(Msg::UrlRequested)
-         .subscribe(Msg::UserLogged);
+     orders.subscribe(Msg::UrlChanged).subscribe(Msg::UserLogged);
 
-     let mut router: Router<Routes> = Router::new();
-     router.init_url_and_navigation(url);
-
+     router().init(url).subscribe(orders.subscribe_with_handle(
+         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
+     ));
+     
      Model {
-         theme: Theme::default(),
          register: Default::default(),
          login: Default::default(),
          dashboard: Default::default(),
@@ -173,14 +175,13 @@ RoutingModule contains Root and AsUrl as well.
      pub admin: pages::admin::Model,
      router: Router<Routes>,
      logged_user: Option<LoggedUser>,
-     theme: Theme,
  }
 
  #[derive(Debug, PartialEq, Clone, RoutingModules)]
      pub enum Routes {
-         Other {
-             id: String,
-             children: Settings,
+         Register, // -> http://localhost:8000/register
+         Login {
+             query: IndexMap<String, String>, // -> http://localhost:8000/login?name=JohnDoe
          },
          #[guard = "logged_user => admin_guard => not_authorized_view"]
          Admin { // will load module "admin.rs"
@@ -209,11 +210,8 @@ RoutingModule contains Root and AsUrl as well.
 
  fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
      match msg {
-         Msg::UrlChanged(subs::UrlChanged(url)) => {
-             model.router.confirm_navigation(url);
-             if let Some(current_route) = model.router.current_route.clone() {
-                 current_route.init(model, orders);
-             }
+         Msg::UrlChanged(subs::UrlChanged(_)) => {
+             router().current_route().init(model, orders);
          }
          // ...remaining arms
      }
