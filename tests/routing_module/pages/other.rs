@@ -18,19 +18,21 @@ pub enum Routes {
 pub fn init(_: Url, _: &mut Model, _: &String, _: &Routes, _: &mut impl Orders<Msg>) -> Model {
     Model {}
 }
-
+#[derive(Default)]
 pub struct Model {}
-
-pub fn view(_: &Routes, _: &Model) -> Node<Msg> {
-    div![]
+pub fn update(msg: Msg, _: &mut Model, _: &mut impl Orders<Msg>) {
+    match msg {}
+}
+pub fn view(route: &Routes, model: &Model) -> Node<Msg> {
+    route.view(model)
 }
 pub enum Msg {}
 pub fn root(_: &Model) -> Node<Msg> {
-    div![]
+    div!["root"]
 }
 pub fn video(_: &Model) -> Node<Msg> {
-    div![]
+    div!["video"]
 }
 pub fn files(_: &Model) -> Node<Msg> {
-    div![]
+    div!["files"]
 }

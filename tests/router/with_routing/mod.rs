@@ -26,6 +26,7 @@ mod test {
         Model {
             dashboard: dashboard::Model::default(),
             admin: admin::Model::default(),
+            other: other::Model::default(),
             user: None,
         }
     }
@@ -41,6 +42,10 @@ mod test {
         Admin {
             query: IndexMap<String, String>,
         },
+        Other {
+            id: String,
+            children: other::Routes,
+        },
         #[default_route]
         #[view = "=> not_found"]
         NotFound,
@@ -55,6 +60,7 @@ mod test {
     struct Model {
         dashboard: dashboard::Model,
         admin: admin::Model,
+        other: other::Model,
         user: Option<UserLogged>,
     }
 
@@ -68,6 +74,7 @@ mod test {
         UrlChanged(subs::UrlChanged),
         Dashboard(dashboard::Msg),
         Admin(admin::Msg),
+        Other(other::Msg),
         GoBack,
         GoForward,
     }
@@ -94,6 +101,11 @@ mod test {
                 admin_message,
                 &mut model.admin,
                 &mut orders.proxy(Msg::Admin),
+            ),
+            Msg::Other(other_message) => other::update(
+                other_message,
+                &mut model.other,
+                &mut orders.proxy(Msg::Other),
             ),
         }
     }
@@ -170,18 +182,45 @@ mod test {
             .view(&Model {
                 dashboard: dashboard::Model::default(),
                 admin: admin::Model::default(),
+                other: other::Model::default(),
                 user: None,
             })
             .to_string();
         let login_view = login(&Model {
             dashboard: dashboard::Model::default(),
             admin: admin::Model::default(),
+            other: other::Model::default(),
             user: None,
         })
         .to_string();
 
         assert_eq!(current_view, login_view);
     }
+
+    #[wasm_bindgen_test]
+    fn test_router_and_route_view_with_children() {
+        let my_router: Router<Route> = router();
+        my_router.navigate_to_new(Route::Other {
+            id: "123".to_string(),
+            children: other::Routes::Root,
+        });
+
+        log!(my_router.current_route());
+        let current_view = my_router
+            .current_route()
+            .view(&Model {
+                dashboard: dashboard::Model::default(),
+                admin: admin::Model::default(),
+                other: other::Model::default(),
+                user: None,
+            })
+            .to_string();
+
+        let other_view = other::root(&other::Model::default()).to_string();
+
+        assert_eq!(current_view, other_view);
+    }
+
     #[wasm_bindgen_test]
     fn test_router_view_and_guard() {
         let my_router: Router<Route> = router();
@@ -192,6 +231,7 @@ mod test {
             .view(&Model {
                 dashboard: dashboard::Model::default(),
                 admin: admin::Model::default(),
+                other: other::Model::default(),
                 user: None,
             })
             .to_string();
@@ -213,6 +253,7 @@ mod test {
             .view(&Model {
                 dashboard: dashboard::Model::default(),
                 admin: admin::Model::default(),
+                other: other::Model::default(),
                 user: Some(test_user),
             })
             .to_string();
@@ -228,6 +269,7 @@ mod test {
         let mut model = Model {
             dashboard: dashboard::Model::default(),
             admin: admin::Model::default(),
+            other: other::Model::default(),
             user: None,
         };
         let window = web_sys::window().expect("no global `window` exists");
