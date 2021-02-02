@@ -5,10 +5,10 @@ use seed::prelude::Orders;
 ///
 ///
 /// # Routes
-/// The routes enum that when matching will give view a specific view
+/// The routes enum that when matching will give a specific view
 /// If the route contains payload ( query, id or children ) it will be passed to
 /// the init call so you can use it to init children routes or make state
-/// management
+/// management.
 /// # Model
 /// The standard model in TEA
 /// The model will be used by the init called and get updated
