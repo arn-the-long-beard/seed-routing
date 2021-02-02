@@ -27,6 +27,7 @@ pub enum MoveStatus {
 }
 
 /// The contained data inside the Router.
+/// This data can mutated while the router does not so we can use it as global variable in our Seed app.
 #[allow(clippy::module_name_repetitions)]
 pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
     /// The actual route, which should be the one displaying the view in Seed.
@@ -69,9 +70,9 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> Router
 }
 
 /// Router that manages navigation between routes,
-/// Store the history,
+/// store the history,
 /// Can go back and forward,
-/// Manage the default route.
+/// Manage the default route and current route.
 #[derive(Clone)]
 pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
     data: Rc<RefCell<RouterData<Route>>>,
