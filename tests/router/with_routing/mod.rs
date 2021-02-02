@@ -9,6 +9,7 @@ mod test {
     extern crate heck;
     use crate::router::with_routing::test::Route::Dashboard;
     use crate::routing_module::test::UserLogged;
+    use seed::app::OrdersContainer;
     use seed_routing::{View, *};
     use std::fmt::Debug;
     add_router!();
@@ -24,6 +25,7 @@ mod test {
 
         Model {
             dashboard: dashboard::Model::default(),
+            admin: admin::Model::default(),
             user: None,
         }
     }
@@ -36,6 +38,9 @@ mod test {
         Login,
         #[guard = "user => guard => forbidden"]
         Dashboard(dashboard::Route),
+        Admin {
+            query: IndexMap<String, String>,
+        },
         #[default_route]
         #[view = "=> not_found"]
         NotFound,
@@ -49,6 +54,7 @@ mod test {
     // ------ ------
     struct Model {
         dashboard: dashboard::Model,
+        admin: admin::Model,
         user: Option<UserLogged>,
     }
 
@@ -61,6 +67,7 @@ mod test {
     pub enum Msg {
         UrlChanged(subs::UrlChanged),
         Dashboard(dashboard::Msg),
+        Admin(admin::Msg),
         GoBack,
         GoForward,
     }
@@ -68,7 +75,10 @@ mod test {
     /// The standard update in a seed app.
     fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
         match msg {
-            Msg::UrlChanged(subs::UrlChanged(_url)) => {}
+            Msg::UrlChanged(subs::UrlChanged(_url)) => {
+                router().current_route().init(model, orders);
+            }
+
             Msg::GoBack => {
                 router().request_moving_back(|r| orders.notify(subs::UrlRequested::new(r)));
             }
@@ -79,6 +89,11 @@ mod test {
                 dashboard_message,
                 &mut model.dashboard,
                 &mut orders.proxy(Msg::Dashboard),
+            ),
+            Msg::Admin(admin_message) => admin::update(
+                admin_message,
+                &mut model.admin,
+                &mut orders.proxy(Msg::Admin),
             ),
         }
     }
@@ -129,9 +144,12 @@ mod test {
 
     // #[wasm_bindgen(start)]
     // pub fn start() {
-    //     App::start("app", init, update, view);
+    //   ;
     // }
 
+    // pub fn get_app() -> App<Msg, Model, Node<Msg>> {
+    //
+    // }
     #[wasm_bindgen_test]
     fn test_router_init() {
         add_router!();
@@ -151,11 +169,13 @@ mod test {
             .current_route()
             .view(&Model {
                 dashboard: dashboard::Model::default(),
+                admin: admin::Model::default(),
                 user: None,
             })
             .to_string();
         let login_view = login(&Model {
             dashboard: dashboard::Model::default(),
+            admin: admin::Model::default(),
             user: None,
         })
         .to_string();
@@ -171,6 +191,7 @@ mod test {
             .current_route()
             .view(&Model {
                 dashboard: dashboard::Model::default(),
+                admin: admin::Model::default(),
                 user: None,
             })
             .to_string();
@@ -191,6 +212,7 @@ mod test {
             .current_route()
             .view(&Model {
                 dashboard: dashboard::Model::default(),
+                admin: admin::Model::default(),
                 user: Some(test_user),
             })
             .to_string();
@@ -200,4 +222,63 @@ mod test {
             dashboard::settings(&dashboard::Model::default()).to_string()
         );
     }
+
+    #[wasm_bindgen_test]
+    fn test_router_navigation_and_page_init() {
+        let mut model = Model {
+            dashboard: dashboard::Model::default(),
+            admin: admin::Model::default(),
+            user: None,
+        };
+        let window = web_sys::window().expect("no global `window` exists");
+        let document = window.document().expect("should have a document on window");
+        let body = document.body().expect("document should have a body");
+        let val = document
+            .create_element("section")
+            .expect("should add section");
+        val.set_id("app");
+
+        let app = App::start(val, init, update, view);
+        let mut orders = OrdersContainer::new(app);
+        let url = Route::Home.to_url(); // Home is chosen by wasm_pak probably because it does query the base url first from Seed
+        update(
+            Msg::UrlChanged(subs::UrlChanged(url)),
+            &mut model,
+            &mut orders,
+        );
+
+        assert_eq!(&model.dashboard.stuff, "");
+        let dashboard_url = Route::Dashboard(dashboard::Route::Settings).to_url();
+        router().navigate_to_url(dashboard_url.clone());
+
+        update(
+            Msg::UrlChanged(subs::UrlChanged(dashboard_url)),
+            &mut model,
+            &mut orders,
+        );
+
+        assert_eq!(&model.dashboard.stuff, "init_has_been_done");
+
+        let admin_url: Url = "http://localhost/admin?admin_id=1&admin_privilege=high"
+            .parse()
+            .unwrap();
+
+        router().navigate_to_url(admin_url.clone());
+
+        update(
+            Msg::UrlChanged(subs::UrlChanged(admin_url)),
+            &mut model,
+            &mut orders,
+        );
+
+        assert_eq!(&model.admin.admin_id, "1");
+        assert_eq!(&model.admin.admin_privilege, "high");
+    }
+    // #[wasm_bindgen_test]
+    // fn test_app() {
+    //     let app = App::start("app", init, update, view);
+    //
+    //     log!(app);
+    //     assert_eq!(1, 2);
+    // }
 }

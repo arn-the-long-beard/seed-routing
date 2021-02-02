@@ -112,7 +112,7 @@ pub mod test {
         let view_from_not_found = SuperExampleRoutes::NotFound
             .view(&Model {
                 dashboard: dashboard::Model::default(),
-                admin: admin::Model {},
+                admin: admin::Model::default(),
                 user: None,
                 other: other::Model {},
                 profile: profile::Model {},
@@ -123,7 +123,7 @@ pub mod test {
             view_from_not_found,
             not_found(&Model {
                 dashboard: dashboard::Model::default(),
-                admin: admin::Model {},
+                admin: admin::Model::default(),
                 user: None,
                 other: other::Model {},
                 profile: profile::Model {},
@@ -134,7 +134,7 @@ pub mod test {
         let view_from_home = SuperExampleRoutes::Root
             .view(&Model {
                 dashboard: dashboard::Model::default(),
-                admin: admin::Model {},
+                admin: admin::Model::default(),
                 user: None,
                 other: other::Model {},
                 profile: profile::Model {},
@@ -145,7 +145,7 @@ pub mod test {
             view_from_home,
             home(&Model {
                 dashboard: dashboard::Model::default(),
-                admin: admin::Model {},
+                admin: admin::Model::default(),
                 user: None,
                 other: other::Model {},
                 profile: profile::Model {},
@@ -160,7 +160,7 @@ pub mod test {
             SuperExampleRoutes::Dashboard(dashboard::Route::Settings)
                 .view(&Model {
                     dashboard: dashboard::Model::default(),
-                    admin: admin::Model {},
+                    admin: admin::Model::default(),
                     user: None,
                     other: other::Model {},
                     profile: profile::Model {},
@@ -179,7 +179,7 @@ pub mod test {
             SuperExampleRoutes::Dashboard(dashboard::Route::Settings)
                 .view(&Model {
                     dashboard: dashboard::Model::default(),
-                    admin: admin::Model {},
+                    admin: admin::Model::default(),
                     user: Some(UserLogged {
                         name: "tester".to_string(),
                     }),
@@ -197,7 +197,7 @@ pub mod test {
             SuperExampleRoutes::Dashboard(dashboard::Route::Settings)
                 .view(&Model {
                     dashboard: dashboard::Model::default(),
-                    admin: admin::Model {},
+                    admin: admin::Model::default(),
                     user: Some(UserLogged {
                         name: "normal_user".to_string(),
                     }),
