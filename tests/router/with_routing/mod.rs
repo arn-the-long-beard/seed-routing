@@ -42,6 +42,7 @@ mod test {
         Admin {
             query: IndexMap<String, String>,
         },
+        #[as_path = "my_stuff"]
         Other {
             id: String,
             children: other::Routes,
@@ -205,7 +206,6 @@ mod test {
             children: other::Routes::Root,
         });
 
-        log!(my_router.current_route());
         let current_view = my_router
             .current_route()
             .view(&Model {
@@ -316,11 +316,40 @@ mod test {
         assert_eq!(&model.admin.admin_id, "1");
         assert_eq!(&model.admin.admin_privilege, "high");
     }
-    // #[wasm_bindgen_test]
-    // fn test_app() {
-    //     let app = App::start("app", init, update, view);
-    //
-    //     log!(app);
-    //     assert_eq!(1, 2);
-    // }
+    #[wasm_bindgen_test]
+    fn test_router_navigation_and_page_init_with_id_and_rename() {
+        let mut model = Model {
+            dashboard: dashboard::Model::default(),
+            admin: admin::Model::default(),
+            other: other::Model::default(),
+            user: None,
+        };
+        let window = web_sys::window().expect("no global `window` exists");
+        let document = window.document().expect("should have a document on window");
+        let body = document.body().expect("document should have a body");
+        let val = document
+            .create_element("section")
+            .expect("should add section");
+        val.set_id("app");
+
+        let app = App::start(val, init, update, view);
+        let mut orders = OrdersContainer::new(app);
+
+        let stuff_url: Url = "http://localhost/my_stuff/123/files".parse().unwrap();
+        router().navigate_to_url(stuff_url.clone());
+        update(
+            Msg::UrlChanged(subs::UrlChanged(stuff_url)),
+            &mut model,
+            &mut orders,
+        );
+
+        let current_view = router().current_route().view(&model).to_string();
+        assert_eq!(
+            current_view,
+            other::files(&other::Model {
+                id: "123".to_string()
+            })
+            .to_string()
+        );
+    }
 }

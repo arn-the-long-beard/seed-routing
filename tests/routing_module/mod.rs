@@ -114,7 +114,7 @@ pub mod test {
                 dashboard: dashboard::Model::default(),
                 admin: admin::Model::default(),
                 user: None,
-                other: other::Model {},
+                other: other::Model::default(),
                 profile: profile::Model {},
             })
             .to_string();
@@ -125,7 +125,7 @@ pub mod test {
                 dashboard: dashboard::Model::default(),
                 admin: admin::Model::default(),
                 user: None,
-                other: other::Model {},
+                other: other::Model::default(),
                 profile: profile::Model {},
             })
             .to_string()
@@ -136,7 +136,7 @@ pub mod test {
                 dashboard: dashboard::Model::default(),
                 admin: admin::Model::default(),
                 user: None,
-                other: other::Model {},
+                other: other::Model::default(),
                 profile: profile::Model {},
             })
             .to_string();
@@ -147,7 +147,7 @@ pub mod test {
                 dashboard: dashboard::Model::default(),
                 admin: admin::Model::default(),
                 user: None,
-                other: other::Model {},
+                other: other::Model::default(),
                 profile: profile::Model {},
             })
             .to_string()
@@ -162,7 +162,7 @@ pub mod test {
                     dashboard: dashboard::Model::default(),
                     admin: admin::Model::default(),
                     user: None,
-                    other: other::Model {},
+                    other: other::Model::default(),
                     profile: profile::Model {},
                 })
                 .to_string();
@@ -183,7 +183,7 @@ pub mod test {
                     user: Some(UserLogged {
                         name: "tester".to_string(),
                     }),
-                    other: other::Model {},
+                    other: other::Model::default(),
                     profile: profile::Model {},
                 })
                 .to_string();
@@ -201,7 +201,7 @@ pub mod test {
                     user: Some(UserLogged {
                         name: "normal_user".to_string(),
                     }),
-                    other: other::Model {},
+                    other: other::Model::default(),
                     profile: profile::Model {},
                 })
                 .to_string();

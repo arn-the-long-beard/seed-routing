@@ -15,11 +15,13 @@ pub enum Routes {
     #[view = " => video"]
     Video,
 }
-pub fn init(_: Url, _: &mut Model, _: &String, _: &Routes, _: &mut impl Orders<Msg>) -> Model {
-    Model {}
+pub fn init(_: Url, _: &mut Model, id: &String, _: &Routes, _: &mut impl Orders<Msg>) -> Model {
+    Model { id: id.to_string() }
 }
 #[derive(Default)]
-pub struct Model {}
+pub struct Model {
+    pub id: String,
+}
 pub fn update(msg: Msg, _: &mut Model, _: &mut impl Orders<Msg>) {
     match msg {}
 }
@@ -33,6 +35,6 @@ pub fn root(_: &Model) -> Node<Msg> {
 pub fn video(_: &Model) -> Node<Msg> {
     div!["video"]
 }
-pub fn files(_: &Model) -> Node<Msg> {
-    div!["files"]
+pub fn files(model: &Model) -> Node<Msg> {
+    div![format!("files for {}", model.id)]
 }
