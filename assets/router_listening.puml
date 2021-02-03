@@ -3,29 +3,35 @@
 title Router listening
 
 :fn init
-Router::new();
+ __router() __
+.init(url)
+.subscribe(sub_handle)
+;
+note right
+   register subscribe_handle
+   //call back with __confirm_navigation(url)__// on requested_url
+end note
 
-:Msg::UrlChanged;
-
-:fn update;
-
-:confirm_navigation(url)
-
-match router.move;
 
 
-fork
+:subs::UrlRequested(requested_url,_);
+:router().confirm_navigation(url);
+:match router move;
+
+split
  :navigate to next;
-    if (route?) then (exist)
+
+if (route?) then (exist)
         :current_route = route;
     else (not found)
         :current_route = default_route;
     endif
     :update history;
-fork again
+split again
  :move back;
-fork again
+split again
  :move forward;
-end fork
+end split
+
 :router : is_ready;
 @enduml
