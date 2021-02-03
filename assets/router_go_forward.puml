@@ -11,7 +11,8 @@ title Router go forward
 if(next_route) then (exist)
     :router.move = move_forward;
     :notify subs::UrlRequested;
-    :Msg::UrlChanged;
+else
+:nothing to do;
 endif
 :router_listening;
 @enduml

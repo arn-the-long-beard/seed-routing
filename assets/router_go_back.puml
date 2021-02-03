@@ -8,10 +8,11 @@ title Router go back
 
 :request_moving_back;
 
-if(previous_route) then (exist)
+if(previous_route) then (exists)
     :router.move = move_back;
     :notify subs::UrlRequested;
-    :Msg::UrlChanged;
+else
+:nothing to do;
 endif
 :router_listening;
 @enduml
