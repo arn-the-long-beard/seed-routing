@@ -10,6 +10,7 @@ use quote::quote;
 use std::collections::HashSet;
 use syn::{export::TokenStream2, punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
 
+/// Build the matching arms for the enum match for ParseUrl trait implementation
 pub fn routing_variant_snippets(
     variants: Iter<'_, Variant>,
 ) -> (Vec<TokenStream2>, Vec<TokenStream2>) {
