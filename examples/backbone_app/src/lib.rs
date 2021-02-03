@@ -43,7 +43,7 @@ pub enum Route {
     },
     #[guard = " => guard => forbidden"]
     Dashboard(pages::dashboard::Routes), // -> http://localhost:8000/dashboard/*
-    #[guard = " => admin_guard => forbidden_user"]
+    #[guard = "logged_user => admin_guard => forbidden_user"]
     Admin {
         // -> /admin/:id/*
         id: String,
@@ -69,9 +69,9 @@ fn guard(model: &Model) -> Option<bool> {
     }
 }
 
-fn admin_guard(model: &Model) -> Option<bool> {
+fn admin_guard(logged_user: Option<&LoggedData>) -> Option<bool> {
     // could check local storage, cookie or what ever you want
-    if let Some(user) = &model.logged_user {
+    if let Some(user) = logged_user {
         match user.role {
             Role::StandardUser => Some(false),
             Role::Admin => Some(true),
@@ -89,8 +89,8 @@ fn forbidden(_: &Model) -> Node<Msg> {
     div!["401 access denied"]
 }
 
-fn forbidden_user(model: &Model) -> Node<Msg> {
-    if let Some(user) = &model.logged_user {
+fn forbidden_user(logged_user: Option<&LoggedData>) -> Node<Msg> {
+    if let Some(user) = logged_user {
         p![format!(
             "Sorry {} {} , but you are missing the Admin Role. Ask your administrator for more information. ",
             user.first_name, user.last_name
@@ -332,8 +332,8 @@ fn generate_admin_nodes(model: &Model) -> Vec<Node<Msg>> {
             C![
                 "route",
                 IF!(    router().is_current_route(&route.0 ) => "active-route")
-                           IF!(admin_guard(model).is_none() => "locked-route"),
-                    IF!(admin_guard(model).is_some() && !admin_guard(model).unwrap()
+                           IF!(admin_guard(model.logged_user.as_ref()).is_none() => "locked-route"),
+                    IF!(admin_guard(model.logged_user.as_ref()).is_some() && !admin_guard(model.logged_user.as_ref()).unwrap()
                     => "locked-admin-route" )
             ],
             attrs! { At::Href => &route.0.to_url() },

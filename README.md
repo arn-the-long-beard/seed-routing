@@ -180,19 +180,19 @@ add_router!();
          Login {
              query: IndexMap<String, String>, // -> http://localhost:8000/login?name=JohnDoe
          },
-         #[guard = "logged_user => admin_guard => not_authorized_view"]
+         #[guard = "logged_user => admin_guard => forbidden_user"]
          Admin { // will load module "admin.rs"
           // will load model.admin and as well
           // will check init has correct arguments
           // will check view has correct arguments
              query: IndexMap<String, String>,
          },
-         #[guard = "logged_user => user_guard => not_logged_user_view"]
+         #[guard = " => user_guard => forbidden"]
          Dashboard(DashboardRoutes), // will load module "dashboard"
          Profile { // will load module "profile"
              id: String,
          },
-         #[guard = "logged_user => admin_guard => not_authorized_view"]
+         #[guard = "logged_user => admin_guard => forbidden_user"]
          #[view = " => my_stuff"]
          MyStuff,
          #[view = " => not_found"]
@@ -203,7 +203,44 @@ add_router!();
          Root,
      }
 
+fn user_guard(model: &Model) -> Option<bool> {
+    // could check local storage, cookie or what ever you want
+    if model.logged_user.is_some() {
+        Some(true)
+    } else {
+        None
+    }
+}
+fn admin_guard(logged_user: Option<&LoggedUser>) -> Option<bool> {
+    // could check local storage, cookie or what ever you want
+    if let Some(user) = logged_user {
+        match user.role {
+            Role::StandardUser => Some(false),
+            Role::Admin => Some(true),
+        }
+    } else {
+        None
+    }
+}
 
+fn not_found(_: &Model) -> Node<Msg> {
+    div!["404 page not found"]
+}
+
+fn forbidden(_: &Model) -> Node<Msg> {
+    div!["401 access denied"]
+}
+
+fn forbidden_user(logged_user: Option<&LoggedData>) -> Node<Msg> {
+    if let Some(user) = logged_user {
+        p![format!(
+            "Sorry {} {} , but you are missing the Admin Role. Ask your administrator for more information. ",
+            user.first_name, user.last_name
+        )]
+    } else {
+        div!["401"]
+    }
+}
 
  fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
      match msg {
@@ -214,15 +251,11 @@ add_router!();
      }
  }
 
+
  fn view(model: &Model) -> impl IntoNodes<Msg> {
      vec![
          header(&model),
-         if let Some(route) = &model.router.current_route {
-             route.view(model)
-         } else {
-             home(&model.theme)
-         },
-     ]
+         router().current_route().view(model)]
  }
 
  ```
