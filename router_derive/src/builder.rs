@@ -7,6 +7,7 @@ use syn::{
 pub fn build_variant_arguments(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
 ) -> TokenStream2 {
+    // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
             quote! { id,query,children}
@@ -44,6 +45,7 @@ pub fn build_variant_arguments(
 pub fn unwrap_url_payload_matching_field(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
 ) -> TokenStream2 {
+    // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
             let sub_enum = &children.clone().unwrap().ty;
@@ -80,6 +82,7 @@ pub fn unwrap_url_payload_matching_field(
 pub fn inject_variant_payload_in_function_call(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
 ) -> String {
+    // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
             "id,query,children".to_string()
@@ -117,6 +120,7 @@ pub fn extract_query_field_to_string() -> TokenStream2 {
 pub fn build_string_without_path_name(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
 ) -> TokenStream2 {
+    // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
             let query_string = extract_query_field_to_string();
@@ -157,6 +161,7 @@ pub fn build_string_with_path_name(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
     name: Option<String>,
 ) -> TokenStream2 {
+    // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
             let query_string = extract_query_field_to_string();
@@ -192,6 +197,10 @@ pub fn build_string_with_path_name(
         }
     }
 }
+
+/// Get the content of an attribute
+/// For example it will get the string `home` from `#[as_path="home"]` and the content as a list from `#[view="=>my_view"]` and `#[guard="user => admin_guard => forbidden_view"]`
+///
 pub fn get_string_from_attribute(attribute_name: &str, attr: &Attribute) -> Result<Option<LitStr>> {
     if !attr.path.is_ident(attribute_name) {
         return Ok(None); // not our attribute
