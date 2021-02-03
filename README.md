@@ -125,7 +125,7 @@ This repos actually contains 2 distinct but linked concepts :
  ```
 ### Example code with DefaultRoute
 
- Define a routing config with a default_route your navigation.
+ Define a routing config with a default_route for your navigation.
  The default route used by the router when it cannot find the
  right url.
 
