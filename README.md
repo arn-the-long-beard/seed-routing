@@ -11,7 +11,7 @@ A try to make a Router that we could use to make a good routing for Seed equival
 - [Example ParseUrl](#example-code-with-parseurl)
 - [Example DefaultRoute](#example-code-with-defaultroute)
 - [Example Modules](#example-code-with-routingmodules)
-
+- [Quickest way to use it](#quickest-way-to-use-it)
 
 ### Rules
 
@@ -259,6 +259,14 @@ fn forbidden_user(logged_user: Option<&LoggedData>) -> Node<Msg> {
  }
 
  ```
+
+### Quickest way to use it
+
+Here is an experimental cli : https://github.com/arn-the-long-beard/proto-seeder
+
+The cli can be used to generate views, guards and submodules.
+
+It is still very experimental and it needs to be published.
 
 ### Router life cycle
 
