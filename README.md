@@ -262,11 +262,32 @@ fn forbidden_user(logged_user: Option<&LoggedData>) -> Node<Msg> {
 
 ### Quickest way to use it
 
+
+Install the alpha cli for generating file from Route enum : 
+
+`cargo install proto_seeder`
+
+In the route of your project :
+
+`proto_seeder ./src/lib.rs`
+
+
+This will generate for you : 
+
+- local views.
+- guards.
+- sub modules with their content.
+- init with payload.
+- empty Model.
+- empty Message.
+- update.
+- view.
+
+Please give feedback there
+
 Here is an experimental cli : https://github.com/arn-the-long-beard/proto-seeder
 
-The cli can be used to generate views, guards and submodules.
-
-It is still very experimental and it needs to be published.
+It is still very experimental and it needs more inputs to get better.
 
 ### Router life cycle
 
