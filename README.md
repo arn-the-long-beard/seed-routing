@@ -5,13 +5,83 @@ A try to make a Router that we could use to make a good routing for Seed equival
 
 ### Summary
 
+- [Quickest way to use it](#quickest-way-to-use-it)
 - [Rules](#rules)
 - [Motivation](#motivations)
 - [Description](#description)
 - [Example ParseUrl](#example-code-with-parseurl)
 - [Example DefaultRoute](#example-code-with-defaultroute)
 - [Example Modules](#example-code-with-routingmodules)
-- [Quickest way to use it](#quickest-way-to-use-it)
+
+
+### Quickest way to use it
+
+#### 1 - Add `seed_routing` to your project in Cargo.toml:
+
+```toml
+
+seed_routing = { git="https://github.com/arn-the-long-beard/seed-routing.git" ,branch ="main" }
+
+```
+
+#### 2 - Write your`Route` enum starting in lib.rs :
+
+```rust
+#[derive(Debug, PartialEq, Clone, RoutingModules)]
+pub enum Route {
+    Login {
+        query: IndexMap<String, String>, // -> http://localhost:8000/login?name=JohnDoe
+    },
+    #[guard = " => guard => forbidden"]
+    Dashboard(pages::dashboard::Routes), // -> http://localhost:8000/dashboard/*
+    #[guard = "logged_user => admin_guard => forbidden_user"]
+    Admin {
+        // -> /admin/:id/*
+        id: String,
+        children: pages::admin::Routes,
+    },
+    #[default_route]
+    #[view = " => not_found"] // -> http://localhost:8000/not_found*
+    NotFound,
+    #[view = " => forbidden"] // -> http://localhost:8000/forbidden*
+    Forbidden,
+    #[as_path = ""]
+    #[view = " => home"] // -> http://localhost:8000/
+    Home,
+}
+
+```
+#### 3 - Install the alpha cli for generating files & code from `Route` enum :
+
+`cargo install proto_seeder`
+
+In the route of your project :
+
+`proto_seeder ./src/lib.rs`
+
+
+This will generate from `Route` for you the following :
+
+- local views.
+- guards.
+- sub modules with their content.
+- init with payload.
+- empty Model.
+- empty Message.
+- update.
+- view.
+
+Here is the experimental cli repo : https://github.com/arn-the-long-beard/proto-seeder
+
+It is still very alpha and it needs more inputs & feedbacks to get better !
+
+#### 4 - You can write a new `Route` enum in a submodule and rerun the command from `proto_seeder`.
+
+`proto_seeder ./src/dashboard.rs`
+
+It will generate the submodules/codes for it as well.
+
+Enjoy the saving time !
 
 ### Rules
 
@@ -260,34 +330,6 @@ fn forbidden_user(logged_user: Option<&LoggedData>) -> Node<Msg> {
 
  ```
 
-### Quickest way to use it
-
-
-Install the alpha cli for generating file from Route enum : 
-
-`cargo install proto_seeder`
-
-In the route of your project :
-
-`proto_seeder ./src/lib.rs`
-
-
-This will generate for you : 
-
-- local views.
-- guards.
-- sub modules with their content.
-- init with payload.
-- empty Model.
-- empty Message.
-- update.
-- view.
-
-Please give feedback there
-
-Here is an experimental cli : https://github.com/arn-the-long-beard/proto-seeder
-
-It is still very experimental and it needs more inputs to get better.
 
 ### Router life cycle
 
