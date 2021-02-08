@@ -51,7 +51,7 @@ pub enum Route {
 }
 
 ```
-#### 3 - Install the alpha cli for generating files & code from `Route` enum :
+#### 3 - Use the alpha cli for generating files & code from `Route` enum :
 
 `cargo install proto_seeder`
 
