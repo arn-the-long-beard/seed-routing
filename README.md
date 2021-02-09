@@ -23,8 +23,63 @@ A try to make a Router that we could use to make a good routing for Seed equival
 seed_routing = { git="https://github.com/arn-the-long-beard/seed-routing.git" ,branch ="main" }
 
 ```
+#### 2 - Implement the router in lib.rs
 
-#### 2 - Write your`Route` enum starting in lib.rs :
+In your lib.rs you need this code :
+
+- with init : 
+
+```rust
+
+add_router!();  
+
+// ------ ------
+//     Init
+// ------ ------
+
+fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
+    orders.subscribe(Msg::UrlChanged);
+
+    router().init(url).subscribe(orders.subscribe_with_handle(
+        |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
+    ));
+
+    Model {
+        // Your Model
+    }
+}
+
+```
+
+- with update :
+
+
+```rust
+
+fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
+    match msg {
+        Msg::UrlChanged(subs::UrlChanged(_url)) => {
+        router().current_route().init(model, orders);
+}
+// rest of the match arms.
+}
+}
+```
+
+- with view :
+
+```rust
+
+fn view(model: &Model) -> impl IntoNodes<Msg> {
+    vec![router().current_route().view(model)]
+}
+
+```
+
+There is nothing more to write for the router to do its job.
+You can check the example for more example code.
+
+#### 3 - Write your `Route` enum starting in lib.rs :
 
 ```rust
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
@@ -51,7 +106,7 @@ pub enum Route {
 }
 
 ```
-#### 3 - Use the alpha cli for generating files & code from `Route` enum :
+#### 4 - Use the alpha cli for generating files & code from `Route` enum :
 
 `cargo install proto_seeder`
 
@@ -75,13 +130,14 @@ Here is the experimental cli repo : https://github.com/arn-the-long-beard/proto-
 
 It is still very alpha and it needs more inputs & feedbacks to get better !
 
-#### 4 - You can write a new `Route` enum in a submodule and rerun the command from `proto_seeder`.
+#### 5 - You can write a new `Route` enum in a submodule and rerun the command from `proto_seeder`.
 
 `proto_seeder ./src/dashboard.rs`
 
 It will generate the submodules/codes for it as well.
 
 Enjoy the saving time !
+
 
 ### Rules
 
