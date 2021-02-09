@@ -33,7 +33,6 @@ pub fn routing_variant_snippets(
                     "A Path must be unique and '{}' is found multiple times",
                     path_name_as_string
                 )
-                .into()
             ))
         }
 
