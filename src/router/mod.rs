@@ -1,3 +1,5 @@
+//! The router is responsible for finding the matching route with the current url from displayed in the web browser and manage a simple history of navigation.
+//!
 mod default_route;
 mod model;
 mod path;
@@ -35,7 +37,7 @@ pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + N
     /// The index of the history.
     /// It will change when navigation or pushing back or forward.
     pub current_history_index: usize,
-    /// The default route extracted from the attribute #[default_route] on your
+    /// The default route extracted from the attribute `#[default_route]` on your
     /// enum. This route is equivalent to 404. In other web framework it
     /// would be matching path pattern "*" for example.
     pub default_route: Route,
@@ -51,18 +53,18 @@ pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + N
 }
 
 impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> RouterData<Route> {
-    /// Add the route to the history
+    /// Add the route to the history.
     pub fn push_to_history(&mut self, route: Route) {
         self.history.push(route);
         self.current_history_index = self.history.len() - 1;
     }
-    /// Check the current page is the last one in the history
+    /// Check the current page is the last one in the history.
     #[must_use]
     pub fn is_on_last_index(&self) -> bool {
         !self.history.is_empty() && self.current_history_index + 1 == self.history.len()
     }
 
-    /// Check the current page is on the first index in the history
+    /// Check the current page is on the first index in the history.
     #[must_use]
     pub fn is_on_first_index(&self) -> bool {
         !self.history.is_empty() && self.current_history_index == 0

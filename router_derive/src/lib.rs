@@ -26,7 +26,8 @@ mod modules;
 mod routing;
 mod view;
 
-/// Add the router to the web application
+/// Add the router to the web application as a global variable.
+/// The router is accessible from anywhere in the application.
 ///
 /// ```rust
 ///
@@ -56,7 +57,7 @@ fn router() -> Router<Route,> {
     .parse()
     .unwrap()
 }
-/// Derive an enum for navigation with `ParseUrl`
+/// Derive an enum for navigation with `ParseUrl`.
 /// You can change the value of a path for a given route this way :
 ///
 ///
@@ -138,9 +139,8 @@ pub fn derive_as_url(item: TokenStream) -> TokenStream {
     })
 }
 
-/// Define a routing config as root for your navigation.
-/// It will contain the default route used by the router when it cannot find the
-/// right url
+/// Add a default route for a Route enumeration. It will be used by the router when it cannot find the
+/// right url.
 ///
 /// ```rust
 /// #[derive(Debug, PartialEq, Copy, Clone, WithDefaultRoute)]
@@ -203,13 +203,12 @@ pub fn derive_add_default_route(item: TokenStream) -> TokenStream {
     })
 }
 
-/// The `RoutingModules` makes the enum variants representing modules loaded by the
-/// routes.
-/// By default, an enum variant as snake_case is equal to its module name
+/// The `RoutingModules` makes the enum variants matching a path and a module to load.
+/// By default, an enum variant as snake_case is equal to its module name.
 ///
 ///  - You can rename the path.
 ///  - You can specify routes that does not load module ( no init, no specific
-/// Model & Msg and no view ). They are called `local views` and use the attribute #[view]
+/// Model & Msg and no view ). They are called `local views` and use the attribute `#[view]`.
 ///
 /// The derive macro will call the init function , Model, Msg, Routes, Update,
 /// and View for the related module.
@@ -335,13 +334,6 @@ pub fn derive_add_default_route(item: TokenStream) -> TokenStream {
 ///     ]
 /// }
 /// ```
-///
-///
-/// --------------------
-/// Todo :
-/// - Could add as_module to rename a module
-/// - Could generate the code for fn update as well ?
-/// --------------------
 #[proc_macro_error]
 #[proc_macro_derive(
     RoutingModules,
