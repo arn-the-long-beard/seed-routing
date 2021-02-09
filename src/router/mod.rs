@@ -719,9 +719,9 @@ mod test {
         assert!(!router.data.borrow().is_on_last_index());
         router.navigate_to_new(ExampleRoutes::parse_path("").unwrap());
         assert!(router.data.borrow().is_on_last_index());
-        router.navigate_to_new(ExampleRoutes::parse_path("register").unwrap());
+        router.navigate_to_new(ExampleRoutes::parse_path("/register").unwrap());
         assert!(router.data.borrow().is_on_last_index());
-        router.navigate_to_new(ExampleRoutes::parse_path("dashboard/admin/other").unwrap());
+        router.navigate_to_new(ExampleRoutes::parse_path("/dashboard/admin/other").unwrap());
         assert!(router.data.borrow().is_on_last_index());
 
         assert_eq!(router.current_history_index(), 2);

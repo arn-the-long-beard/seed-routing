@@ -356,7 +356,7 @@ mod test {
     }
 
     #[wasm_bindgen_test]
-    fn test_as_path() {
+    fn test_from_url() {
         let stuff_ref: Url = "/dashboard/my_stuff/123".parse().unwrap();
         let things_ref: Url = "/foobar".parse().unwrap();
         let fizz_ref: Url = "/fizz_buzz".parse().unwrap();
