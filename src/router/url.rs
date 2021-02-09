@@ -56,7 +56,7 @@ pub fn extract_url_payload(
 
     (param_id, query_parameters, children_path)
 }
-/// Extract the id parameter from the url string for the Enum Variant
+/// Extract the id parameter from the url string for the Enum Variant.
 pub fn extract_id_parameter(url_string: &str) -> String {
     let mut single_paths = url_string.split('/');
 
