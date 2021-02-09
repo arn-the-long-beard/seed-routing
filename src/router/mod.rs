@@ -18,13 +18,21 @@ use seed::prelude::{
 pub use url::*;
 pub use view::*;
 
-// pub mod children;
-// pub mod route;
+/// Internal state for the router that dictates which kind of navigation will happen.
+///
+/// Example:
+/// When the user clicks a button `back`, the router will get the state `MoveStatus::MovingBack` from the method `request_moving_back()`.
+/// Then when Seed gets the Url Requested, the app will use `confirm_navigation()` and use `back()` to go back in the history of navigation.
+/// The same logic apply for forward.
 #[derive(Clone, Debug, PartialEq)]
 pub enum MoveStatus {
+    /// The router will register the route in the history.
     Navigating,
+    /// The router will go backward in the navigation.
     MovingBack,
+    /// The router will go forward in the navigation.
     MovingForward,
+    /// The router is ready to listen.
     Ready,
 }
 

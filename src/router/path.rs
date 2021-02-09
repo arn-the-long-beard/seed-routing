@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+/// Convert an enumeration variant to a string. Used as base for a route to be converted to `Url`.
 #[allow(clippy::module_name_repetitions)]
 pub trait AsPath {
     #[must_use]
@@ -23,6 +24,8 @@ pub trait ParsePath: AsPath + Sized {
     /// Will return Err if it's not possible to parse this string slice into the desired type.
     fn parse_path(route: &str) -> Result<Self, ParseError>;
 }
+
+///Error enum for parsing from string to `Route` with extra information.
 #[derive(Debug)]
 pub enum ParseError {
     FromStr,

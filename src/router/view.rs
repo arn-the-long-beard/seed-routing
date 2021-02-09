@@ -10,9 +10,9 @@ use seed::prelude::Node;
 /// Nested Routes and children Routes are passed to the view to call view() on
 /// them as well.
 /// # Model
-/// The model will be used by the view to display data in Html
+/// The model will be used by the view to display data in Html.
 /// # Msg
-/// The standard Msg Enum that we can use to triggers events or actions
+/// The standard Msg Enum that we can use to triggers events or actions.
 pub trait View<Routes, Model, Msg> {
     #[must_use]
     fn view(&self, scoped_state: &Model) -> Node<Msg>;

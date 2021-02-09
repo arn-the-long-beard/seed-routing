@@ -2,7 +2,7 @@ use crate::ParseError;
 use seed::{prelude::IndexMap, Url};
 
 #[allow(clippy::missing_errors_doc)]
-/// Used by `#[derive(ParseUrl)]`
+/// Implemented on `Route` enum by `#[derive(ParseUrl)]`.
 pub trait Navigation {
     fn from_url(url: Url) -> std::result::Result<Self, ParseError>
     where
