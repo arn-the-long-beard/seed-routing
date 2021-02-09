@@ -5,10 +5,12 @@ use seed::{prelude::IndexMap, Url};
 #[allow(clippy::missing_errors_doc)]
 /// Implemented on `Route` enum by `#[derive(ParseUrl)]`.
 pub trait ParseUrl {
+    /// Get the route matching a url.
     fn from_url(url: Url) -> std::result::Result<Self, ParseError>
     where
         Self: Sized;
     #[must_use]
+    /// Convert a route to a full url.
     fn to_url(&self) -> Url;
 }
 
