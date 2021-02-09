@@ -261,7 +261,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
 
     /// Same as `Router::peek_back`, with the addition of navigating to a resulting `Some(Route)`
     ///
-    ///  # Note for now it does not add to history since we navigate inside
+    ///   ### Note for now it does not add to history since we navigate inside.
     pub fn back(&self) -> Option<Route> {
         self.peek_back().map(|next_route| {
             self.set_current_route(&next_route);
@@ -272,7 +272,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
 
     /// Same as `Router::peek_forward`, with the addition of navigating to a resulting `Some(Route)`
     ///
-    /// # Note for now it does not add to history since we navigate inside
+    /// ### Note for now it does not add to history since we navigate inside.
     pub fn forward(&self) -> Option<Route> {
         self.peek_forward().map(|next_route| {
             self.set_current_route(&next_route);
