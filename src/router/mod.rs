@@ -80,7 +80,7 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> RouterDa
 }
 
 /// Router that manages navigation between routes,
-/// store the history,
+/// stores the history,
 /// Can go back and forward,
 /// Manage the default route and current route.
 #[derive(Clone)]
