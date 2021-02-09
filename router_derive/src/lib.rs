@@ -57,10 +57,7 @@ fn router() -> Router<Route,> {
     .parse()
     .unwrap()
 }
-/// Derive an enum for navigation with `ParseUrl`.
-/// You can change the value of a path for a given route this way :
-///
-///
+/// Derive an enum for navigation with `ParseUrl` so a route can be converted to a `Url`.
 ///
 /// ```rust
 /// #[derive(Debug, PartialEq, Copy, Clone, ParseUrl)]
@@ -87,6 +84,9 @@ fn router() -> Router<Route,> {
 ///     assert_eq!(url, url_to_compare);
 /// }
 /// ```
+/// You can change the value of a path for a given route this way with `#[as_path = "my_new_name"]`.
+///
+///
 #[proc_macro_error]
 #[proc_macro_derive(ParseUrl, attributes(as_path))]
 pub fn derive_as_url(item: TokenStream) -> TokenStream {
