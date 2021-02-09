@@ -42,12 +42,12 @@ pub enum Route {
         query: IndexMap<String, String>, // -> http://localhost:8000/login?name=JohnDoe
     },
     #[guard = " => guard => forbidden"]
-    Dashboard(pages::dashboard::Routes), // -> http://localhost:8000/dashboard/*
+    Dashboard(pages::dashboard::Route), // -> http://localhost:8000/dashboard/*
     #[guard = "logged_user => admin_guard => forbidden_user"]
     Admin {
         // -> /admin/:id/*
         id: String,
-        children: pages::admin::Routes,
+        children: pages::admin::Route,
     },
     #[default_route]
     #[view = " => not_found"] // -> http://localhost:8000/not_found*
@@ -290,35 +290,35 @@ fn generate_admin_routes() -> Vec<(Route, &'static str)> {
     vec.push((
         Route::Admin {
             id: "1".to_string(),
-            children: pages::admin::Routes::Root,
+            children: pages::admin::Route::Root,
         },
         "Admin Project 1",
     ));
     vec.push((
         Route::Admin {
             id: "2".to_string(),
-            children: pages::admin::Routes::Root,
+            children: pages::admin::Route::Root,
         },
         "Admin Project 2",
     ));
     vec.push((
         Route::Admin {
             id: "3".to_string(),
-            children: pages::admin::Routes::Root,
+            children: pages::admin::Route::Root,
         },
         "Admin Project 3",
     ));
     vec.push((
         Route::Admin {
             id: "3".to_string(),
-            children: pages::admin::Routes::NotFound,
+            children: pages::admin::Route::NotFound,
         },
         "Not found project 3",
     ));
     vec.push((
         Route::Admin {
             id: "1".to_string(),
-            children: pages::admin::Routes::Manager,
+            children: pages::admin::Route::Manager,
         },
         "Manage project 1",
     ));
@@ -345,24 +345,24 @@ fn generate_admin_nodes(model: &Model) -> Vec<Node<Msg>> {
 
 fn generate_dashboard_routes() -> Vec<(Route, &'static str)> {
     let mut vec: Vec<(Route, &'static str)> = vec![];
-    vec.push((Route::Dashboard(pages::dashboard::Routes::Root), "Profile"));
+    vec.push((Route::Dashboard(pages::dashboard::Route::Root), "Profile"));
     vec.push((
-        Route::Dashboard(pages::dashboard::Routes::Message),
+        Route::Dashboard(pages::dashboard::Route::Message),
         "Message",
     ));
     vec.push((
-        Route::Dashboard(pages::dashboard::Routes::Statistics),
+        Route::Dashboard(pages::dashboard::Route::Statistics),
         "Statistics",
     ));
     vec.push((
-        Route::Dashboard(pages::dashboard::Routes::Tasks {
+        Route::Dashboard(pages::dashboard::Route::Tasks {
             query: IndexMap::new(),
             children: pages::dashboard::tasks::Routes::Root,
         }),
         "Tasks",
     ));
     vec.push((
-        Route::Dashboard(pages::dashboard::Routes::Tasks {
+        Route::Dashboard(pages::dashboard::Route::Tasks {
             query: make_query(),
             children: pages::dashboard::tasks::Routes::Root,
         }),

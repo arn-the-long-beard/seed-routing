@@ -11,7 +11,7 @@ pub fn init(
     _: Url,
     _: &mut Model,
     id: &str,
-    children: &Routes,
+    children: &Route,
     orders: &mut impl Orders<Msg>,
 ) -> Model {
     let models = load_models();
@@ -23,7 +23,7 @@ pub fn init(
             name: name.to_string(),
             description: description.to_string(),
         }
-    } else if children.eq(&Routes::NotFound) {
+    } else if children.eq(&Route::NotFound) {
         let mut not_found_model = Model::default();
         not_found_model.id = id.to_string();
         not_found_model
@@ -31,7 +31,7 @@ pub fn init(
         orders.notify(subs::UrlRequested::new(
             Root::Admin {
                 id: id.to_string(),
-                children: Routes::NotFound,
+                children: Route::NotFound,
             }
             .to_url(),
         ));
@@ -50,7 +50,7 @@ pub struct Model {
 pub enum Msg {}
 
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
-pub enum Routes {
+pub enum Route {
     #[view = " => root"]
     Root,
     #[view = " => manager"]
@@ -62,7 +62,7 @@ pub enum Routes {
 
 pub fn update(_: Msg, _: &mut Model, _: &mut impl Orders<Msg>) {}
 
-pub fn view(routes: &Routes, model: &Model) -> Node<Msg> {
+pub fn view(routes: &Route, model: &Model) -> Node<Msg> {
     routes.view(model)
 }
 fn manager(model: &Model) -> Node<Msg> {
