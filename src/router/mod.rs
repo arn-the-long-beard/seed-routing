@@ -39,7 +39,7 @@ pub enum MoveStatus {
 /// The contained data inside the Router.
 /// This data can mutated while the router does not so we can use it as global variable in our Seed app.
 #[allow(clippy::module_name_repetitions)]
-pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
+pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> {
     /// The actual route, which should be the one displaying the view in Seed.
     pub current_route: Route,
     /// The index of the history.
@@ -60,7 +60,7 @@ pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + N
     history: Vec<Route>,
 }
 
-impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> RouterData<Route> {
+impl<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> RouterData<Route> {
     /// Add the route to the history.
     pub fn push_to_history(&mut self, route: Route) {
         self.history.push(route);
@@ -84,14 +84,14 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> Router
 /// Can go back and forward,
 /// Manage the default route and current route.
 #[derive(Clone)]
-pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + Navigation> {
+pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> {
     data: Rc<RefCell<RouterData<Route>>>,
 }
 
 /// Router implementation with interior mutability.
 /// This specific mutability allows us to use the router as a global variable that we can use everywhere in the app.
 /// More information here [https://doc.rust-lang.org/book/ch15-05-interior-mutability.html](https://doc.rust-lang.org/book/ch15-05-interior-mutability.html)
-impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + Navigation> Router<Route> {
+impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl> Router<Route> {
     /// Create a new Router with no url, no history and current route is default
     /// route
     pub fn new() -> Self {

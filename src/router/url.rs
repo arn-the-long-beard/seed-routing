@@ -1,9 +1,10 @@
 use crate::ParseError;
 use seed::{prelude::IndexMap, Url};
 
+#[allow(clippy::module_name_repetitions)]
 #[allow(clippy::missing_errors_doc)]
 /// Implemented on `Route` enum by `#[derive(ParseUrl)]`.
-pub trait Navigation {
+pub trait ParseUrl {
     fn from_url(url: Url) -> std::result::Result<Self, ParseError>
     where
         Self: Sized;

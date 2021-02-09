@@ -103,7 +103,7 @@ pub fn derive_as_url(item: TokenStream) -> TokenStream {
 
     let name = ident.to_string();
     TokenStream::from(quote! {
-     impl router::Navigation for #ident {
+     impl router::ParseUrl for #ident {
         fn to_url(&self) -> Url {
          let url : Url =    match self {
                     #(#as_snippets),*
