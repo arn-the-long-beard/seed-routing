@@ -1,4 +1,4 @@
-//! The router is responsible for finding the matching route with the current url from displayed in the web browser and manage a simple history of navigation.
+//! The router is responsible for finding the matching route with the current url displayed in the web browser and manage a simple history of navigation.
 //!
 mod default_route;
 mod model;
