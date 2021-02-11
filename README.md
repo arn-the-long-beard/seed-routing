@@ -77,7 +77,6 @@ fn view(model: &Model) -> impl IntoNodes<Msg> {
 ```
 
 There is nothing more to write for the router to do its job.
-You can check the example for more example code.
 
 #### 3 - Write your `Route` enum starting in lib.rs :
 
