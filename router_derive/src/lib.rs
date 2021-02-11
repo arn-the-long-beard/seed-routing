@@ -56,6 +56,14 @@ fn router() -> Router<Route,> {
 /// Synchronize the router to listen to subs::UrlRequested(requested_url, _)
 /// from seed and triggers navigation on callback to next route, or go back or
 /// go forward in history.
+/// Here is the code it contains.
+/// ```rust
+/// router().init(url).subscribe(orders.subscribe_with_handle(
+///     |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
+/// ));
+/// ```
+/// ###Note:
+/// It has to be used in lib.rs init function.
 #[proc_macro]
 pub fn sync_router(_item: TokenStream) -> TokenStream {
     "router().init(url).subscribe(orders.subscribe_with_handle(
