@@ -3,7 +3,7 @@
 pub mod router;
 
 pub use router::*;
-pub use router_derive::{add_router, ParseUrl, RoutingModules, WithDefaultRoute};
+pub use router_derive::{add_router, sync_router, ParseUrl, RoutingModules, WithDefaultRoute};
 #[cfg(test)]
 mod tests {
     #[test]
