@@ -1,6 +1,6 @@
 ## Seed Routing
 
-A try to make a Router that we could use to make a good routing for Seed equivalent to what we have in Angular/React/Vue.
+A proposal for advanced routing in Seed equivalent to what we have in Angular/React/Vue.
 
 
 ### Summary
@@ -145,8 +145,7 @@ Here are the rules I try to respect
 - Respect for TEA = One single path of truth.
 - Minimize the boilerplate and the risks of bugs.
 - Easy API so we can follow the flow of an app.
-- Making routing in TEA should be as easy as in Angular.
-- Making transition from other front end framework as easy as possible.
+- Making routing in TEA should be as easy as in popular frameworks.
 
 ### Motivations
 
