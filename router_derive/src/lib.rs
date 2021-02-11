@@ -30,20 +30,16 @@ mod view;
 /// The router is accessible from anywhere in the application.
 ///
 /// ```rust
-///
 /// add_router!();
-///
 ///
 /// enum Route {
 ///     Home,
-///     NotFound
+///     NotFound,
 /// }
 ///
 /// router().navigate_to_new(Route::Home);
-/// assert!(router().current_route(),Route::Home);
+/// assert!(router().current_route(), Route::Home);
 /// ```
-///
-///
 #[proc_macro]
 pub fn add_router(_item: TokenStream) -> TokenStream {
     "thread_local! {
@@ -96,9 +92,8 @@ pub fn sync_router(_item: TokenStream) -> TokenStream {
 ///     assert_eq!(url, url_to_compare);
 /// }
 /// ```
-/// You can change the value of a path for a given route this way with `#[as_path = "my_new_name"]`.
-///
-///
+/// You can change the value of a path for a given route this way with
+/// `#[as_path = "my_new_name"]`.
 #[proc_macro_error]
 #[proc_macro_derive(ParseUrl, attributes(as_path))]
 pub fn derive_as_url(item: TokenStream) -> TokenStream {
@@ -151,8 +146,8 @@ pub fn derive_as_url(item: TokenStream) -> TokenStream {
     })
 }
 
-/// Add a default route for a Route enumeration. It will be used by the router when it cannot find the
-/// right url.
+/// Add a default route for a Route enumeration. It will be used by the router
+/// when it cannot find the right url.
 ///
 /// ```rust
 /// #[derive(Debug, PartialEq, Copy, Clone, WithDefaultRoute)]
@@ -215,12 +210,13 @@ pub fn derive_add_default_route(item: TokenStream) -> TokenStream {
     })
 }
 
-/// The `RoutingModules` makes the enum variants matching a path and a module to load.
-/// By default, an enum variant as snake_case is equal to its module name.
+/// The `RoutingModules` makes the enum variants matching a path and a module to
+/// load. By default, an enum variant as snake_case is equal to its module name.
 ///
 ///  - You can rename the path.
 ///  - You can specify routes that does not load module ( no init, no specific
-/// Model & Msg and no view ). They are called `local views` and use the attribute `#[view]`.
+/// Model & Msg and no view ). They are called `local views` and use the
+/// attribute `#[view]`.
 ///
 /// The derive macro will call the init function , Model, Msg, Routes, Update,
 /// and View for the related module.

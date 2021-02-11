@@ -199,8 +199,9 @@ pub fn build_string_with_path_name(
 }
 
 /// Get the content of an attribute
-/// For example it will get the string `home` from `#[as_path="home"]` and the content as a list from `#[view="=>my_view"]` and `#[guard="user => admin_guard => forbidden_view"]`
-///
+/// For example it will get the string `home` from `#[as_path="home"]` and the
+/// content as a list from `#[view="=>my_view"]` and `#[guard="user =>
+/// admin_guard => forbidden_view"]`
 pub fn get_string_from_attribute(attribute_name: &str, attr: &Attribute) -> Result<Option<LitStr>> {
     if !attr.path.is_ident(attribute_name) {
         return Ok(None); // not our attribute

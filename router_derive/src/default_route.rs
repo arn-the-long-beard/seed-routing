@@ -30,8 +30,5 @@ pub fn get_default_route(variants: Iter<'_, Variant>) -> Result<Variant> {
 
 /// Check if default_route exist
 fn variant_default_route(_: Ident, attrs: &[Attribute]) -> bool {
-    attrs
-        .iter()
-        .any(|attr| attr.path.is_ident("default_route"))
-
+    attrs.iter().any(|attr| attr.path.is_ident("default_route"))
 }

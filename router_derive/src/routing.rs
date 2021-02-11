@@ -93,12 +93,11 @@ fn unit_variant_snippets(ident: Ident, path_name: Option<String>) -> (TokenStrea
 /// #[derive(Debug, PartialEq, Clone, ParseUrl)]
 /// #[modules_path = "pages"]
 /// pub enum Route {
-///     #[as_path="my_thing"] // -> http://localhost:8000/my_thing
+///     #[as_path = "my_thing"] // -> http://localhost:8000/my_thing
 ///     MyStuff,
-///     #[as_path=""]
-///    Home, // -> http://localhost:8000
+///     #[as_path = ""]
+///     Home, // -> http://localhost:8000
 /// }
-///
 /// ```
 fn as_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream2 {
     let format = match path_name {
@@ -253,8 +252,9 @@ fn parse_struct_variant(
     let with_children = structs_tuple.2.is_some();
     let structs = unwrap_url_payload_matching_field(structs_tuple);
 
-    // If path not empty, parse it and extract payload otherwise go to the next part of the string.
-    // Warning empty path does not support url payload extracting because url functions do not know the path is empty.
+    // If path not empty, parse it and extract payload otherwise go to the next part
+    // of the string. Warning empty path does not support url payload extracting
+    // because url functions do not know the path is empty.
     let parser = match path_name {
         Some(path_name) => {
             quote! {      next.strip_prefix(#path_name).ok_or(err)
