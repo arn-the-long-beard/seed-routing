@@ -23,9 +23,7 @@ add_router!();
 fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
     orders.subscribe(Msg::UrlChanged).subscribe(Msg::UserLogged);
 
-    router().init(url).subscribe(orders.subscribe_with_handle(
-        |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
-    ));
+    sync_router!();
 
     Model {
         theme: Theme::default(),

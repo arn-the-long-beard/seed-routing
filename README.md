@@ -40,9 +40,7 @@ add_router!();
 fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
     orders.subscribe(Msg::UrlChanged);
 
-    router().init(url).subscribe(orders.subscribe_with_handle(
-        |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
-    ));
+    sync_router!();
 
     Model {
         // Your Model
@@ -277,7 +275,7 @@ add_router!();
 
      router().init(url).subscribe(orders.subscribe_with_handle(
          |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
-     ));
+     )); // ---> is equal to sync_router!();
      
      Model {
          register: Default::default(),
