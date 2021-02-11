@@ -57,7 +57,19 @@ fn router() -> Router<Route,> {
     .parse()
     .unwrap()
 }
-/// Derive an enum for navigation with `ParseUrl` so a route can be converted to a `Url`.
+/// Synchronize the router to listen to subs::UrlRequested(requested_url, _)
+/// from seed and triggers navigation on callback to next route, or go back or
+/// go forward in history.
+#[proc_macro]
+pub fn sync_router(_item: TokenStream) -> TokenStream {
+    "router().init(url).subscribe(orders.subscribe_with_handle(
+        |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
+    ));"
+    .parse()
+    .unwrap()
+}
+/// Derive an enum for navigation with `ParseUrl` so a route can be converted to
+/// a `Url`.
 ///
 /// ```rust
 /// #[derive(Debug, PartialEq, Copy, Clone, ParseUrl)]
