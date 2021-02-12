@@ -57,10 +57,10 @@ fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
 fn update(msg: Msg, model: &mut Model, orders: &mut impl Orders<Msg>) {
     match msg {
         Msg::UrlChanged(subs::UrlChanged(_url)) => {
-        router().current_route().init(model, orders);
-}
-// rest of the match arms.
-}
+            router().current_route().init(model, orders);
+        }
+        // rest of the match arms.
+    }
 }
 ```
 
