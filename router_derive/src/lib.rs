@@ -11,12 +11,12 @@ extern crate proc_macro;
 extern crate proc_macro_error;
 
 use crate::{default_route::get_default_route, routing::routing_variant_snippets};
-use proc_macro::TokenStream;
-
 use crate::{init::module_init_snippets, view::modules_view_snippets};
+use proc_macro::TokenStream;
+use proc_macro2::TokenStream as TokenStream2;
 use proc_macro_error::{abort, proc_macro_error, Diagnostic, Level};
 use quote::quote;
-use syn::{export::TokenStream2, parse_macro_input, Data, DeriveInput, Fields};
+use syn::{parse_macro_input, Data, DeriveInput, Fields};
 
 mod builder;
 mod default_route;

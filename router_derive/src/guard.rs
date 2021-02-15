@@ -1,9 +1,9 @@
 use proc_macro_error::{abort, Diagnostic, Level};
 
 use crate::builder::get_string_from_attribute;
+use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{export::TokenStream2, Attribute, Ident};
-
+use syn::{Attribute, Ident};
 /// Extract the value from the [#guard  = "model_prop => guard_function"]
 pub fn variant_guard_path_tuple(
     _ident: Ident,
@@ -61,17 +61,17 @@ pub fn variant_guard_path_tuple(
 /// Add a guard on the view if guard_scope contains value from [#guard  =
 /// "model_prop => guard_function"]
 pub fn add_guard_to_view(
-    view_to_load: TokenStream2,
+    view_to_load: TokenStream,
     guard_scope: (String, String, String),
-) -> TokenStream2 {
+) -> TokenStream {
     let (model_scope, function_path, redirect) = guard_scope;
     let model_path = if model_scope.is_empty() {
         "scoped_state".to_string()
     } else {
         format!("scoped_state.{}.as_ref()", model_scope)
     };
-    let redirect_token: TokenStream2 = format!(" {}({})", redirect, model_path).parse().unwrap();
-    let guard_function_token: TokenStream2 = format!("{}({})", function_path, model_path)
+    let redirect_token: TokenStream = format!(" {}({})", redirect, model_path).parse().unwrap();
+    let guard_function_token: TokenStream = format!("{}({})", function_path, model_path)
         .parse()
         .unwrap();
     quote! {

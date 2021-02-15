@@ -1,18 +1,18 @@
 use convert_case::{Case, Casing};
 
-use proc_macro_error::{abort, Diagnostic, Level};
-
 use crate::{
     builder::{build_variant_arguments, get_string_from_attribute},
     guard::{add_guard_to_view, variant_guard_path_tuple},
 };
+use proc_macro2::TokenStream;
+use proc_macro_error::{abort, Diagnostic, Level};
 use quote::quote;
-use syn::{export::TokenStream2, punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
+use syn::{punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
 
 pub fn modules_view_snippets(
     variants: Iter<'_, Variant>,
     modules_path: Option<String>,
-) -> Vec<TokenStream2> {
+) -> Vec<TokenStream> {
     let len = variants.len();
     let snippets = variants.enumerate().map(|(_, variant)| {
         let Variant {
@@ -120,8 +120,8 @@ pub fn variant_local_view_tuple(
 /// {}(&scoped_state)
 /// or
 /// {}(&scoped_state.{}
-fn get_view_path_token(path: String, view: String) -> TokenStream2 {
-    let token: TokenStream2 = if path.is_empty() {
+fn get_view_path_token(path: String, view: String) -> TokenStream {
+    let token: TokenStream = if path.is_empty() {
         format!(" {}(&scoped_state)", view).parse().unwrap()
     } else {
         format!(" {}(&scoped_state.{})", view, path,)
@@ -138,7 +138,7 @@ fn view_as_unit_variant(
     view_scope: Option<(String, String)>,
     guard_scope: Option<(String, String, String)>,
     modules_path: Option<String>,
-) -> TokenStream2 {
+) -> TokenStream {
     let module_name = ident.to_string().to_case(Case::Snake);
     let view_to_load = if let Some((path, view)) = view_scope {
         get_view_path_token(path, view)
@@ -149,7 +149,7 @@ fn view_as_unit_variant(
             module_name.clone()
         };
 
-        let token: TokenStream2 = format!(
+        let token: TokenStream = format!(
             "{}::view( &scoped_state.{}).map_msg(Msg::{})",
             full_path,
             module_name,
@@ -177,7 +177,7 @@ fn view_as_tuple_variant(
     guard_scope: Option<(String, String, String)>,
     fields: Iter<'_, Field>,
     modules_path: Option<String>,
-) -> TokenStream2 {
+) -> TokenStream {
     if fields.clone().count() != 1 {
         abort!(Diagnostic::new(
             Level::Error,
@@ -194,7 +194,7 @@ fn view_as_tuple_variant(
         } else {
             module_name.clone()
         };
-        let token: TokenStream2 = format!(
+        let token: TokenStream = format!(
             " {}::view(nested, &scoped_state.{}).map_msg(Msg::{}) ",
             full_path,
             module_name,
@@ -222,7 +222,7 @@ fn view_as_struct_variant(
     guard_scope: Option<(String, String, String)>,
     fields: Iter<'_, Field>,
     modules_path: Option<String>,
-) -> TokenStream2 {
+) -> TokenStream {
     let fields_to_extract = fields.clone();
 
     let query_parameters = fields_to_extract
@@ -253,7 +253,7 @@ fn view_as_struct_variant(
         } else {
             module_name.clone()
         };
-        let token: TokenStream2 = if children.is_some() {
+        let token: TokenStream = if children.is_some() {
             format!(
                 " {}::view(&children,&scoped_state.{}).map_msg(Msg::{})",
                 full_path,

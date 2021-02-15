@@ -7,13 +7,13 @@ use crate::builder::{
 };
 use quote::quote;
 
+use proc_macro2::TokenStream;
 use std::collections::HashSet;
-use syn::{export::TokenStream2, punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
-
+use syn::{punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
 /// Build the matching arms for the enum match for ParseUrl trait implementation
 pub fn routing_variant_snippets(
     variants: Iter<'_, Variant>,
-) -> (Vec<TokenStream2>, Vec<TokenStream2>) {
+) -> (Vec<TokenStream>, Vec<TokenStream>) {
     let len = variants.len();
 
     let mut check_hash = HashSet::new();
@@ -77,7 +77,7 @@ pub fn routing_variant_snippets(
         },
     )
 }
-fn unit_variant_snippets(ident: Ident, path_name: Option<String>) -> (TokenStream2, TokenStream2) {
+fn unit_variant_snippets(ident: Ident, path_name: Option<String>) -> (TokenStream, TokenStream) {
     (
         as_unit_variant(ident.clone(), path_name.clone()),
         parse_unit_variant(ident, path_name),
@@ -99,7 +99,7 @@ fn unit_variant_snippets(ident: Ident, path_name: Option<String>) -> (TokenStrea
 ///     Home, // -> http://localhost:8000
 /// }
 /// ```
-fn as_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream2 {
+fn as_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream {
     let format = match path_name {
         Some(path_name) => quote! { format!("/{}", #path_name) },
         None => quote! { String::new() },
@@ -109,7 +109,7 @@ fn as_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream2 {
     }
 }
 
-fn parse_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream2 {
+fn parse_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream {
     let parser = match path_name {
         Some(path_name) => quote! {
             next.strip_prefix(#path_name).ok_or(err)
@@ -131,7 +131,7 @@ fn tuple_variant_snippets(
     ident: Ident,
     name: Option<String>,
     fields: Iter<'_, Field>,
-) -> (TokenStream2, TokenStream2) {
+) -> (TokenStream, TokenStream) {
     (
         as_tuple_variant(ident.clone(), name.clone(), fields.clone()),
         parse_tuple_variant(ident, name, fields),
@@ -142,7 +142,7 @@ fn struct_variant_snippets(
     ident: Ident,
     path_name: Option<String>,
     fields: Iter<'_, Field>,
-) -> (TokenStream2, TokenStream2) {
+) -> (TokenStream, TokenStream) {
     (
         as_struct_variant(ident.clone(), path_name.clone(), fields.clone()),
         parse_struct_variant(ident, path_name, fields),
@@ -152,7 +152,7 @@ fn as_tuple_variant(
     ident: Ident,
     path_name: Option<String>,
     fields: Iter<'_, Field>,
-) -> TokenStream2 {
+) -> TokenStream {
     if fields.clone().count() != 1 {
         abort!(Diagnostic::new(
             Level::Error,
@@ -172,7 +172,7 @@ fn as_struct_variant(
     ident: Ident,
     path_name: Option<String>,
     fields: Iter<'_, Field>,
-) -> TokenStream2 {
+) -> TokenStream {
     let fields_to_extract = fields.clone();
 
     let query_parameters = fields_to_extract
@@ -205,7 +205,7 @@ fn parse_tuple_variant(
     ident: Ident,
     path_name: Option<String>,
     fields: Iter<'_, Field>,
-) -> TokenStream2 {
+) -> TokenStream {
     if fields.clone().count() != 1 {
         abort!(Diagnostic::new(
             Level::Error,
@@ -233,7 +233,7 @@ fn parse_struct_variant(
     ident: Ident,
     path_name: Option<String>,
     fields: Iter<'_, Field>,
-) -> TokenStream2 {
+) -> TokenStream {
     // let children = fields.find(|f| f.ident.as_ref().unwrap() == "children");
     let id_param = fields.clone().find(|f| f.ident.as_ref().unwrap() == "id");
     let query_parameters = fields

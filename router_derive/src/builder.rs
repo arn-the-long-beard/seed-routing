@@ -1,12 +1,12 @@
+use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{
-    export::TokenStream2, Attribute, Error, Field, Lit, LitStr, Meta, MetaNameValue, Result,
-};
+use syn::{Attribute, Error, Field, Lit, LitStr, Meta, MetaNameValue, Result};
+
 /// Rebuild the content of a variant depending of the fields present in the
 /// original enum
 pub fn build_variant_arguments(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
-) -> TokenStream2 {
+) -> TokenStream {
     // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
@@ -44,7 +44,7 @@ pub fn build_variant_arguments(
 /// Assign only the payload defined by the field in the enu,
 pub fn unwrap_url_payload_matching_field(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
-) -> TokenStream2 {
+) -> TokenStream {
     // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
@@ -114,12 +114,12 @@ pub fn inject_variant_payload_in_function_call(
     }
 }
 
-pub fn extract_query_field_to_string() -> TokenStream2 {
+pub fn extract_query_field_to_string() -> TokenStream {
     quote! { convert_to_string(&query)}
 }
 pub fn build_string_without_path_name(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
-) -> TokenStream2 {
+) -> TokenStream {
     // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
@@ -160,7 +160,7 @@ pub fn build_string_without_path_name(
 pub fn build_string_with_path_name(
     structs_tuple: (Option<&Field>, Option<&Field>, Option<&Field>),
     name: Option<String>,
-) -> TokenStream2 {
+) -> TokenStream {
     // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {

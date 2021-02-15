@@ -1,18 +1,18 @@
 use convert_case::{Case, Casing};
 
-use proc_macro_error::{abort, Diagnostic, Level};
-
 use crate::{
     builder::{build_variant_arguments, inject_variant_payload_in_function_call},
     view::variant_local_view_tuple,
 };
+use proc_macro2::TokenStream;
+use proc_macro_error::{abort, Diagnostic, Level};
 use quote::quote;
-use syn::{export::TokenStream2, punctuated::Iter, Field, Fields, Ident, Variant};
+use syn::{punctuated::Iter, Field, Fields, Ident, Variant};
 
 pub fn module_init_snippets(
     variants: Iter<'_, Variant>,
     modules_path: Option<String>,
-) -> Vec<TokenStream2> {
+) -> Vec<TokenStream> {
     let len = variants.len();
     let snippets = variants.enumerate().map(|(_, variant)| {
         let Variant {
@@ -71,7 +71,7 @@ fn init_for_unit_variant(
     ident: Ident,
     local_view: Option<(String, String)>,
     modules_path: Option<String>,
-) -> TokenStream2 {
+) -> TokenStream {
     // Do stuff about nested init maybe ?
     let init_to_load = match local_view {
         Some((_, _)) => {
@@ -85,7 +85,7 @@ fn init_for_unit_variant(
 }
 
 /// Get the init function token if not local view
-fn get_init_token(ident: Ident, modules_path: Option<String>) -> TokenStream2 {
+fn get_init_token(ident: Ident, modules_path: Option<String>) -> TokenStream {
     let module_name = ident.to_string().to_case(Case::Snake);
 
     let full_path = if let Some(modules_path) = modules_path {
@@ -93,7 +93,7 @@ fn get_init_token(ident: Ident, modules_path: Option<String>) -> TokenStream2 {
     } else {
         module_name.clone()
     };
-    let token: TokenStream2 = format!(
+    let token: TokenStream = format!(
         " previous_state.{} = {}::init(self.to_url(),
                     &mut previous_state.{},
                         &mut orders.proxy(Msg::{}),)  ",
@@ -113,7 +113,7 @@ fn init_for_tuple_variant(
     local_view: Option<(String, String)>,
     fields: Iter<'_, Field>,
     modules_path: Option<String>,
-) -> TokenStream2 {
+) -> TokenStream {
     if fields.clone().count() != 1 {
         abort!(Diagnostic::new(
             Level::Error,
@@ -133,7 +133,7 @@ fn init_for_tuple_variant(
             } else {
                 module_name.clone()
             };
-            let token: TokenStream2 = format!(
+            let token: TokenStream = format!(
                 " previous_state.{} = {}::init(self.to_url(),
                     &mut previous_state.{},
                         nested,
@@ -159,7 +159,7 @@ fn init_for_init_struct_variant(
     local_view: Option<(String, String)>,
     fields: Iter<'_, Field>,
     modules_path: Option<String>,
-) -> TokenStream2 {
+) -> TokenStream {
     let fields_to_extract = fields.clone();
 
     let query_parameters = fields_to_extract
@@ -193,7 +193,7 @@ fn init_for_init_struct_variant(
             } else {
                 module_name.clone()
             };
-            let token: TokenStream2 = if payload.is_empty() {
+            let token: TokenStream = if payload.is_empty() {
                 format!(
                     " previous_state.{} = {}::init(self.to_url(),
                     &mut previous_state.{},
