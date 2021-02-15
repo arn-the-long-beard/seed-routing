@@ -68,7 +68,6 @@ impl<T: ToString> AsPath for T {
 ///     }
 /// );
 /// ```
-///
 #[allow(clippy::module_name_repetitions)]
 pub trait ParsePath: AsPath + Sized {
     /// Implementation is provided for all types implementing `FromStr`,
