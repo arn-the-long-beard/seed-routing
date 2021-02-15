@@ -204,7 +204,7 @@ mod test {
             }
         );
 
-        let string = "/admin?";
+        let string = "/admin";
 
         let route = ExampleRoutes::parse_path(string).unwrap();
         let query_search: IndexMap<String, String> = IndexMap::new();
