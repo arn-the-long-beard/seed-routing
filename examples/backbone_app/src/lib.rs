@@ -54,6 +54,11 @@ pub enum Route {
     Forbidden,
     // #[view = " => nice_view"] // -> http://localhost:8000/forbidden*
     // NiceView { id: String },
+
+    // When putting together the view for this route, the "theme" in this
+    // attribute sets the argument of the function signature to the "theme"
+    // field like so: `home(&model.theme)`, where the `model` is the `Model`
+    // struct for this module.
     #[view = "theme => home"] // -> http://localhost:8000/
     Home,
 }
