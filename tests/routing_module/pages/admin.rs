@@ -18,7 +18,8 @@ pub fn init(
     if let Some(p) = privilege_query {
         model.admin_privilege = p.to_string();
     }
-    // it is ok to clone here because we just then replace the previous state with a new one
+    // it is ok to clone here because we just then replace the previous state with a
+    // new one
     model.clone()
 }
 pub enum Msg {}

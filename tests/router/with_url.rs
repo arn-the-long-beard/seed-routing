@@ -55,8 +55,8 @@ mod test {
     //    Update
     // ------ ------
     /// Root actions for your app.
-    /// Each component will have single action/message mapped to its message later
-    /// in update
+    /// Each component will have single action/message mapped to its message
+    /// later in update
 
     pub enum Msg {
         UrlChanged(subs::UrlChanged),

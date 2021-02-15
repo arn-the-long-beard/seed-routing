@@ -1,5 +1,5 @@
-//! The router is responsible for finding the matching route with the current url displayed in the web browser and manage a simple history of navigation.
-//!
+//! The router is responsible for finding the matching route with the current
+//! url displayed in the web browser and manage a simple history of navigation.
 mod default_route;
 mod model;
 mod path;
@@ -18,12 +18,15 @@ use seed::prelude::{
 pub use url::*;
 pub use view::*;
 
-/// Internal state for the router that dictates which kind of navigation will happen.
+/// Internal state for the router that dictates which kind of navigation will
+/// happen.
 ///
 /// Example:
-/// When the user clicks a button `back`, the router will get the state `MoveStatus::MovingBack` from the method `request_moving_back()`.
-/// Then when Seed gets the Url Requested, the app will use `confirm_navigation()` and use `back()` to go back in the history of navigation.
-/// The same logic apply for forward.
+/// When the user clicks a button `back`, the router will get the state
+/// `MoveStatus::MovingBack` from the method `request_moving_back()`.
+/// Then when Seed gets the Url Requested, the app will use
+/// `confirm_navigation()` and use `back()` to go back in the history of
+/// navigation. The same logic apply for forward.
 #[derive(Clone, Debug, PartialEq)]
 pub enum MoveStatus {
     /// The router will register the route in the history.
@@ -37,7 +40,8 @@ pub enum MoveStatus {
 }
 
 /// The contained data inside the Router.
-/// This data can mutated while the router does not so we can use it as global variable in our Seed app.
+/// This data can mutated while the router does not so we can use it as global
+/// variable in our Seed app.
 #[allow(clippy::module_name_repetitions)]
 pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> {
     /// The actual route, which should be the one displaying the view in Seed.
@@ -45,9 +49,9 @@ pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + P
     /// The index of the history.
     /// It will change when navigation or pushing back or forward.
     pub current_history_index: usize,
-    /// The default route extracted from the attribute `#[default_route]` on your
-    /// enum. This route is equivalent to 404. In other web framework it
-    /// would be matching path pattern "*" for example.
+    /// The default route extracted from the attribute `#[default_route]` on
+    /// your enum. This route is equivalent to 404. In other web framework
+    /// it would be matching path pattern "*" for example.
     pub default_route: Route,
     /// The route url of the route
     /// ∕∕todo add protocol, domain and extract info later.
@@ -89,8 +93,8 @@ pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + Parse
 }
 
 /// Router implementation with interior mutability.
-/// This specific mutability allows us to use the router as a global variable that we can use everywhere in the app.
-/// More information here [https://doc.rust-lang.org/book/ch15-05-interior-mutability.html](https://doc.rust-lang.org/book/ch15-05-interior-mutability.html)
+/// This specific mutability allows us to use the router as a global variable
+/// that we can use everywhere in the app. More information here [https://doc.rust-lang.org/book/ch15-05-interior-mutability.html](https://doc.rust-lang.org/book/ch15-05-interior-mutability.html)
 #[allow(clippy::new_without_default)]
 impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl> Router<Route> {
     /// Create a new Router with no url, no history and current route is default
@@ -126,34 +130,29 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     /// ```rust
     /// extern crate seed_routing;
     /// #[macro_use]
-    ///
     /// use seed_routing::{View, *};
     /// use seed::prelude::*;
     /// add_router!();
     /// // Empty Model for example
-    /// struct Model {
-    ///
-    /// }
+    /// struct Model {}
     ///
     /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
     ///     orders.subscribe(Msg::UrlChanged);
-    ///     router().init(url);     
+    ///     router().init(url);
     ///
-    /// Model {
+    ///     Model {
     /// // Empty Model for example
     /// }
-    ///
-    /// }  
+    /// }
     /// enum Msg {
-    ///      UrlChanged(subs::UrlChanged),
+    ///     UrlChanged(subs::UrlChanged),
     /// }
     ///
-    /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
-    ///     enum Route {
+    /// #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
+    /// enum Route {
     ///     #[default_route]
-    ///     NotFound
+    ///     NotFound,
     /// }
-    ///
     /// ```
     pub fn init(&self, url: Url) -> &Self {
         self.set_base_url(&url);
@@ -172,38 +171,33 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     /// ```rust
     /// extern crate seed_routing;
     /// #[macro_use]
-    ///
     /// use seed_routing::{View, *};
     /// use seed::prelude::*;
     /// add_router!();
     /// // Empty Model for example
     /// struct Model {
-    /// // Empty for example
+    ///     // Empty for example
     /// }
     ///
     /// fn init(url: Url, orders: &mut impl Orders<Msg>) -> Model {
     ///     orders.subscribe(Msg::UrlChanged);
-    ///     router()
-    ///     .init(url)
-    ///     .subscribe(orders.subscribe_with_handle(
+    ///     router().init(url).subscribe(orders.subscribe_with_handle(
     ///         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
     ///     ));
     ///
-    /// Model {
+    ///     Model {
     /// // Empty for example
     /// }
-    ///
-    /// }  
+    /// }
     /// enum Msg {
-    ///      UrlChanged(subs::UrlChanged),
+    ///     UrlChanged(subs::UrlChanged),
     /// }
     ///
-    /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
+    /// #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
     /// enum Route {
     ///     #[default_route]
-    ///     NotFound
+    ///     NotFound,
     /// }
-    ///
     /// ```
     pub fn subscribe(&self, sub_handle: SubHandle) -> &Self {
         self.clone()
@@ -216,7 +210,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
         self.update_data(|data| data.push_to_history(route));
     }
 
-    /// If a previous `Route` in history exists, return it. Otherwise return `None`
+    /// If a previous `Route` in history exists, return it. Otherwise return
+    /// `None`
     #[must_use]
     pub fn peek_back(&self) -> Option<Route> {
         // If we have no history, cannot go back
@@ -259,7 +254,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
         Some(route.clone())
     }
 
-    /// Same as `Router::peek_back`, with the addition of navigating to a resulting `Some(Route)`
+    /// Same as `Router::peek_back`, with the addition of navigating to a
+    /// resulting `Some(Route)`
     ///
     ///   ### Note for now it does not add to history since we navigate inside.
     pub fn back(&self) -> Option<Route> {
@@ -270,7 +266,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
         })
     }
 
-    /// Same as `Router::peek_forward`, with the addition of navigating to a resulting `Some(Route)`
+    /// Same as `Router::peek_forward`, with the addition of navigating to a
+    /// resulting `Some(Route)`
     ///
     /// ### Note for now it does not add to history since we navigate inside.
     pub fn forward(&self) -> Option<Route> {
@@ -325,8 +322,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
         });
     }
 
-    /// This method accepts a given url and chooses the appropriate update for the
-    /// history depending of the `MoveStatus`.
+    /// This method accepts a given url and chooses the appropriate update for
+    /// the history depending of the `MoveStatus`.
     /// It also resets the current move to Ready.
     /// Mostly this method is used with the subscribe() in the init() in Seed.
     /// ```rust
@@ -363,8 +360,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     ///     #[default_route]
     ///     NotFound
     /// }
-    ///
-    ///```
+    /// ```
     pub fn confirm_navigation(&self, url: Url) {
         match self.map_data(|data| data.current_move.clone()) {
             MoveStatus::Navigating | MoveStatus::Ready => {
@@ -391,7 +387,8 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
         self.map_data(|data| data.current_route.clone())
     }
 
-    /// Get the default route of the router. The default route is used when an Url does not match the given Routes.
+    /// Get the default route of the router. The default route is used when an
+    /// Url does not match the given Routes.
     #[must_use]
     pub fn default_route(&self) -> Route {
         self.map_data(|data| data.default_route.clone())
@@ -701,7 +698,8 @@ mod test {
 
     // Testing return value and side effects of Router::back
     //
-    // After running back, check the option it returns, and that current_path() and is_current_route() is still correct
+    // After running back, check the option it returns, and that current_path() and
+    // is_current_route() is still correct
     //
     // Also tests is_on_last_index
     #[wasm_bindgen_test]
@@ -767,7 +765,8 @@ mod test {
         assert!(!router.data.borrow().is_on_last_index());
     }
 
-    // assumes correct functioning of back() in the case of not currently at most recent history
+    // assumes correct functioning of back() in the case of not currently at most
+    // recent history
     #[wasm_bindgen_test]
     fn test_forward() {
         let router: Router<ExampleRoutes> = Router::new();
@@ -873,7 +872,8 @@ mod test {
             assert_eq!(router.current_route(), ExampleRoutes::Stuff);
         }
 
-        // When navigating to wrong url, should go to default ( aka not found in this example )
+        // When navigating to wrong url, should go to default ( aka not found in this
+        // example )
         let url: Url = "/blabla/wrong_url".parse().unwrap();
         router.confirm_navigation(url);
         {

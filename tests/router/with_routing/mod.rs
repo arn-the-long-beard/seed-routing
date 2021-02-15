@@ -31,7 +31,8 @@ mod test {
         }
     }
     /// The base routes of the application.
-    /// If a submodule to load from a route has also routes, they should appear as children routes as well.
+    /// If a submodule to load from a route has also routes, they should appear
+    /// as children routes as well.
     #[derive(Debug, PartialEq, Clone, RoutingModules)]
     #[modules_path = "pages"]
     pub enum Route {
@@ -69,8 +70,8 @@ mod test {
     //    Update
     // ------ ------
     /// Root actions for your app.
-    /// Each component will have single action/message mapped to its message later
-    /// in update
+    /// Each component will have single action/message mapped to its message
+    /// later in update
     pub enum Msg {
         UrlChanged(subs::UrlChanged),
         Dashboard(dashboard::Msg),
@@ -282,7 +283,8 @@ mod test {
 
         let app = App::start(val, init, update, view);
         let mut orders = OrdersContainer::new(app);
-        let url = Route::Home.to_url(); // Home is chosen by wasm_pak probably because it does query the base url first from Seed
+        let url = Route::Home.to_url(); // Home is chosen by wasm_pak probably because it does query the base url first
+                                        // from Seed
         update(
             Msg::UrlChanged(subs::UrlChanged(url)),
             &mut model,

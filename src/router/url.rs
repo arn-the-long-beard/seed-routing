@@ -14,7 +14,8 @@ pub trait ParseUrl {
     fn to_url(&self) -> Url;
 }
 
-/// Convert the IndexMap from the Enum Variant to the string injected in the web browser.
+/// Convert the IndexMap from the Enum Variant to the string injected in the web
+/// browser.
 pub fn convert_to_string(query: &IndexMap<String, String>) -> String {
     let mut query_string = "".to_string();
     for (i, q) in query.iter().enumerate() {
@@ -27,7 +28,8 @@ pub fn convert_to_string(query: &IndexMap<String, String>) -> String {
     query_string
 }
 
-/// Extract from url string the id, the query parameter and the children route to rebuild the enum variant.
+/// Extract from url string the id, the query parameter and the children route
+/// to rebuild the enum variant.
 pub fn extract_url_payload(
     url_string: String,
     with_id_param: bool,
@@ -82,7 +84,8 @@ pub fn extract_id_parameter(url_string: &str) -> String {
     }
     param_id
 }
-/// Extract the children route string from url string and conserves the id parameter if any for the Enum Variant.
+/// Extract the children route string from url string and conserves the id
+/// parameter if any for the Enum Variant.
 pub fn extract_children_string(url_string: String, param_id: Option<String>) -> String {
     let full_query = url_string;
     let children_path: Option<String>;
@@ -101,7 +104,8 @@ pub fn extract_children_string(url_string: String, param_id: Option<String>) -> 
 
     children_path.expect("We should have a children path")
 }
-/// Extract the query parameters from the url string and return an IndexMap for the Enum Variant.
+/// Extract the query parameters from the url string and return an IndexMap for
+/// the Enum Variant.
 pub fn extract_query_params(url_string: &str) -> IndexMap<String, String> {
     let mut query: IndexMap<String, String> = IndexMap::new();
     let url_parts: Vec<&str> = url_string.split('?').collect();
