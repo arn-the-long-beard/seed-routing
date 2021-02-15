@@ -211,7 +211,9 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     }
 
     /// If a previous `Route` in history exists, return it. Otherwise return
-    /// `None`
+    /// `None`.
+    /// # Panics
+    /// The method will panic if the next index and history have mismatch.
     #[must_use]
     pub fn peek_back(&self) -> Option<Route> {
         // If we have no history, cannot go back
@@ -225,11 +227,19 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
         }
         let next_index: usize = self.map_data(|data| data.current_history_index - 1);
         let history = &self.map_data(|data| data.history.clone());
-        let route = history.get(next_index).unwrap();
+        let route = history.get(next_index).unwrap_or_else(|| {
+            panic!(
+                "We should have get route but index is failed {}",
+                next_index
+            )
+        });
+
         Some(route.clone())
     }
 
     /// If a next `Route` in history exists, return it. Otherwise return `None`
+    /// # Panics
+    /// The method will panic if the next index and history have mismatch.
     #[must_use]
     pub fn peek_forward(&self) -> Option<Route> {
         // if there is no route, cannot go forward
