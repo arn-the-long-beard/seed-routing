@@ -14,8 +14,8 @@ pub trait ParseUrl {
     fn to_url(&self) -> Url;
 }
 
-/// Convert the IndexMap from the Enum Variant to the string injected in the web
-/// browser.
+/// Convert the `IndexMap` from the Enum Variant to the string injected in the
+/// web browser.
 pub fn convert_to_string(query: &IndexMap<String, String>) -> String {
     let mut query_string = "".to_string();
     for (i, q) in query.iter().enumerate() {
@@ -61,13 +61,19 @@ pub fn extract_url_payload(
     (param_id, query_parameters, children_path)
 }
 /// Extract the id parameter from the url string for the Enum Variant.
+/// # Panics
+/// The function will panic if the root path start withs special character `/`.
 pub fn extract_id_parameter(url_string: &str) -> String {
     let mut single_paths = url_string.split('/');
 
     let root = single_paths.next();
 
-    if root.is_some() && !root.unwrap().is_empty() {
-        eprintln!("root path should be like '' because urls starts with / ");
+    if root.is_some()
+        && !root
+            .expect("Should get the root path of the url")
+            .is_empty()
+    {
+        panic!("root path should be like '' because urls starts with / ");
     }
     // make error if root is not empty
     let mut param_id = single_paths
@@ -91,21 +97,24 @@ pub fn extract_children_string(url_string: String, param_id: Option<String>) -> 
     let children_path: Option<String>;
 
     if param_id.is_some() {
-        println!("We have id param");
         children_path = full_query
             .trim_start_matches('/')
             .to_string()
             .strip_prefix(&param_id.expect("should have id parameter"))
             .map(std::string::ToString::to_string);
     } else {
-        println!("No id param");
         children_path = Some(full_query)
     }
 
     children_path.expect("We should have a children path")
 }
-/// Extract the query parameters from the url string and return an IndexMap for
-/// the Enum Variant.
+/// Extract the query parameters from the url string and return an `IndexMap`
+/// for the Enum Variant.
+/// # Panics
+/// The function will panic a key has no value.
+/// # Warns
+/// A warning will be emitted if the query parameter string only contains `?`
+/// with no query. Theses choices are opinionated for now.
 pub fn extract_query_params(url_string: &str) -> IndexMap<String, String> {
     let mut query: IndexMap<String, String> = IndexMap::new();
     let url_parts: Vec<&str> = url_string.split('?').collect();
