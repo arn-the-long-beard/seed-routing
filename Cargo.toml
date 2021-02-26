@@ -22,7 +22,8 @@ exclude = [
 crate-type = ["cdylib" ,"rlib"]
 
 [dependencies]
-seed = { git = "https://github.com/seed-rs/seed.git" }
+#seed = { git = "https://github.com/seed-rs/seed.git"   }
+seed="0.8.0"
 serde = "1.0.115"
 serde_json = "1.0.51"
 heck="0.3.1"
