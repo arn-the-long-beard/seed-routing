@@ -7,7 +7,7 @@ mod test {
     wasm_bindgen_test_configure!(run_in_browser);
     use seed::{prelude::*, *};
     extern crate heck;
-    use crate::router::with_routing::test::Route::Dashboard;
+    use crate::router::with_routing::test::Routes::Dashboard;
     use crate::routing_module::test::UserLogged;
     use seed::app::OrdersContainer;
     use seed_routing::{View, *};
@@ -35,11 +35,11 @@ mod test {
     /// as children routes as well.
     #[derive(Debug, PartialEq, Clone, RoutingModules)]
     #[modules_path = "pages"]
-    pub enum Route {
+    pub enum Routes {
         #[view = "=> login"]
         Login,
         #[guard = "user => guard => forbidden"]
-        Dashboard(dashboard::Route),
+        Dashboard(dashboard::Routes),
         Admin {
             query: IndexMap<String, String>,
         },
@@ -168,16 +168,16 @@ mod test {
     fn test_router_init() {
         add_router!();
         let my_router = router();
-        assert_eq!(my_router.current_route(), Route::NotFound);
-        let url = Route::Login.to_url();
+        assert_eq!(my_router.current_route(), Routes::NotFound);
+        let url = Routes::Login.to_url();
         router().init(url);
-        assert_eq!(my_router.current_route(), Route::Login);
+        assert_eq!(my_router.current_route(), Routes::Login);
     }
 
     #[wasm_bindgen_test]
     fn test_router_and_route_view() {
-        let my_router: Router<Route> = router();
-        my_router.navigate_to_new(Route::Login);
+        let my_router: Router<Routes> = router();
+        my_router.navigate_to_new(Routes::Login);
 
         let current_view = my_router
             .current_route()
@@ -201,8 +201,8 @@ mod test {
 
     #[wasm_bindgen_test]
     fn test_router_and_route_view_with_children() {
-        let my_router: Router<Route> = router();
-        my_router.navigate_to_new(Route::Other {
+        let my_router: Router<Routes> = router();
+        my_router.navigate_to_new(Routes::Other {
             id: "123".to_string(),
             children: other::Routes::Root,
         });
@@ -224,9 +224,9 @@ mod test {
 
     #[wasm_bindgen_test]
     fn test_router_view_and_guard() {
-        let my_router: Router<Route> = router();
+        let my_router: Router<Routes> = router();
 
-        my_router.navigate_to_new(Dashboard(dashboard::Route::Settings));
+        my_router.navigate_to_new(Dashboard(dashboard::Routes::Settings));
         let current_view = my_router
             .current_route()
             .view(&Model {
@@ -247,7 +247,7 @@ mod test {
         let test_user = UserLogged {
             name: "test_user".to_string(),
         };
-        my_router.navigate_to_new(Dashboard(dashboard::Route::Settings));
+        my_router.navigate_to_new(Dashboard(dashboard::Routes::Settings));
 
         let current_view = my_router
             .current_route()
@@ -283,8 +283,8 @@ mod test {
 
         let app = App::start(val, init, update, view);
         let mut orders = OrdersContainer::new(app);
-        let url = Route::Home.to_url(); // Home is chosen by wasm_pak probably because it does query the base url first
-                                        // from Seed
+        let url = Routes::Home.to_url(); // Home is chosen by wasm_pak probably because it does query the base url first
+                                         // from Seed
         update(
             Msg::UrlChanged(subs::UrlChanged(url)),
             &mut model,
@@ -292,7 +292,7 @@ mod test {
         );
 
         assert_eq!(&model.dashboard.stuff, "");
-        let dashboard_url = Route::Dashboard(dashboard::Route::Settings).to_url();
+        let dashboard_url = Routes::Dashboard(dashboard::Routes::Settings).to_url();
         router().navigate_to_url(dashboard_url.clone());
 
         update(

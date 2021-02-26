@@ -13,7 +13,6 @@ A proposal for advanced routing in Seed equivalent to what we have in Angular/Re
 - [Example DefaultRoute](#example-code-with-defaultroute)
 - [Example Modules](#example-code-with-routingmodules)
 
-
 ### Quickest way to use it
 
 #### 1 - Add `seed_routing` to your project in Cargo.toml:
@@ -76,11 +75,11 @@ fn view(model: &Model) -> impl IntoNodes<Msg> {
 
 There is nothing more to write for the router to do its job.
 
-#### 3 - Write your `Route` enum starting in lib.rs :
+#### 3 - Write your `Routes` enum starting in lib.rs :
 
 ```rust
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
-pub enum Route {
+pub enum Routes {
     Login {
         query: IndexMap<String, String>, // -> http://localhost:8000/login?name=JohnDoe
     },
@@ -104,7 +103,7 @@ pub enum Route {
 }
 
 ```
-#### 4 - Use the alpha cli for generating files & code from `Route` enum :
+#### 4 - Use the alpha cli for generating files & code from `Routes` enum :
 
 `cargo install proto_seeder`
 
@@ -113,7 +112,7 @@ In the route of your project :
 `proto_seeder ./src/lib.rs`
 
 
-This will generate from `Route` for you the following :
+This will generate from `Routes` for you the following :
 
 - local views.
 - guards.
@@ -128,7 +127,7 @@ Here is the experimental cli repo : https://github.com/arn-the-long-beard/proto-
 
 It is still very alpha and it needs more inputs & feedbacks to get better !
 
-#### 5 - You can write a new `Route` enum in a submodule and rerun the command from `proto_seeder`.
+#### 5 - You can write a new `Routes` enum in a submodule and rerun the command from `proto_seeder`.
 
 `proto_seeder ./src/dashboard.rs`
 

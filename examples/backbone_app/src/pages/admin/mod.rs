@@ -1,4 +1,4 @@
-use crate::{router, Route as Root};
+use crate::{router, Routes as Root};
 pub use router::View;
 use router::*;
 

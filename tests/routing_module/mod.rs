@@ -44,7 +44,7 @@ pub mod test {
             query: IndexMap<String, String>,
         },
         #[guard = "user => guard => forbidden"]
-        Dashboard(dashboard::Route),
+        Dashboard(dashboard::Routes),
         Profile {
             id: String,
         },
@@ -157,7 +157,7 @@ pub mod test {
     #[wasm_bindgen_test]
     fn test_view_with_guard_without_logged_user() {
         let view_from_route_without_logged_user =
-            SuperExampleRoutes::Dashboard(dashboard::Route::Settings)
+            SuperExampleRoutes::Dashboard(dashboard::Routes::Settings)
                 .view(&Model {
                     dashboard: dashboard::Model::default(),
                     admin: admin::Model::default(),
@@ -176,7 +176,7 @@ pub mod test {
     #[wasm_bindgen_test]
     fn test_view_with_guard_with_logged_user() {
         let view_from_route_with_logged_user =
-            SuperExampleRoutes::Dashboard(dashboard::Route::Settings)
+            SuperExampleRoutes::Dashboard(dashboard::Routes::Settings)
                 .view(&Model {
                     dashboard: dashboard::Model::default(),
                     admin: admin::Model::default(),
@@ -194,7 +194,7 @@ pub mod test {
         );
 
         let view_from_route_with_wrong_logged_user =
-            SuperExampleRoutes::Dashboard(dashboard::Route::Settings)
+            SuperExampleRoutes::Dashboard(dashboard::Routes::Settings)
                 .view(&Model {
                     dashboard: dashboard::Model::default(),
                     admin: admin::Model::default(),

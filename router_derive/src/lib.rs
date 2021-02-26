@@ -32,7 +32,7 @@ mod view;
 /// ```rust
 /// add_router!();
 ///
-/// enum Route {
+/// enum Routes {
 ///     Home,
 ///     NotFound,
 /// }
@@ -43,11 +43,11 @@ mod view;
 #[proc_macro]
 pub fn add_router(_item: TokenStream) -> TokenStream {
     "thread_local! {
-    pub(crate) static ROUTER: Router<Route> = Router::new();
+    pub(crate) static ROUTER: Router<Routes> = Router::new();
 }
 
 /// Access the router from global state
-fn router() -> Router<Route,> {
+fn router() -> Router<Routes> {
     ROUTER.with(Clone::clone,)
 }"
     .parse()
@@ -77,7 +77,7 @@ pub fn sync_router(_item: TokenStream) -> TokenStream {
 ///
 /// ```rust
 /// #[derive(Debug, PartialEq, Copy, Clone, ParseUrl)]
-/// pub enum DashboardAdminRoutes {
+/// pub enum Routes {
 ///     #[as_path = "my_stuff"] // "/my_stuff"
 ///     Other,
 ///     #[as_path = ""]

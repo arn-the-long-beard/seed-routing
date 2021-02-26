@@ -1,6 +1,6 @@
-use crate::Route as Root;
+use crate::Routes as Root;
 
-use crate::pages::dashboard::Route as Parent;
+use crate::pages::dashboard::Routes as Parent;
 use seed::{prelude::*, *};
 use seed_routing::*;
 

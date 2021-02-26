@@ -43,16 +43,16 @@ pub enum MoveStatus {
 /// This data can mutated while the router does not so we can use it as global
 /// variable in our Seed app.
 #[allow(clippy::module_name_repetitions)]
-pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> {
+pub struct RouterData<Routes: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> {
     /// The actual route, which should be the one displaying the view in Seed.
-    pub current_route: Route,
+    pub current_route: Routes,
     /// The index of the history.
     /// It will change when navigation or pushing back or forward.
     pub current_history_index: usize,
     /// The default route extracted from the attribute `#[default_route]` on
     /// your enum. This route is equivalent to 404. In other web framework
     /// it would be matching path pattern "*" for example.
-    pub default_route: Route,
+    pub default_route: Routes,
     /// The route url of the route
     /// ∕∕todo add protocol, domain and extract info later.
     base_url: Url,
@@ -61,12 +61,12 @@ pub struct RouterData<Route: Debug + PartialEq + ParsePath + Clone + Default + P
 
     pub sub_handle: Option<SubHandle>,
     /// The full history with all the routes the user has visited.
-    history: Vec<Route>,
+    history: Vec<Routes>,
 }
 
-impl<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> RouterData<Route> {
+impl<Routes: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> RouterData<Routes> {
     /// Add the route to the history.
-    pub fn push_to_history(&mut self, route: Route) {
+    pub fn push_to_history(&mut self, route: Routes) {
         self.history.push(route);
         self.current_history_index = self.history.len() - 1;
     }
@@ -88,24 +88,24 @@ impl<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> RouterDa
 /// Can go back and forward,
 /// Manage the default route and current route.
 #[derive(Clone)]
-pub struct Router<Route: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> {
-    data: Rc<RefCell<RouterData<Route>>>,
+pub struct Router<Routes: Debug + PartialEq + ParsePath + Clone + Default + ParseUrl> {
+    data: Rc<RefCell<RouterData<Routes>>>,
 }
 
 /// Router implementation with interior mutability.
 /// This specific mutability allows us to use the router as a global variable
 /// that we can use everywhere in the app. More information here [https://doc.rust-lang.org/book/ch15-05-interior-mutability.html](https://doc.rust-lang.org/book/ch15-05-interior-mutability.html)
 #[allow(clippy::new_without_default)]
-impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl> Router<Route> {
+impl<Routes: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl> Router<Routes> {
     /// Create a new Router with no url, no history and current route is default
     /// route.
     pub fn new() -> Self {
         Self {
             data: Rc::new(RefCell::new(RouterData {
                 current_history_index: 0,
-                default_route: Route::default(),
+                default_route: Routes::default(),
                 history: Vec::new(),
-                current_route: Route::default(),
+                current_route: Routes::default(),
                 base_url: Url::new(), // should replace with current ,maybe ?
                 current_move: MoveStatus::Ready,
                 sub_handle: None,
@@ -114,12 +114,12 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     }
 
     /// Update the data on `RouterData` with the use of a closure.
-    fn update_data(&self, updater: impl FnOnce(&mut RouterData<Route>)) {
+    fn update_data(&self, updater: impl FnOnce(&mut RouterData<Routes>)) {
         updater(&mut self.data.borrow_mut());
     }
 
     /// Get the data from `RouterData` with the use of closure.
-    fn map_data<T>(&self, mapper: impl FnOnce(&RouterData<Route>) -> T) -> T {
+    fn map_data<T>(&self, mapper: impl FnOnce(&RouterData<Routes>) -> T) -> T {
         mapper(&self.data.borrow())
     }
 
@@ -149,7 +149,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     /// }
     ///
     /// #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
-    /// enum Route {
+    /// enum Routes {
     ///     #[default_route]
     ///     NotFound,
     /// }
@@ -194,7 +194,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     /// }
     ///
     /// #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
-    /// enum Route {
+    /// enum Routes {
     ///     #[default_route]
     ///     NotFound,
     /// }
@@ -206,16 +206,16 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     }
 
     /// Push the route to the history so you can go back to it later.
-    fn push_to_history(&self, route: Route) {
+    fn push_to_history(&self, route: Routes) {
         self.update_data(|data| data.push_to_history(route));
     }
 
-    /// If a previous `Route` in history exists, return it. Otherwise return
+    /// If a previous `Routes` in history exists, return it. Otherwise return
     /// `None`.
     /// # Panics
     /// The method will panic if the next index and history have mismatch.
     #[must_use]
-    pub fn peek_back(&self) -> Option<Route> {
+    pub fn peek_back(&self) -> Option<Routes> {
         // If we have no history, cannot go back
 
         if self.map_data(|data| data.history.is_empty()) {
@@ -237,11 +237,11 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
         Some(route.clone())
     }
 
-    /// If a next `Route` in history exists, return it. Otherwise return `None`
+    /// If a next `Routes` in history exists, return it. Otherwise return `None`
     /// # Panics
     /// The method will panic if the next index and history have mismatch.
     #[must_use]
-    pub fn peek_forward(&self) -> Option<Route> {
+    pub fn peek_forward(&self) -> Option<Routes> {
         // if there is no route, cannot go forward
         if self.map_data(|data| data.history.is_empty()) {
             return None;
@@ -265,10 +265,10 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     }
 
     /// Same as `Router::peek_back`, with the addition of navigating to a
-    /// resulting `Some(Route)`
+    /// resulting `Some(Routes)`
     ///
     ///   ### Note for now it does not add to history since we navigate inside.
-    pub fn back(&self) -> Option<Route> {
+    pub fn back(&self) -> Option<Routes> {
         self.peek_back().map(|next_route| {
             self.set_current_route(&next_route);
             self.update_data(|data| data.current_history_index -= 1);
@@ -277,10 +277,10 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     }
 
     /// Same as `Router::peek_forward`, with the addition of navigating to a
-    /// resulting `Some(Route)`
+    /// resulting `Some(Routes)`
     ///
     /// ### Note for now it does not add to history since we navigate inside.
-    pub fn forward(&self) -> Option<Route> {
+    pub fn forward(&self) -> Option<Routes> {
         self.peek_forward().map(|next_route| {
             self.set_current_route(&next_route);
             self.update_data(|data| data.current_history_index += 1);
@@ -291,7 +291,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     /// Check the route is the current route.
     /// Could be use directly with url as well.
     #[must_use]
-    pub fn is_current_route(&self, route: &Route) -> bool {
+    pub fn is_current_route(&self, route: &Routes) -> bool {
         route.eq(&self.current_route())
     }
 
@@ -299,15 +299,15 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     /// This will push to history. So If you go back multiple time and then use
     /// navigate and then go back, you will not get the previous page, but the
     /// one just pushed into history before.
-    pub fn navigate_to_new(&self, route: Route) {
+    pub fn navigate_to_new(&self, route: Routes) {
         self.set_current_route(&route);
         self.push_to_history(route);
     }
 
     /// Match the url that change and update the router with the new current
-    /// Route.
+    /// Routes.
     pub fn navigate_to_url(&self, url: Url) {
-        if let Ok(route_match) = Route::from_url(url) {
+        if let Ok(route_match) = Routes::from_url(url) {
             // log!("found route");
             self.navigate_to_new(route_match);
         } else {
@@ -366,7 +366,7 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     /// }
     ///
     /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
-    ///     enum Route {
+    ///     enum Routes {
     ///     #[default_route]
     ///     NotFound
     /// }
@@ -387,20 +387,20 @@ impl<Route: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUrl
     }
 
     /// Set the current route of the router. It should be used only privately.
-    fn set_current_route(&self, route: &Route) {
+    fn set_current_route(&self, route: &Routes) {
         self.update_data(|data| data.current_route = route.clone());
     }
 
     /// Get the current route of the router.
     #[must_use]
-    pub fn current_route(&self) -> Route {
+    pub fn current_route(&self) -> Routes {
         self.map_data(|data| data.current_route.clone())
     }
 
     /// Get the default route of the router. The default route is used when an
     /// Url does not match the given Routes.
     #[must_use]
-    pub fn default_route(&self) -> Route {
+    pub fn default_route(&self) -> Routes {
         self.map_data(|data| data.default_route.clone())
     }
 

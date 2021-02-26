@@ -6,7 +6,7 @@ use seed_routing::*;
 use seed::{prelude::*, *};
 
 #[derive(Debug, PartialEq, Clone, RoutingModules)]
-pub enum Route {
+pub enum Routes {
     #[default_route]
     #[view = " => not_found"]
     NotFound,
@@ -14,7 +14,7 @@ pub enum Route {
     Settings,
 }
 pub enum Msg {}
-pub fn init(_: Url, _: &mut Model, _: &Route, _: &mut impl Orders<Msg>) -> Model {
+pub fn init(_: Url, _: &mut Model, _: &Routes, _: &mut impl Orders<Msg>) -> Model {
     Model {
         stuff: "init_has_been_done".to_string(),
     }
@@ -27,7 +27,7 @@ pub fn update(msg: Msg, _: &mut Model, _: &mut impl Orders<Msg>) {
     match msg {}
 }
 
-pub fn view(route: &Route, model: &Model) -> Node<Msg> {
+pub fn view(route: &Routes, model: &Model) -> Node<Msg> {
     route.view(model)
 }
 

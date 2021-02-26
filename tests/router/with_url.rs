@@ -35,7 +35,7 @@ mod test {
     }
 
     #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
-    pub enum Route {
+    pub enum Routes {
         Login,
         Register,
         Stuff,
@@ -99,10 +99,10 @@ mod test {
     #[wasm_bindgen_test]
     fn test_router_init() {
         let my_router = router();
-        assert_eq!(my_router.current_route(), Route::NotFound);
+        assert_eq!(my_router.current_route(), Routes::NotFound);
 
-        let url = Route::Login.to_url();
+        let url = Routes::Login.to_url();
         router().init(url);
-        assert_eq!(my_router.current_route(), Route::Login);
+        assert_eq!(my_router.current_route(), Routes::Login);
     }
 }
