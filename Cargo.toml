@@ -32,6 +32,8 @@ router_derive =  { path = "./router_derive"}
 [dependencies.web-sys]
 version = "0.3"
 
+
+
 [dev-dependencies]
 wasm-bindgen-test = "0.3.17"
 

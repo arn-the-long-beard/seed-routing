@@ -47,7 +47,7 @@ pub fn add_router(_item: TokenStream) -> TokenStream {
 }
 
 /// Access the router from global state
-fn router() -> Router<Routes> {
+pub fn router() -> Router<Routes> {
     ROUTER.with(Clone::clone,)
 }"
     .parse()

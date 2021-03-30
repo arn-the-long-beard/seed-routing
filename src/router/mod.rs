@@ -149,7 +149,7 @@ impl<Routes: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUr
     /// }
     ///
     /// #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
-    /// enum Routes {
+    /// pub enum Routes {
     ///     #[default_route]
     ///     NotFound,
     /// }
@@ -194,7 +194,7 @@ impl<Routes: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUr
     /// }
     ///
     /// #[derive(Debug, PartialEq, Clone, ParseUrl, WithDefaultRoute)]
-    /// enum Routes {
+    /// pub enum Routes {
     ///     #[default_route]
     ///     NotFound,
     /// }
@@ -366,7 +366,7 @@ impl<Routes: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUr
     /// }
     ///
     /// #[derive(Debug, PartialEq, Clone,ParseUrl,WithDefaultRoute)]
-    ///     enum Routes {
+    ///   pub enum Routes {
     ///     #[default_route]
     ///     NotFound
     /// }

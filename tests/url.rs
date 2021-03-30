@@ -420,4 +420,9 @@ mod test {
     fn test_default_route() {
         assert_eq!(ExampleRoutes::default(), ExampleRoutes::NotFound);
     }
+
+    #[wasm_bindgen_test]
+    fn test_as_path_empty() {
+        assert_eq!(ExampleRoutes::Root.as_path(), "");
+    }
 }
