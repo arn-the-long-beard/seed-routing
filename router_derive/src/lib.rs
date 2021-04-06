@@ -68,7 +68,11 @@ pub fn router() -> Router<Routes> {
 pub fn sync_router(_item: TokenStream) -> TokenStream {
     "router().init(url).subscribe(orders.subscribe_with_handle(
         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url),
-    ));"
+    ));
+    orders.send_msg(Msg::UrlChanged(seed::prelude::subs::UrlChanged(
+        router().current_route().to_url(),
+    )));
+    "
     .parse()
     .unwrap()
 }
