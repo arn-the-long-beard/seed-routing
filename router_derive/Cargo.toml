@@ -11,7 +11,7 @@ proc-macro = true
 
 [dependencies]
 quote = "1.0.7"
-syn = { version =  "=1.0.60" ,  features = ["full"]}
+syn = { version =  "1.0.60" ,  features = ["full"]}
 heck="0.3.1"
 proc-macro-error = "^1"
 proc-macro2 = "^1"
