@@ -5,7 +5,7 @@ mod model;
 mod path;
 mod url;
 mod view;
-use seed::Url;
+use seed::{log, Url};
 use std::fmt::Debug;
 
 pub use default_route::*;
@@ -308,7 +308,7 @@ impl<Routes: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUr
     /// Routes.
     pub fn navigate_to_url(&self, url: Url) {
         if let Ok(route_match) = Routes::from_url(url) {
-            // log!("found route");
+            log!("found route");
             self.navigate_to_new(route_match);
         } else {
             let default = self.default_route();
@@ -353,7 +353,7 @@ impl<Routes: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUr
     ///     router()
     ///     .init(url)
     ///     .subscribe(orders.subscribe_with_handle(
-    ///         |subs::UrlRequested(requested_url, _)| router().confirm_navigation(requested_url), // <-- Confirmation called when we request a Url
+    ///         |subs::UrlChanged(changed_url)| router().confirm_navigation(changed_url), // <-- Confirmation called when we request a Url
     ///     ));
     ///
     /// Model {
@@ -372,6 +372,7 @@ impl<Routes: 'static + Debug + PartialEq + ParsePath + Default + Clone + ParseUr
     /// }
     /// ```
     pub fn confirm_navigation(&self, url: Url) {
+        log!("ask route");
         match self.map_data(|data| data.current_move.clone()) {
             MoveStatus::Navigating | MoveStatus::Ready => {
                 self.navigate_to_url(url);
@@ -842,7 +843,6 @@ mod test {
     #[wasm_bindgen_test]
     fn test_confirm_navigation() {
         let router: Router<ExampleRoutes> = Router::new();
-
         // When triggering from RequestedUrl
         let url = ExampleRoutes::Login.to_url();
         router.confirm_navigation(url);
