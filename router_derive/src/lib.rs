@@ -126,7 +126,7 @@ pub fn derive_as_url(item: TokenStream) -> TokenStream {
         fn to_url(&self) -> Url {
          let url : Url =    match self {
                     #(#as_snippets),*
-                    }.parse().unwrap();
+                    }.parse().expect("Should have parsed but broke");
                     url
         }
 
