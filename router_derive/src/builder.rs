@@ -48,30 +48,30 @@ pub fn unwrap_url_payload_matching_field(
     // Todo this code is ugly, need to find something better
     match structs_tuple {
         (id, query, children) if id.is_some() && query.is_some() && children.is_some() => {
-            let sub_enum = &children.clone().unwrap().ty;
-            quote! { id : id.unwrap(),query : query.unwrap(),children :  #sub_enum::parse_path(&children.unwrap()).unwrap()}
+            let sub_enum = &children.clone().expect("Should have extract url item").ty;
+            quote! { id : id.expect("Should have extract url item"),query : query.expect("Should have extract url item"),children :  #sub_enum::parse_path(&children.expect("Should have unwrap children route")).expect("Should have parse children Route but failed")}
         }
 
         (id, query, _) if id.is_some() && query.is_some() => {
-            quote! { id : id.unwrap(),query : query.unwrap()}
+            quote! { id : id.expect("Should have extract url item"),query : query.expect("Should have extract url item")}
         }
         (id, query, children) if id.is_none() && query.is_some() && children.is_some() => {
-            let sub_enum = &children.clone().unwrap().ty;
-            quote! { query : query.unwrap(),children :  #sub_enum::parse_path(&children.unwrap()).unwrap()}
+            let sub_enum = &children.clone().expect("Should have extract url item").ty;
+            quote! { query : query.expect("Should have extract url item"),children :  #sub_enum::parse_path(&children.expect("Should unwrap children route")).expect("Should have parse children Route")}
         }
         (id, query, children) if id.is_some() && children.is_some() && query.is_none() => {
-            let sub_enum = &children.clone().unwrap().ty;
-            quote! { id : id.unwrap(),children : #sub_enum::parse_path(&children.unwrap()).unwrap()}
+            let sub_enum = &children.clone().expect("Should have extract url item").ty;
+            quote! { id : id.expect("Should have extract url item"),children : #sub_enum::parse_path(&children.expect("Should unwrap children route")).expect("Should have parse children Route")}
         }
         (id, query, children) if id.is_some() && query.is_none() && children.is_none() => {
-            quote! { id : id.unwrap()}
+            quote! { id : id.expect("Should have extract url item")}
         }
         (id, query, children) if query.is_some() && id.is_none() && children.is_none() => {
-            quote! { query : query.unwrap()}
+            quote! { query : query.expect("Should have extract url item")}
         }
         (id, query, children) if query.is_none() && id.is_none() & children.is_some() => {
-            let sub_enum = &children.clone().unwrap().ty;
-            quote! { children :#sub_enum::parse_path(&children.unwrap().clone()).unwrap()}
+            let sub_enum = &children.clone().expect("Should have extract url item").ty;
+            quote! { children :#sub_enum::parse_path(&children.expect("Should have extract url item").clone()).expect("Should have parse children Route")}
         }
 
         (_, _, _) => {
