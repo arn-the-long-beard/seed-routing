@@ -10,6 +10,8 @@ use quote::quote;
 use proc_macro2::TokenStream;
 use std::collections::HashSet;
 use syn::{punctuated::Iter, Attribute, Field, Fields, Ident, Variant};
+use std::string::ParseError;
+
 /// Build the matching arms for the enum match for ParseUrl trait implementation
 pub fn routing_variant_snippets(
     variants: Iter<'_, Variant>,
@@ -115,12 +117,9 @@ fn parse_unit_variant(ident: Ident, path_name: Option<String>) -> TokenStream {
             next.strip_prefix(#path_name).ok_or(err)
         },
         None => quote! {
-            if next.is_empty() {
-                Some(())
-            } else {
-                None
-            }
-            .ok_or(ParseError::RemainingSegments)
+        if next.is_empty() || next.strip_prefix("?").is_some()
+            { Ok(()) }
+        else { Err(err) }
         },
     };
     quote! {
