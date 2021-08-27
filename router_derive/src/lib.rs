@@ -69,9 +69,6 @@ pub fn sync_router(_item: TokenStream) -> TokenStream {
     "router().init(url).subscribe(orders.subscribe_with_handle(
         |subs::UrlChanged(changed_url)| router().confirm_navigation(changed_url),
     ));
-    orders.send_msg(Msg::UrlChanged(seed::prelude::subs::UrlChanged(
-        router().current_route().to_url(),
-    )));
     "
     .parse()
     .unwrap()
